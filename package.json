@@ -1,6 +1,6 @@
 {
   "name": "request-templater",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "description": "RequestTemplater is a class for generating HTTP request examples based on templates for different programming languages.",
   "main": "dist/request-templater.js",
   "module": "dist/request-templater.module.js",
