@@ -53,8 +53,8 @@ function encode_char(c) {
     ;  }) 
     ;  } 
     ; __append("\n\n")
-    ;  if (postData.length > 0) { 
-    ; __append("\n// Set the request body\n")
+    ;  if (method === 'POST' && postData.length > 0) { 
+    ; __append("// Set the request body\n")
     ;  if (postData.length === 1 && postData[0].type === 'file') { 
     ; __append("\nlet fileUrl = URL(fileURLWithPath: \"/path/to/file\")\nlet data = try Data(contentsOf: fileUrl)\nrequest.httpBody = data\n")
     ;  } else { 
@@ -62,7 +62,6 @@ function encode_char(c) {
     ; __append(escapeFn( postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') ))
     ; __append("\"\nlet postDataEncoded = postData.data(using: .utf8)\nrequest.httpBody = postDataEncoded\n")
     ;  } 
-    ; __append("\n")
     ;  } 
     ; __append("\n\n// Create a new URLSession object\nlet session = URLSession.shared\n\n// Send the request\nlet task = session.dataTask(with: request) { (data, response, error) in\nguard let data = data else { return }\nprint(\"Response:\", String(data: data, encoding: .utf8)!)\n}\n\ntask.resume()\n")
   return __output;

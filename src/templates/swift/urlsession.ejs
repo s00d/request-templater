@@ -18,8 +18,7 @@ request.addValue("<%= header.value %>", forHTTPHeaderField: "<%= header.name %>"
 request.addValue("<%= cookie.value %>", forHTTPHeaderField: "<%= cookie.name %>")
 <% }) %><% } %>
 
-<% if (postData.length > 0) { %>
-// Set the request body
+<% if (method === 'POST' && postData.length > 0) { %>// Set the request body
 <% if (postData.length === 1 && postData[0].type === 'file') { %>
 let fileUrl = URL(fileURLWithPath: "/path/to/file")
 let data = try Data(contentsOf: fileUrl)
@@ -28,8 +27,7 @@ request.httpBody = data
 let postData = "<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>"
 let postDataEncoded = postData.data(using: .utf8)
 request.httpBody = postDataEncoded
-<% } %>
-<% } %>
+<% } %><% } %>
 
 // Create a new URLSession object
 let session = URLSession.shared

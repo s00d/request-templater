@@ -101,7 +101,7 @@ class RequestTemplater {
             throw new Error('bad library')
         }
         const params = this.convertParams();
-        return template(params);
+        return template(params).replace('&amp;', '&');
     }
 
     generateHighlight(): string {

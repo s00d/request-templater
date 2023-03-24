@@ -65,12 +65,20 @@
         <input type="text" id="url-template" placeholder="posts/{id}" value="posts/{id}">
     </div>
     <div class="form-item">
+        <label for="headers">Headers:</label>
+        <textarea id="headers" placeholder="auth=11111">auth=11111&head=yes</textarea>
+    </div>
+    <div class="form-item">
         <label for="query-params">Query Params:</label>
         <textarea id="query-params" placeholder="userId=1">page=1&limit=10</textarea>
     </div>
     <div class="form-item">
         <label for="path-params">Path Params:</label>
         <textarea id="path-params" placeholder="id=1">id=12345</textarea>
+    </div>
+    <div class="form-item">
+        <label for="post-data">Post Data:</label>
+        <textarea id="post-data" placeholder="id=1">id=12345&key=222</textarea>
     </div>
     <div class="form-item">
         <label for="mime-type">MIME Type:</label>
@@ -134,6 +142,8 @@
         const urlTemplate = document.getElementById('url-template').value;
         const queryParams = document.getElementById('query-params').value;
         const pathParams = document.getElementById('path-params').value;
+        const headers = document.getElementById('headers').value;
+        const postData = document.getElementById('post-data').value;
         const mimeType = document.getElementById('mime-type').value;
         const lang = document.getElementById('lang').value;
         const method = document.getElementById('method').value;
@@ -153,6 +163,20 @@
                 params.push({ in: 'path', name: key, value });
             });
         }
+        if (postData) {
+            postData.split('&').map(param => {
+                const [key, value] = param.split('=');
+                params.push({ in: 'postData', name: key, value });
+            });
+        }
+        if (headers) {
+            headers.split('&').map(param => {
+                const [key, value] = param.split('=');
+                params.push({ in: 'headers', name: key, value });
+            });
+        }
+
+
         requestTemplater.params(params);
         requestTemplater.mimeType(mimeType);
         output.innerHTML = requestTemplater.method(method).lang(lang).library(library).generate();
