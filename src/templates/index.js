@@ -30,7 +30,9 @@ function encode_char(c) {
     ; __append( method )
     ; __append("\"\n\n// Set the request content type header\nrequest.addValue(\"")
     ; __append( mimeType )
-    ; __append("\", forHTTPHeaderField: \"Content-Type\")\n\n// Add headers to the request\n")
+    ; __append("\", forHTTPHeaderField: \"Content-Type\")\n\n")
+    ;  if (headers.length > 0) { 
+    ; __append("// Add headers to the request\n")
     ;  headers.forEach(header => { 
     ; __append("\nrequest.addValue(\"")
     ; __append(escapeFn( header.value ))
@@ -38,7 +40,10 @@ function encode_char(c) {
     ; __append(escapeFn( header.name ))
     ; __append("\")\n")
     ;  }) 
-    ; __append("\n\n// Add cookies to the request\n")
+    ;  } 
+    ; __append("\n\n")
+    ;  if (cookies.length > 0) { 
+    ; __append("// Add cookies to the request\n")
     ;  cookies.forEach(cookie => { 
     ; __append("\nrequest.addValue(\"")
     ; __append(escapeFn( cookie.value ))
@@ -46,9 +51,10 @@ function encode_char(c) {
     ; __append(escapeFn( cookie.name ))
     ; __append("\")\n")
     ;  }) 
-    ; __append("\n\n// Set the request body\n")
+    ;  } 
+    ; __append("\n\n")
     ;  if (postData.length > 0) { 
-    ; __append("\n")
+    ; __append("\n// Set the request body\n")
     ;  if (postData.length === 1 && postData[0].type === 'file') { 
     ; __append("\nlet fileUrl = URL(fileURLWithPath: \"/path/to/file\")\nlet data = try Data(contentsOf: fileUrl)\nrequest.httpBody = data\n")
     ;  } else { 
