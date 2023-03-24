@@ -11,7 +11,7 @@ RequestTemplater is a class for generating HTTP request examples based on templa
 
 # Example
 
-[Show](https://on-org.github.io/request-templater/)
+[Show](https://s00d.github.io/request-templater/)
 
 ## Installation
 To install RequestTemplater, run the following command:
