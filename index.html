@@ -13,7 +13,7 @@
             overflow: scroll;
             border: 2px solid #d0d0d0;
             padding: 10px;
-            text-indent: 4em;
+            /*text-indent: 4em;*/
             white-space: pre-wrap;
         }
 
@@ -176,10 +176,11 @@
             });
         }
 
+        requestTemplater.params(params).mimeType(mimeType).method(method).lang(lang).library(library)
 
-        requestTemplater.params(params);
-        requestTemplater.mimeType(mimeType);
-        output.innerHTML = requestTemplater.method(method).lang(lang).library(library).generate();
-        outputHighlight.innerHTML = requestTemplater.method(method).lang(lang).library(library).generateHighlight()
+        const code = requestTemplater.generate();
+        output.innerHTML = code;
+        console.log(code)
+        outputHighlight.innerHTML = requestTemplater.generateHighlight()
     }
 </script>

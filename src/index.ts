@@ -95,13 +95,20 @@ class RequestTemplater {
             cookies: this._params.filter(param => param.in === 'cookie'),
         }
     }
+
+    private cleanup(val: string): string {
+        return val
+            .replace(/&amp;/gmiu, '&')
+            .replace(/\n\n+/gmiu, '\n')
+            .replace(/^\n/gmiu, '')
+    }
     generate(): string {
         const template = templates[this._lang + '/' + this._library] ?? null;
         if (!template) {
             throw new Error('bad library')
         }
         const params = this.convertParams();
-        return template(params).replace('&amp;', '&');
+        return this.cleanup(template(params));
     }
 
     generateHighlight(): string {

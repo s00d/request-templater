@@ -127,180 +127,6 @@ function encode_char(c) {
   return __output;
 
 },
-"shell/wget": function anonymous(locals, escapeFn, include, rethrow
-) {
-"use strict";
-escapeFn = escapeFn || function (markup) {
-  return markup == undefined
-    ? ''
-    : String(markup)
-      .replace(_MATCH_HTML, encode_char);
-};
-var _ENCODE_HTML_RULES = {
-      "&": "&amp;"
-    , "<": "&lt;"
-    , ">": "&gt;"
-    , '"': "&#34;"
-    , "'": "&#39;"
-    }
-  , _MATCH_HTML = /[&<>'"]/g;
-function encode_char(c) {
-  return _ENCODE_HTML_RULES[c] || c;
-};
-;
-  var __output = "";
-  function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
-    ; __append("\nwget --verbose --output-document=- \\\n--header=\"Content-Type: ")
-    ; __append(escapeFn( mimeType ))
-    ; __append("\" \\\n")
-    ;  headers.forEach(header => { 
-    ; __append("\n    --header=\"")
-    ; __append(escapeFn( header.name ))
-    ; __append(": ")
-    ; __append(escapeFn( header.value ))
-    ; __append("\" \\\n")
-    ;  }) 
-    ; __append("\n")
-    ;  cookies.forEach(cookie => { 
-    ; __append("\n    --header=\"Cookie: ")
-    ; __append(escapeFn( cookie.name ))
-    ; __append("=")
-    ; __append(escapeFn( cookie.value ))
-    ; __append("\" \\\n")
-    ;  }) 
-    ;  if (method === 'GET') { 
-    ; __append("\n    \"")
-    ; __append(escapeFn( url ))
-    ; __append("\" \\\n")
-    ;  } else if (method === 'POST') { 
-    ; __append("\n    --post-data=\"")
-    ; __append(escapeFn( postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') ))
-    ; __append("\" \\\n    \"")
-    ; __append(escapeFn( url ))
-    ; __append("\" \\\n")
-    ;  } else if (method === 'PUT') { 
-    ; __append("\n    --method=PUT \\\n    --body-data=\"")
-    ; __append(escapeFn( postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') ))
-    ; __append("\" \\\n    \"")
-    ; __append(escapeFn( url ))
-    ; __append("\" \\\n")
-    ;  } else if (method === 'DELETE') { 
-    ; __append("\n    --method=DELETE \\\n    \"")
-    ; __append(escapeFn( url ))
-    ; __append("\" \\\n")
-    ;  } 
-    ; __append("\n")
-  return __output;
-
-},
-"shell/httpie": function anonymous(locals, escapeFn, include, rethrow
-) {
-"use strict";
-escapeFn = escapeFn || function (markup) {
-  return markup == undefined
-    ? ''
-    : String(markup)
-      .replace(_MATCH_HTML, encode_char);
-};
-var _ENCODE_HTML_RULES = {
-      "&": "&amp;"
-    , "<": "&lt;"
-    , ">": "&gt;"
-    , '"': "&#34;"
-    , "'": "&#39;"
-    }
-  , _MATCH_HTML = /[&<>'"]/g;
-function encode_char(c) {
-  return _ENCODE_HTML_RULES[c] || c;
-};
-;
-  var __output = "";
-  function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
-    ; __append("\nhttp --verbose --check --follow \\\n\"")
-    ; __append(escapeFn( url ))
-    ; __append("\" \\\n")
-    ; __append(escapeFn( headers.map(header => "'" + header.name + ":" + header.value + "'").join(' \\\n    ') ))
-    ; __append(" \\\n")
-    ;  cookies.forEach(cookie => { 
-    ; __append("\n    Cookie:\"")
-    ; __append(escapeFn( cookie.name ))
-    ; __append("=")
-    ; __append(escapeFn( cookie.value ))
-    ; __append("\" \\\n")
-    ;  }) 
-    ;  if (postData.length > 0) { 
-    ; __append("\n    ")
-    ; __append(escapeFn( postData.map(param => "'" + param.name + "=" + encodeURIComponent(param.value) + "'").join(' \\\n    ') ))
-    ; __append(" \\\n")
-    ;  } 
-    ; __append("\n--form \\\n--timeout 120s \\\n--max-redirects 10\n")
-  return __output;
-
-},
-"shell/curl": function anonymous(locals, escapeFn, include, rethrow
-) {
-"use strict";
-escapeFn = escapeFn || function (markup) {
-  return markup == undefined
-    ? ''
-    : String(markup)
-      .replace(_MATCH_HTML, encode_char);
-};
-var _ENCODE_HTML_RULES = {
-      "&": "&amp;"
-    , "<": "&lt;"
-    , ">": "&gt;"
-    , '"': "&#34;"
-    , "'": "&#39;"
-    }
-  , _MATCH_HTML = /[&<>'"]/g;
-function encode_char(c) {
-  return _ENCODE_HTML_RULES[c] || c;
-};
-;
-  var __output = "";
-  function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
-    ; __append("\ncurl -X ")
-    ; __append(escapeFn( method ))
-    ; __append(" \\\n-H \"Content-Type: ")
-    ; __append(escapeFn( mimeType ))
-    ; __append("\" \\\n")
-    ;  headers.forEach(header => { 
-    ; __append("\n    -H \"")
-    ; __append(escapeFn( header.name ))
-    ; __append(": ")
-    ; __append(escapeFn( header.value ))
-    ; __append("\" \\\n")
-    ;  }) 
-    ; __append("\n")
-    ;  cookies.forEach(cookie => { 
-    ; __append("\n    --cookie \"")
-    ; __append(escapeFn( cookie.name ))
-    ; __append("=")
-    ; __append(escapeFn( cookie.value ))
-    ; __append("\" \\\n")
-    ;  }) 
-    ;  if (postData.length > 0) { 
-    ; __append("\n    -d ")
-    ;  if (postData.length === 1 && postData[0].type === 'file') { 
-    ; __append("\n        \"@")
-    ; __append(escapeFn( postData[0].value ))
-    ; __append("\" \\\n    ")
-    ;  } else { 
-    ; __append("\n        \"")
-    ; __append(escapeFn( postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') ))
-    ; __append("\" \\\n    ")
-    ;  } 
-    ;  } 
-    ; __append("\n\"")
-    ; __append(escapeFn( url ))
-    ; __append("\n")
-  return __output;
-
-},
 "scala/scalaj-http": function anonymous(locals, escapeFn, include, rethrow
 ) {
 "use strict";
@@ -3670,6 +3496,180 @@ function encode_char(c) {
     ;  if (postData.length === 1 && postData[0].type === 'file') { 
     ; __append(" Remember, uploading files in Brainfuck is like trying to fit a square peg in a round hole.")
     ;  } 
+    ; __append("\n")
+  return __output;
+
+},
+"bash/wget": function anonymous(locals, escapeFn, include, rethrow
+) {
+"use strict";
+escapeFn = escapeFn || function (markup) {
+  return markup == undefined
+    ? ''
+    : String(markup)
+      .replace(_MATCH_HTML, encode_char);
+};
+var _ENCODE_HTML_RULES = {
+      "&": "&amp;"
+    , "<": "&lt;"
+    , ">": "&gt;"
+    , '"': "&#34;"
+    , "'": "&#39;"
+    }
+  , _MATCH_HTML = /[&<>'"]/g;
+function encode_char(c) {
+  return _ENCODE_HTML_RULES[c] || c;
+};
+;
+  var __output = "";
+  function __append(s) { if (s !== undefined && s !== null) __output += s }
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\nwget --verbose --output-document=- \\\n--header=\"Content-Type: ")
+    ; __append(escapeFn( mimeType ))
+    ; __append("\" \\\n")
+    ;  headers.forEach(header => { 
+    ; __append("\n    --header=\"")
+    ; __append(escapeFn( header.name ))
+    ; __append(": ")
+    ; __append(escapeFn( header.value ))
+    ; __append("\" \\\n")
+    ;  }) 
+    ; __append("\n")
+    ;  cookies.forEach(cookie => { 
+    ; __append("\n    --header=\"Cookie: ")
+    ; __append(escapeFn( cookie.name ))
+    ; __append("=")
+    ; __append(escapeFn( cookie.value ))
+    ; __append("\" \\\n")
+    ;  }) 
+    ;  if (method === 'GET') { 
+    ; __append("\n    \"")
+    ; __append(escapeFn( url ))
+    ; __append("\" \\\n")
+    ;  } else if (method === 'POST') { 
+    ; __append("\n    --post-data=\"")
+    ; __append(escapeFn( postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') ))
+    ; __append("\" \\\n    \"")
+    ; __append(escapeFn( url ))
+    ; __append("\" \\\n")
+    ;  } else if (method === 'PUT') { 
+    ; __append("\n    --method=PUT \\\n    --body-data=\"")
+    ; __append(escapeFn( postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') ))
+    ; __append("\" \\\n    \"")
+    ; __append(escapeFn( url ))
+    ; __append("\" \\\n")
+    ;  } else if (method === 'DELETE') { 
+    ; __append("\n    --method=DELETE \\\n    \"")
+    ; __append(escapeFn( url ))
+    ; __append("\"\n")
+    ;  } 
+    ; __append("\n")
+  return __output;
+
+},
+"bash/httpie": function anonymous(locals, escapeFn, include, rethrow
+) {
+"use strict";
+escapeFn = escapeFn || function (markup) {
+  return markup == undefined
+    ? ''
+    : String(markup)
+      .replace(_MATCH_HTML, encode_char);
+};
+var _ENCODE_HTML_RULES = {
+      "&": "&amp;"
+    , "<": "&lt;"
+    , ">": "&gt;"
+    , '"': "&#34;"
+    , "'": "&#39;"
+    }
+  , _MATCH_HTML = /[&<>'"]/g;
+function encode_char(c) {
+  return _ENCODE_HTML_RULES[c] || c;
+};
+;
+  var __output = "";
+  function __append(s) { if (s !== undefined && s !== null) __output += s }
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\nhttp --verbose --check --follow \\\n\"")
+    ; __append(escapeFn( url ))
+    ; __append("\" \\\n")
+    ; __append(escapeFn( headers.map(header => "'" + header.name + ":" + header.value + "'").join(' \\\n    ') ))
+    ; __append(" \\\n")
+    ;  cookies.forEach(cookie => { 
+    ; __append("\n    Cookie:\"")
+    ; __append(escapeFn( cookie.name ))
+    ; __append("=")
+    ; __append(escapeFn( cookie.value ))
+    ; __append("\" \\\n")
+    ;  }) 
+    ;  if (postData.length > 0) { 
+    ; __append("\n    ")
+    ; __append(escapeFn( postData.map(param => "'" + param.name + "=" + encodeURIComponent(param.value) + "'").join(' \\\n    ') ))
+    ; __append(" \\\n")
+    ;  } 
+    ; __append("\n--form \\\n--timeout 120s \\\n--max-redirects 10\n")
+  return __output;
+
+},
+"bash/curl": function anonymous(locals, escapeFn, include, rethrow
+) {
+"use strict";
+escapeFn = escapeFn || function (markup) {
+  return markup == undefined
+    ? ''
+    : String(markup)
+      .replace(_MATCH_HTML, encode_char);
+};
+var _ENCODE_HTML_RULES = {
+      "&": "&amp;"
+    , "<": "&lt;"
+    , ">": "&gt;"
+    , '"': "&#34;"
+    , "'": "&#39;"
+    }
+  , _MATCH_HTML = /[&<>'"]/g;
+function encode_char(c) {
+  return _ENCODE_HTML_RULES[c] || c;
+};
+;
+  var __output = "";
+  function __append(s) { if (s !== undefined && s !== null) __output += s }
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\ncurl -X ")
+    ; __append(escapeFn( method ))
+    ; __append(" \\\n-H \"Content-Type: ")
+    ; __append(escapeFn( mimeType ))
+    ; __append("\" \\\n")
+    ;  headers.forEach(header => { 
+    ; __append("\n    -H \"")
+    ; __append(escapeFn( header.name ))
+    ; __append(": ")
+    ; __append(escapeFn( header.value ))
+    ; __append("\" \\\n")
+    ;  }) 
+    ; __append("\n")
+    ;  cookies.forEach(cookie => { 
+    ; __append("\n    --cookie \"")
+    ; __append(escapeFn( cookie.name ))
+    ; __append("=")
+    ; __append(escapeFn( cookie.value ))
+    ; __append("\" \\\n")
+    ;  }) 
+    ;  if (postData.length > 0) { 
+    ; __append("\n    -d ")
+    ;  if (postData.length === 1 && postData[0].type === 'file') { 
+    ; __append("\n        \"@")
+    ; __append(escapeFn( postData[0].value ))
+    ; __append("\" \\\n    ")
+    ;  } else { 
+    ; __append("\n        \"")
+    ; __append(escapeFn( postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') ))
+    ; __append("\" \\\n    ")
+    ;  } 
+    ;  } 
+    ; __append("\n\"")
+    ; __append(escapeFn( url ))
     ; __append("\n")
   return __output;
 

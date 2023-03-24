@@ -22,6 +22,7 @@ declare class RequestTemplater {
     url(value: string): this;
     baseUrl(value: string): this;
     private convertParams;
+    private cleanup;
     generate(): string;
     generateHighlight(): string;
     config(): {};

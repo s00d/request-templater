@@ -3,8 +3,6 @@ import hljs from 'highlight.js/lib/core';
 
 import swift from 'highlight.js/lib/languages/swift';
 hljs.registerLanguage('swift', swift);
-import shell from 'highlight.js/lib/languages/shell';
-hljs.registerLanguage('shell', shell);
 import scala from 'highlight.js/lib/languages/scala';
 hljs.registerLanguage('scala', scala);
 import rust from 'highlight.js/lib/languages/rust';
@@ -47,6 +45,8 @@ import c from 'highlight.js/lib/languages/c';
 hljs.registerLanguage('c', c);
 import brainfuck from 'highlight.js/lib/languages/brainfuck';
 hljs.registerLanguage('brainfuck', brainfuck);
+import bash from 'highlight.js/lib/languages/bash';
+hljs.registerLanguage('bash', bash);
 import r from 'highlight.js/lib/languages/r';
 hljs.registerLanguage('r', r);
 
