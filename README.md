@@ -1,6 +1,17 @@
+[![npm version](https://badge.fury.io/js/request-templater.svg)](https://badge.fury.io/js/request-templater)
+[![npm downloads](https://img.shields.io/npm/dw/request-templater)](https://badge.fury.io/js/request-templater)
+[![NPM license](https://img.shields.io/npm/l/request-templater)](https://github.com/sood/request-templater/blob/master/LICENSE)
+[![npm type definitions](https://img.shields.io/npm/types/request-templater)](https://github.com/sood/request-templater)
+[![donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.me/s00d)
+[![GitHub Repo stars](https://img.shields.io/github/stars/sood/request-templater?style=social)](https://github.com/sood/request-templater)
+
 # RequestTemplater
 
 RequestTemplater is a class for generating HTTP request examples based on templates for different programming languages.
+
+# Example
+
+[Show](https://on-org.github.io/request-templater/)
 
 ## Installation
 To install RequestTemplater, run the following command:
