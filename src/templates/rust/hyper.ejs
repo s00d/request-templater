@@ -1,8 +1,4 @@
-<%
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-%>
-
+<% const { url, method, mimeType, headers, postData, cookies } = locals; %>
 // Create a new Hyper client object
 let client = hyper::Client::new();
 

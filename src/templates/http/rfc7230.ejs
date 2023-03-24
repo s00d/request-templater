@@ -1,7 +1,4 @@
-<%
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-%>
+<% const { url, method, mimeType, headers, postData, cookies } = locals; %>
 // https://www.rfc-editor.org/rfc/rfc7230
 <% if (method === 'GET') { %>
 <%= method %> <%= url %> HTTP/1.1

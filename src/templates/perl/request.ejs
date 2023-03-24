@@ -1,8 +1,4 @@
-<%
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-%>
-
+<% const { url, method, mimeType, headers, postData, cookies } = locals; %>
 <%# Create a new HTTP::Request object %>
 use HTTP::Request;
 my $request = HTTP::Request->new('<%= method %>', '<%= url %>');

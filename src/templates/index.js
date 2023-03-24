@@ -23,11 +23,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\n// Create a new URLRequest object\nvar request = URLRequest(url: URL(string: \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\n// Create a new URLRequest object\nvar request = URLRequest(url: URL(string: \"")
     ; __append( url )
     ; __append("\")!)\n\n// Set the request method\nrequest.httpMethod = \"")
     ; __append( method )
@@ -88,11 +85,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\n// Construct the request URL\nlet fullUrl = \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\n// Construct the request URL\nlet fullUrl = \"")
     ; __append( url )
     ; __append("\"\n\n// Set up the request headers\nvar headers: HTTPHeaders = [:]\n")
     ;  headers.forEach(header => { 
@@ -151,11 +145,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\nwget --verbose --output-document=- \\\n--header=\"Content-Type: ")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\nwget --verbose --output-document=- \\\n--header=\"Content-Type: ")
     ; __append(escapeFn( mimeType ))
     ; __append("\" \\\n")
     ;  headers.forEach(header => { 
@@ -221,11 +212,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\nhttp --verbose --check --follow \\\n\"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\nhttp --verbose --check --follow \\\n\"")
     ; __append(escapeFn( url ))
     ; __append("\" \\\n")
     ; __append(escapeFn( headers.map(header => "'" + header.name + ":" + header.value + "'").join(' \\\n    ') ))
@@ -269,11 +257,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\ncurl -X ")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\ncurl -X ")
     ; __append(escapeFn( method ))
     ; __append(" \\\n-H \"Content-Type: ")
     ; __append(escapeFn( mimeType ))
@@ -334,11 +319,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\nimport scalaj.http._\n\n// Extract parameters from the options object\nval url = \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\nimport scalaj.http._\n\nval url = \"")
     ; __append(escapeFn( url ))
     ; __append("\"\nval method = \"")
     ; __append(escapeFn( method ))
@@ -427,11 +409,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\nimport cats.effect._\nimport org.http4s._\nimport org.http4s.client.blaze._\nimport org.http4s.client.dsl.io._\nimport org.http4s.headers._\nimport org.http4s.MediaType._\n\n// Extract parameters from the options object\nval url = \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\nimport cats.effect._\nimport org.http4s._\nimport org.http4s.client.blaze._\nimport org.http4s.client.dsl.io._\nimport org.http4s.headers._\nimport org.http4s.MediaType._\n\nval url = \"")
     ; __append(escapeFn( url ))
     ; __append("\"\nval method = \"")
     ; __append(escapeFn( method ))
@@ -508,11 +487,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\nimport akka.actor.ActorSystem\nimport akka.http.scaladsl.Http\nimport akka.http.scaladsl.model._\nimport akka.stream.ActorMaterializer\nimport akka.stream.scaladsl._\nimport scala.concurrent.Future\nimport scala.util.{Failure, Success}\n\n// Extract parameters from the options object\nval url = \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\nimport akka.actor.ActorSystem\nimport akka.http.scaladsl.Http\nimport akka.http.scaladsl.model._\nimport akka.stream.ActorMaterializer\nimport akka.stream.scaladsl._\nimport scala.concurrent.Future\nimport scala.util.{Failure, Success}\n\nval url = \"")
     ; __append(escapeFn( url ))
     ; __append("\"\nval method = \"")
     ; __append(escapeFn( method ))
@@ -577,11 +553,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\nuse surf::http::{Method, Url, headers::{Headers, HeaderValue}};\n\n// Construct the request URL\nlet url = Url::new(\"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\nuse surf::http::{Method, Url, headers::{Headers, HeaderValue}};\n\n// Construct the request URL\nlet url = Url::new(\"")
     ; __append(escapeFn( url ))
     ; __append("\").unwrap();\n\n// Set up the request\nlet mut req = surf::Request::new(")
     ; __append(escapeFn( method ))
@@ -642,11 +615,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\n// Extract parameters from the options object\nlet url = \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\nlet url = \"")
     ; __append(escapeFn( url ))
     ; __append("\";\nlet method = \"")
     ; __append(escapeFn( method ))
@@ -711,11 +681,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\n// Create a new Hyper client object\nlet client = hyper::Client::new();\n\n// Construct the request URL\nlet full_url = \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\n// Create a new Hyper client object\nlet client = hyper::Client::new();\n\n// Construct the request URL\nlet full_url = \"")
     ; __append(escapeFn( url ))
     ; __append("\";\n\n// Create the request\nlet mut req = hyper::Request::new(hyper::Method::")
     ; __append(escapeFn( method ))
@@ -780,11 +747,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\nrequire 'rest-client'\n\nurl = \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\nrequire 'rest-client'\n\nurl = \"")
     ; __append(escapeFn( url ))
     ; __append("\"\nmethod = \"")
     ; __append(escapeFn( method ))
@@ -843,11 +807,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\nrequire 'net/http'\nrequire 'uri'\n\nurl = URI(\"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\nrequire 'net/http'\nrequire 'uri'\n\nurl = URI(\"")
     ; __append(escapeFn( url ))
     ; __append("\")\nmethod = \"")
     ; __append(escapeFn( method ))
@@ -906,11 +867,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\nimport requests\n\n# Extract parameters from the options object\nfullUrl = \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\nimport requests\n\n# Extract parameters from the options object\nfullUrl = \"")
     ; __append(escapeFn( url ))
     ; __append("\"\nmethod = \"")
     ; __append(escapeFn( method ))
@@ -967,11 +925,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, query, postData, cookies } = locals;
-
-    ; __append("\n\nimport http.client\n\n# Extract parameters from the options object\nfullUrl = \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\nimport http.client\n\n# Extract parameters from the options object\nfullUrl = \"")
     ; __append(escapeFn( url ))
     ; __append("\"\nmethod = \"")
     ; __append(escapeFn( method ))
@@ -1028,11 +983,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\n$url = \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\n$url = \"")
     ; __append(escapeFn( url ))
     ; __append("\"\n$method = \"")
     ; __append(escapeFn( method ))
@@ -1095,11 +1047,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\n$url = \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\n$url = \"")
     ; __append(escapeFn( url ))
     ; __append("\"\n$method = \"")
     ; __append(escapeFn( method ))
@@ -1162,11 +1111,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\n<?php\n\n    $host = parse_url(\"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\n<?php\n\n    $host = parse_url(\"")
     ; __append(escapeFn( url ))
     ; __append("\", PHP_URL_HOST);\n    $path = parse_url(\"")
     ; __append(escapeFn( url ))
@@ -1219,11 +1165,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\n<?php\n\n    $host = parse_url(\"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\n<?php\n\n    $host = parse_url(\"")
     ; __append(escapeFn( url ))
     ; __append("\", PHP_URL_HOST);\n    $path = parse_url(\"")
     ; __append(escapeFn( url ))
@@ -1276,11 +1219,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\n<?php\n\n    use GuzzleHttp\\Client;\n    use GuzzleHttp\\Exception\\RequestException;\n\n    $client = new Client();\n\n    $url = \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\n<?php\n\n    use GuzzleHttp\\Client;\n    use GuzzleHttp\\Exception\\RequestException;\n\n    $client = new Client();\n\n    $url = \"")
     ; __append(escapeFn( url ))
     ; __append("\";\n\n    $headers = array(\n    ")
     ;  headers.forEach(header => { 
@@ -1331,11 +1271,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\n<?php\n\n    $url = \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\n<?php\n\n    $url = \"")
     ; __append(escapeFn( url ))
     ; __append("\";\n\n    $requestHeaders = array(\n    ")
     ;  headers.forEach(header => { 
@@ -1386,11 +1323,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\n")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\n")
     ; __append("\nuse LWP::UserAgent;\nmy $ua = LWP::UserAgent->new;\n\n")
     ; __append("\nmy $fullUrl = '")
     ; __append(escapeFn( url ))
@@ -1466,11 +1400,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\n")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\n")
     ; __append("\nuse HTTP::Tiny;\nmy $http = HTTP::Tiny->new;\n\n")
     ; __append("\nmy $fullUrl = '")
     ; __append(escapeFn( url ))
@@ -1546,11 +1477,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\n")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\n")
     ; __append("\nuse HTTP::Request;\nmy $request = HTTP::Request->new('")
     ; __append(escapeFn( method ))
     ; __append("', '")
@@ -1624,11 +1552,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-    // Extract parameters from the options object
-    const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\n(* Construct the request URL *)\nlet fullUrl = \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\n(* Construct the request URL *)\nlet fullUrl = \"")
     ; __append(escapeFn( url ))
     ; __append("\" in\n\n(* Set up the request *)\nlet headers = Cohttp.Header.of_list [\n  \"Content-Type\", \"")
     ; __append(escapeFn( mimeType ))
@@ -1687,11 +1612,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-    // Extract parameters from the options object
-    const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\n(* Construct the request URL *)\nlet fullUrl = \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\n(* Construct the request URL *)\nlet fullUrl = \"")
     ; __append(escapeFn( url ))
     ; __append("\" in\n\n(* Set up the request *)\nlet req = Cohttp_lwt_unix.Client.request\n  ~headers:(Cohttp.Header.of_list [\n    \"Content-Type\", \"")
     ; __append(escapeFn( mimeType ))
@@ -1750,11 +1672,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\n// Construct the request URL\nNSString *fullUrl = @\"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\n// Construct the request URL\nNSString *fullUrl = @\"")
     ; __append( url )
     ; __append("\";\n\n// Set up the request headers\nNSMutableDictionary *headers = [NSMutableDictionary dictionary];\n")
     ;  headers.forEach(header => { 
@@ -1815,11 +1734,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\n// Construct the request URL\nNSString *fullUrl = @\"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\n// Construct the request URL\nNSString *fullUrl = @\"")
     ; __append( url )
     ; __append("\";\n\n// Set up the request headers\nNSMutableDictionary *headers = [NSMutableDictionary dictionary];\n")
     ;  headers.forEach(header => { 
@@ -1878,11 +1794,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\nlocal http_client = require(\"httpclient\")\n\n-- Extract parameters from the options object\nlocal url = '")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\nlocal http_client = require(\"httpclient\")\n\n-- Extract parameters from the options object\nlocal url = '")
     ; __append(escapeFn( url ))
     ; __append("'\nlocal method = '")
     ; __append(escapeFn( method ))
@@ -1947,11 +1860,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\nlocal http = require(\"socket.http\")\nlocal ltn12 = require(\"ltn12\")\n\n-- Extract parameters from the options object\nlocal url = '")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\nlocal http = require(\"socket.http\")\nlocal ltn12 = require(\"ltn12\")\n\n-- Extract parameters from the options object\nlocal url = '")
     ; __append(escapeFn( url ))
     ; __append("'\nlocal method = '")
     ; __append(escapeFn( method ))
@@ -2010,11 +1920,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\nlocal curl = require(\"cURL\")\n\n-- Extract parameters from the options object\nlocal url = '")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\nlocal curl = require(\"cURL\")\n\n-- Extract parameters from the options object\nlocal url = '")
     ; __append(escapeFn( url ))
     ; __append("'\nlocal method = '")
     ; __append(escapeFn( method ))
@@ -2071,11 +1978,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\nimport okhttp3.*\nimport java.io.IOException\n\nval client = OkHttpClient()\n\nval url = \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\nimport okhttp3.*\nimport java.io.IOException\n\nval client = OkHttpClient()\n\nval url = \"")
     ; __append(escapeFn( url ))
     ; __append("\"\nval method = \"")
     ; __append(escapeFn( method ))
@@ -2134,11 +2038,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-    // Extract parameters from the options object
-    const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\nimport java.net.HttpURLConnection\nimport java.net.URL\nimport java.net.URLEncoder\n\nval url = URL(\"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\nimport java.net.HttpURLConnection\nimport java.net.URL\nimport java.net.URLEncoder\n\nval url = URL(\"")
     ; __append(escapeFn( url ))
     ; __append("\")\nval connection = url.openConnection() as HttpURLConnection\nconnection.requestMethod = \"")
     ; __append(escapeFn( method ))
@@ -2207,11 +2108,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-    // Extract parameters from the options object
-    const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\nimport com.github.kittinunf.fuel.*\nimport com.github.kittinunf.fuel.core.*\nimport com.github.kittinunf.result.*\n\nval fullUrl = \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\nimport com.github.kittinunf.fuel.*\nimport com.github.kittinunf.fuel.core.*\nimport com.github.kittinunf.result.*\n\nval fullUrl = \"")
     ; __append(escapeFn( url ))
     ; __append("\"\n\nval requestHeaders = listOf(\n")
     ;  headers.forEach(header => { 
@@ -2268,11 +2166,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\n// Construct the request URL\nvar fullUrl = '")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\n// Construct the request URL\nvar fullUrl = '")
     ; __append(escapeFn( url ))
     ; __append("';\n\n// Set up the request configuration object\nvar config = {\nurl: fullUrl,\ntype: '")
     ; __append(escapeFn( method ))
@@ -2331,11 +2226,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { baseUrl, url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\n// Construct the request URL\nvar fullUrl = '")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\n// Construct the request URL\nvar fullUrl = '")
     ; __append(escapeFn( url ))
     ; __append("';\n\n// Set up the request configuration object\nvar config = {\nmethod: '")
     ; __append(escapeFn( method ))
@@ -2394,11 +2286,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\n// Import the Axios library\nimport axios from 'axios';\n\n// Construct the request URL\nvar fullUrl = '")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\n// Import the Axios library\nimport axios from 'axios';\n\n// Construct the request URL\nvar fullUrl = '")
     ; __append(escapeFn( url ))
     ; __append("';\n\n// Set up the request configuration object\nvar config = {\n    method: '")
     ; __append(escapeFn( method ))
@@ -2457,11 +2346,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\n// Create a new XMLHttpRequest object\nvar xhr = new XMLHttpRequest();\n\n// Construct the request URL\nvar fullUrl = '")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\n// Create a new XMLHttpRequest object\nvar xhr = new XMLHttpRequest();\n\n// Construct the request URL\nvar fullUrl = '")
     ; __append(escapeFn( url ))
     ; __append("';\n\n// Set up the request\nxhr.open('")
     ; __append(escapeFn( method ))
@@ -2524,11 +2410,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\nimport com.mashape.unirest.http.Unirest;\nimport com.mashape.unirest.http.exceptions.UnirestException;\n\npublic class Main {\n    public static void main(String[] args) {\n        // Construct the request URL\n        String fullUrl = \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\nimport com.mashape.unirest.http.Unirest;\nimport com.mashape.unirest.http.exceptions.UnirestException;\n\npublic class Main {\n    public static void main(String[] args) {\n        // Construct the request URL\n        String fullUrl = \"")
     ; __append(escapeFn( url ))
     ; __append("\";\n\n        // Set up the request\n        com.mashape.unirest.http.HttpRequestWithBody request =\n            Unirest.")
     ; __append(escapeFn( method.toLowerCase() ))
@@ -2603,11 +2486,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-    // Extract parameters from the options object
-    const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\nimport java.io.IOException;\nimport okhttp3.*;\n\npublic class Main {\n    public static void main(String[] args) throws IOException {\n        // Construct the request URL\n        String fullUrl = \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\nimport java.io.IOException;\nimport okhttp3.*;\n\npublic class Main {\n    public static void main(String[] args) throws IOException {\n        // Construct the request URL\n        String fullUrl = \"")
     ; __append(escapeFn( url ))
     ; __append("\";\n\n        // Set up the request\n        OkHttpClient client = new OkHttpClient();\n        Request.Builder requestBuilder = new Request.Builder()\n            .url(fullUrl)\n            .method(\"")
     ; __append(escapeFn( method ))
@@ -2668,11 +2548,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-    // Extract parameters from the options object
-    const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\nimport java.io.IOException;\nimport java.io.InputStream;\nimport java.io.InputStreamReader;\nimport java.io.BufferedReader;\nimport java.net.HttpURLConnection;\nimport java.net.URL;\nimport java.net.URLEncoder;\n\npublic class Main {\n    public static void main(String[] args) throws IOException {\n        // Construct the request URL\n        String fullUrl = \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\nimport java.io.IOException;\nimport java.io.InputStream;\nimport java.io.InputStreamReader;\nimport java.io.BufferedReader;\nimport java.net.HttpURLConnection;\nimport java.net.URL;\nimport java.net.URLEncoder;\n\npublic class Main {\n    public static void main(String[] args) throws IOException {\n        // Construct the request URL\n        String fullUrl = \"")
     ; __append(escapeFn( url ))
     ; __append("\";\n\n        // Set up the request\n        URL url = new URL(fullUrl);\n        HttpURLConnection connection = (HttpURLConnection) url.openConnection();\n        connection.setRequestMethod(\"")
     ; __append(escapeFn( method ))
@@ -2727,11 +2604,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-    // Extract parameters from the options object
-    const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\nimport org.asynchttpclient.*;\n\npublic class Main {\n    public static void main(String[] args) throws Exception {\n        // Construct the request URL\n        String fullUrl = \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\nimport org.asynchttpclient.*;\n\npublic class Main {\n    public static void main(String[] args) throws Exception {\n        // Construct the request URL\n        String fullUrl = \"")
     ; __append(escapeFn( url ))
     ; __append("\";\n\n        // Set up the request\n        AsyncHttpClient client = Dsl.asyncHttpClient();\n        RequestBuilder requestBuilder = new RequestBuilder(\"")
     ; __append(escapeFn( method ))
@@ -2786,10 +2660,7 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
     ; __append("\n// https://www.rfc-editor.org/rfc/rfc7230\n")
     ;  if (method === 'GET') { 
     ; __append("\n")
@@ -2869,11 +2740,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\npackage main\n\nimport (\n    \"fmt\"\n    \"net/http\"\n    \"strings\"\n)\n\nfunc main() {\n// Construct the request URL\n    url := \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\npackage main\n\nimport (\n    \"fmt\"\n    \"net/http\"\n    \"strings\"\n)\n\nfunc main() {\n// Construct the request URL\n    url := \"")
     ; __append(escapeFn( url ))
     ; __append("\"\n\n    // Construct the request body\n    var body strings.Reader\n    ")
     ;  if (postData.length > 0) { 
@@ -2932,11 +2800,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\npackage main\n\nimport (\n    \"fmt\"\n    \"mime/multipart\"\n    \"os\"\n    \"strings\"\n    \"github.com/valyala/fasthttp\"\n)\n\nfunc main() {\n    // Construct the request URL\n    url := \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\npackage main\n\nimport (\n    \"fmt\"\n    \"mime/multipart\"\n    \"os\"\n    \"strings\"\n    \"github.com/valyala/fasthttp\"\n)\n\nfunc main() {\n    // Construct the request URL\n    url := \"")
     ; __append(escapeFn( url ))
     ; __append("\"\n\n    // Construct the request body\n    var body *strings.Reader\n    ")
     ;  if (postData.length > 0) { 
@@ -2999,11 +2864,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\nimport 'dart:convert';\nimport 'package:http/http.dart' as http;\n\n// Extract parameters from the options object\nfinal url = '")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\nimport 'dart:convert';\nimport 'package:http/http.dart' as http;\n\nfinal url = '")
     ; __append(escapeFn( url ))
     ; __append("';\nfinal method = '")
     ; __append(escapeFn( method ))
@@ -3072,11 +2934,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\nimport 'package:http/http.dart' as http;\n\n// Extract parameters from the options object\nfinal url = '")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\nimport 'package:http/http.dart' as http;\n\nfinal url = '")
     ; __append(escapeFn( url ))
     ; __append("';\nfinal method = '")
     ; __append(escapeFn( method ))
@@ -3161,11 +3020,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\n#include <iostream>\n#include <string>\n#include <curl/curl.h>\n\n// Extract parameters from the options object\nconst auto url = \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\n#include <iostream>\n#include <string>\n#include <curl/curl.h>\n\nconst auto url = \"")
     ; __append(escapeFn( url ))
     ; __append("\";\nconst auto method = \"")
     ; __append(escapeFn( method ))
@@ -3222,11 +3078,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-    // Extract parameters from the options object
-    const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\nusing RestSharp;\n\nclass Program\n{\n    static void Main(string[] args)\n    {\n        // Construct the request URL\n        var fullUrl = \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\nusing RestSharp;\n\nclass Program\n{\n    static void Main(string[] args)\n    {\n        // Construct the request URL\n        var fullUrl = \"")
     ; __append(escapeFn( url ))
     ; __append("\";\n\n        // Set up the request\n        var client = new RestClient(fullUrl);\n        var request = new RestRequest(\"")
     ; __append(escapeFn( method ))
@@ -3283,11 +3136,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-    // Extract parameters from the options object
-    const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\nusing System;\nusing System.Net.Http;\nusing System.Threading.Tasks;\n\nclass Program\n{\n    static async Task Main(string[] args)\n    {\n        // Construct the request URL\n        var fullUrl = \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\nusing System;\nusing System.Net.Http;\nusing System.Threading.Tasks;\n\nclass Program\n{\n    static async Task Main(string[] args)\n    {\n        // Construct the request URL\n        var fullUrl = \"")
     ; __append(escapeFn( url ))
     ; __append("\";\n\n        // Set up the request\n        var client = new HttpClient();\n        var request = new HttpRequestMessage(new HttpMethod(\"")
     ; __append(escapeFn( method ))
@@ -3344,11 +3194,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\n// Construct the request URL\nstd::string fullUrl = \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\n// Construct the request URL\nstd::string fullUrl = \"")
     ; __append( url )
     ; __append("\";\n\n// Set up the request headers\nstd::map<std::string, std::string> headers;\n")
     ;  headers.forEach(header => { 
@@ -3403,11 +3250,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\n// Construct the request URL\nstd::string url = \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\n// Construct the request URL\nstd::string url = \"")
     ; __append( url )
     ; __append("\";\n\n// Set up the request headers\nstruct curl_slist* headers = NULL;\n")
     ;  headers.forEach(header => { 
@@ -3433,7 +3277,7 @@ const { url, method, mimeType, headers, postData, cookies } = locals;
     ; __append(escapeFn( param.value ))
     ; __append("\";\npostData += paramString + \"&\";\n")
     ;  }) 
-    ; __append("\n\n// Construct the request\nCURL* curl = curl_easy_init();\nif (curl) {\n    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());\n    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);\n    // TODO: Set up cookies with CURLOPT_COOKIE\n    if (postData.length() > 0) {\n        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData.c_str());\n    }\n\n    // Perform the request\n    CURLcode res = curl_easy_perform(curl);\n\n    // Handle errors\n    if (res != CURLE_OK) {\n        fprintf(stderr, \"curl_easy_perform() failed: %s\\n\", curl_easy_strerror(res));\n    }\n\n    // Cleanup\n    curl_slist_free_all(headers);\n    curl_easy_cleanup(curl);\n}\n")
+    ; __append("\n// Construct the request\nCURL* curl = curl_easy_init();\nif (curl) {\n    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());\n    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);\n    // TODO: Set up cookies with CURLOPT_COOKIE\n    if (postData.length() > 0) {\n        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData.c_str());\n    }\n\n    // Perform the request\n    CURLcode res = curl_easy_perform(curl);\n\n    // Handle errors\n    if (res != CURLE_OK) {\n        fprintf(stderr, \"curl_easy_perform() failed: %s\\n\", curl_easy_strerror(res));\n    }\n\n    // Cleanup\n    curl_slist_free_all(headers);\n    curl_easy_cleanup(curl);\n}\n")
   return __output;
 
 },
@@ -3460,11 +3304,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\n// Construct the request URL\nString url = \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\n// Construct the request URL\nString url = \"")
     ; __append( url )
     ; __append("\";\n\n// Set up the request headers\nString headers;\n")
     ;  headers.forEach(header => { 
@@ -3521,11 +3362,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-    // Extract parameters from the options object
-    const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\n(require '[ring.util.http-client :as client])\n\n(defn make-request []\n  (let [url \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\n(require '[ring.util.http-client :as client])\n\n(defn make-request []\n  (let [url \"")
     ; __append(escapeFn( url ))
     ; __append("\"\n        headers {")
     ;  headers.forEach(header => { 
@@ -3603,11 +3441,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-    // Extract parameters from the options object
-    const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\n(require '[clj-http.client :as client])\n\n(defn make-request []\n  (let [url \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\n(require '[clj-http.client :as client])\n\n(defn make-request []\n  (let [url \"")
     ; __append(escapeFn( url ))
     ; __append("\"\n        headers {")
     ;  headers.forEach(header => { 
@@ -3687,11 +3522,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\n// Set up the request\nstruct evhttp_uri *uri = evhttp_uri_parse(\"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\n// Set up the request\nstruct evhttp_uri *uri = evhttp_uri_parse(\"")
     ; __append(escapeFn( url ))
     ; __append("\");\nstruct evhttp_connection *conn = evhttp_connection_base_new(NULL, NULL, evhttp_uri_get_host(uri), evhttp_uri_get_port(uri));\nstruct evhttp_request *req = evhttp_request_new(NULL, NULL);\n\n// Construct the request URL\nchar *path = evhttp_uri_get_path(uri);\nif(strlen(path) == 0) {\n    path = \"/\";\n}\n\n// Set request method and URL\nevhttp_request_set_chunked_cb(req, NULL);\nevhttp_request_set_error_cb(req, request_error_cb);\nevhttp_request_set_cb(req, request_done_cb);\nevhttp_request_set_header_cb(req, request_header_cb);\nevhttp_request_set_response_cb(req, request_response_cb);\nevhttp_request_set_uri(req, path);\nevhttp_request_set_type(req, EVHTTP_REQ_")
     ; __append(escapeFn( method.toUpperCase() ))
@@ -3740,11 +3572,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\n\n#include <stdio.h>\n#include <stdlib.h>\n#include <curl/curl.h>\n\nint main(void) {\n    CURL *curl;\n    CURLcode res;\n    struct curl_slist *headers = NULL;\n    char *url = \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\n#include <stdio.h>\n#include <stdlib.h>\n#include <curl/curl.h>\n\nint main(void) {\n    CURL *curl;\n    CURLcode res;\n    struct curl_slist *headers = NULL;\n    char *url = \"")
     ; __append(escapeFn( url ))
     ; __append("\";\n    char *method = \"")
     ; __append(escapeFn( method ))
@@ -3781,11 +3610,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\n// Create a new brainfuck program\n++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.\n\n// Construct the request URL\n,[<]>[.>],")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\n// Create a new brainfuck program\n++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.\n\n// Construct the request URL\n,[<]>[.>],")
     ;  url.split('').forEach(char => { 
     ; __append("++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>++++++[<.+>-]<<[->+>+<<]>>[->+<]>[<.<+>-]<,")
     ;  }) 
@@ -3866,11 +3692,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\nlibrary(RCurl)\n\nurl <- \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\nlibrary(RCurl)\n\nurl <- \"")
     ; __append(escapeFn( url ))
     ; __append("\"\nmethod <- \"")
     ; __append(escapeFn( method ))
@@ -3933,11 +3756,8 @@ function encode_char(c) {
 ;
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ; 
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-
-    ; __append("\n\nlibrary(httr)\n\nurl <- \"")
+    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
+    ; __append("\nlibrary(httr)\n\nurl <- \"")
     ; __append(escapeFn( url ))
     ; __append("\"\n\nreq <- VERB(\"")
     ; __append(escapeFn( method ))

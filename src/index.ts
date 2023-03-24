@@ -105,12 +105,7 @@ class RequestTemplater {
     }
 
     generateHighlight(): string {
-        const template = templates[this._lang + '/' + this._library] ?? null;
-        if (!template) {
-            throw new Error('bad library')
-        }
-        const params = this.convertParams();
-        return hljs.highlight(template(params), {language: this._lang, ignoreIllegals: true}).value;
+        return hljs.highlight(this.generate(), {language: this._lang, ignoreIllegals: true}).value;
     }
 
     config() {

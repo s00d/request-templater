@@ -1,8 +1,4 @@
-<%
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-%>
-
+<% const { url, method, mimeType, headers, postData, cookies } = locals; %>
 import cats.effect._
 import org.http4s._
 import org.http4s.client.blaze._
@@ -10,7 +6,6 @@ import org.http4s.client.dsl.io._
 import org.http4s.headers._
 import org.http4s.MediaType._
 
-// Extract parameters from the options object
 val url = "<%= url %>"
 val method = "<%= method %>"
 val mimeType = "<%= mimeType %>"

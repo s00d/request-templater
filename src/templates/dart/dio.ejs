@@ -1,13 +1,8 @@
-<%
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-%>
-
+<% const { url, method, mimeType, headers, postData, cookies } = locals; %>
 #include <iostream>
 #include <string>
 #include <curl/curl.h>
 
-// Extract parameters from the options object
 const auto url = "<%= url %>";
 const auto method = "<%= method %>";
 const auto mimeType = "<%= mimeType %>";

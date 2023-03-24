@@ -1,8 +1,4 @@
-<%
-// Extract parameters from the options object
-const { url, method, mimeType, headers, postData, cookies } = locals;
-%>
-
+<% const { url, method, mimeType, headers, postData, cookies } = locals; %>
 // Construct the request URL
 std::string url = "<%- url %>";
 
@@ -25,7 +21,6 @@ std::string postData;
 std::string paramString = "<%= param.name %>=<%= param.value %>";
 postData += paramString + "&";
 <% }) %>
-
 // Construct the request
 CURL* curl = curl_easy_init();
 if (curl) {
