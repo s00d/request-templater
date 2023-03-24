@@ -71,6 +71,11 @@ Method for setting the library that will be used to send the request.
 ### generate(): string
 Method for generating a request example based on the specified parameters.
 
+### generateHighlight(): string
+Method for generating a request example based on the specified parameters with highlight.js tags.
+
+Need add style, for example: ```<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/tokyo-night-dark.min.css" integrity="sha512-dSQLLtgaq2iGigmy9xowRshaMzUHeiIUTvJW/SkUpb1J+ImXOPNGAI7ZC8V5/PiN/XN83B8uIk4qET7AMhdC5Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />```
+
 ### config(): Object
 Method for getting a list of available templates for generating request examples.
 

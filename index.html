@@ -4,47 +4,55 @@
     <meta charset="UTF-8">
     <title>Request Templater Test</title>
     <script src="./dist/minified/dist/request-templater.min.js"></script>
-    <style> .code {
-        width: 100%;
-        min-height: 100px;
-        max-height: 300px;
-        overflow: scroll;
-        border: 2px solid #d0d0d0;
-        padding: 10px;
-        text-indent: 4em;
-        white-space: pre-wrap;
-    }
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/tokyo-night-dark.min.css" integrity="sha512-dSQLLtgaq2iGigmy9xowRshaMzUHeiIUTvJW/SkUpb1J+ImXOPNGAI7ZC8V5/PiN/XN83B8uIk4qET7AMhdC5Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        .code {
+            width: 100%;
+            min-height: 100px;
+            max-height: 300px;
+            overflow: scroll;
+            border: 2px solid #d0d0d0;
+            padding: 10px;
+            text-indent: 4em;
+            white-space: pre-wrap;
+        }
 
-    .title-lang {
-        font-weight: bold;
-        font-size: 30px;
-        padding-top: 20px;
-        padding-bottom: 20px;
-    }
+        .title-lang {
+            font-weight: bold;
+            font-size: 30px;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
 
-    .title {
-        font-weight: bold;
-    }
+        .title {
+            font-weight: bold;
+        }
 
-    .form-item {
-        display: flex;
-        flex-direction: row;
-        margin-bottom: 10px;
-    }
+        .form-item {
+            display: flex;
+            flex-direction: row;
+            margin-bottom: 10px;
+        }
 
-    .form-item label {
-        width: 100px;
-        font-weight: bold;
-        margin-right: 10px;
-    }
+        .form-item label {
+            width: 100px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
 
-    .form-item select, .form-item input[type="text"] {
-        flex-grow: 1;
-    }
+        .form-item select, .form-item input[type="text"] {
+            flex-grow: 1;
+        }
 
-    .form-submit {
-        margin-top: 10px;
-    } </style>
+        .form-submit {
+            margin-top: 10px;
+        }
+
+        #output-highlight {
+            background: #001529;
+            color: #d3d3d3;
+        }
+    </style>
 </head>
 <body>
 <div id="form">
@@ -84,9 +92,13 @@
     <div class="form-item"><label for="library">Library:</label> <select id="library"></select></div>
     <button class="form-submit" onclick="generateCode()">Generate Code</button>
 </div>
-<div id="output" class="code"></div>
+<div>
+    <div id="output" class="code"></div>
+    <div id="output-highlight" class="code"></div>
+</div>
 <script>
     const output = document.getElementById('output');
+    const outputHighlight = document.getElementById('output-highlight');
     const requestTemplater = new RequestTemplater(); // Populate the language and library dropdowns
     const configs = requestTemplater.config();
     const langDropdown = document.getElementById('lang');
@@ -143,6 +155,7 @@
         }
         requestTemplater.params(params);
         requestTemplater.mimeType(mimeType);
-        output.innerHTML  = requestTemplater.method(method).lang(lang).library(library).generate();
+        output.innerHTML = requestTemplater.method(method).lang(lang).library(library).generate();
+        outputHighlight.innerHTML = requestTemplater.method(method).lang(lang).library(library).generateHighlight()
     }
 </script>

@@ -1,4 +1,5 @@
 import templates from './templates';
+import hljs from './templates/hljs';
 interface Param {
     in: 'headers'|'query'|'postData'|'path'|'cookie';
     name: string;
@@ -101,6 +102,15 @@ class RequestTemplater {
         }
         const params = this.convertParams();
         return template(params);
+    }
+
+    generateHighlight(): string {
+        const template = templates[this._lang + '/' + this._library] ?? null;
+        if (!template) {
+            throw new Error('bad library')
+        }
+        const params = this.convertParams();
+        return hljs.highlight(template(params), {language: this._lang, ignoreIllegals: true}).value;
     }
 
     config() {

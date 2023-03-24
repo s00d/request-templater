@@ -11,5 +11,16 @@ module.exports = {
                 corejs: 3
             }
         ]
-    ]
+    ],
+    // "plugins": [
+    //     [
+    //         "@babel/transform-runtime",
+    //         {
+    //             corejs: 3,
+    //             helpers: true,
+    //             regenerator: true,
+    //             useESModules: false
+    //         }
+    //     ]
+    // ]
 }

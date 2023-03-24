@@ -13,6 +13,7 @@ import ejs from "ejs";
 import fs from "fs";
 
 const templateFiles = glob.sync('src/templates/**/*.ejs');
+const leng = {};
 
 // Compile each template file using EJS
 const templates = templateFiles.map((filePath) => {
@@ -23,6 +24,8 @@ const templates = templateFiles.map((filePath) => {
         .replace(/\.ejs$/, '')
         .replace('src/templates/', '')
         .toLowerCase();
+
+    leng[name.split('/')[0]] = name.split('/')[0];
     return { name, template };
 });
 
@@ -38,6 +41,17 @@ export default templates;
 // Write the template module to a file
 fs.writeFileSync('src/templates/index.js', templateModule);
 
+
+const hljsModule = `
+import hljs from 'highlight.js/lib/core';
+
+${Object.keys(leng).map((t) => `import ${t} from 'highlight.js/lib/languages/${t}';\nhljs.registerLanguage('${t}', ${t});`).join('\n')}
+
+export default hljs;
+`;
+
+// Write the template module to a file
+fs.writeFileSync('src/templates/hljs.js', hljsModule);
 
 const inputPath = './src'
 const outputPath = './dist';

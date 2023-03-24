@@ -23,6 +23,7 @@ declare class RequestTemplater {
     baseUrl(value: string): this;
     private convertParams;
     generate(): string;
+    generateHighlight(): string;
     config(): {};
 }
 export default RequestTemplater;
