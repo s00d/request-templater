@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Request Templater Test</title>
+    <script src="./dist/minified/dist/request-templater.min.js"></script>
+    <style>
+        .code {
+            width: 80%;
+            min-height: 100px;
+            max-height: 300px;
+            overflow: scroll;
+            border: 2px solid #d0d0d0;
+            padding: 10px;
+        }
+
+        .title {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div id="output"></div>
+
+<script>
+    const output = document.getElementById('output');
+    // Создаем экземпляр класса RequestTemplater
+    const requestTemplater = new RequestTemplater();
+
+    console.log(222, requestTemplater.config());
+
+    // Устанавливаем базовый URL
+    requestTemplater.baseUrl('https://jsonplaceholder.typicode.com/');
+
+    // Устанавливаем URL для запроса
+    requestTemplater.url('posts/{id}');
+
+    // Устанавливаем параметры запроса
+    requestTemplater.params([
+        {in: 'query', name: 'userId', value: '1'},
+        {in: 'path', name: 'id', value: '1'},
+    ]);
+
+    // Устанавливаем тип MIME для запроса
+    requestTemplater.mimeType('application/json');
+
+    const configs = requestTemplater.config();
+    for (let i in configs) {
+        const title = document.createElement('div');
+        title.classList.add('title')
+        title.innerHTML = i;
+        output.appendChild(title);
+
+        for (let j in configs[i]) {
+            const library = configs[i][j]
+
+            for (let method of ['POST', 'GET', 'DELETE']) {
+                const code = requestTemplater.method(method).lang(i).library(library).generate();
+
+                console.log(code);
+
+                const title = document.createElement('div');
+                title.classList.add('title')
+                title.innerHTML = library + ' - ' + method;
+                output.appendChild(title);
+
+
+                const div = document.createElement('div');
+                div.classList.add('code')
+                div.classList.add('code-' + i)
+                div.innerText = code;
+                output.appendChild(div);
+            }
+
+        }
+    }
+</script>
+</body>
+</html>

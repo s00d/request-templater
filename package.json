@@ -1,0 +1,83 @@
+{
+  "name": "request-templater",
+  "version": "1.0.0",
+  "description": "RequestTemplater is a class for generating HTTP request examples based on templates for different programming languages.",
+  "main": "dist/request-templater.js",
+  "module": "dist/request-templater.module.js",
+  "browser": "dist/request-templater.iife.js",
+  "typings": "dist/dist/src/index.d.ts",
+  "scripts": {
+    "prebuild": "rimraf ./dist",
+    "build": "rollup -c",
+    "build:watch": "rollup -c -w",
+    "test:template": "ts-node ./src/templates/test.ts",
+    "test:cypress": "npm run build && cp -r ./dist ./tests/cypress/setup && cd ./tests && cypress run --env type=actual",
+    "test:prettier": "prettier --check '(src|tests)/**/*.(js|ts|json|html)' '!tests/cypress/setup/dist'",
+    "prettier": "prettier --write '(src|tests)/**/*.(js|ts|json|html)' '!tests/cypress/setup/dist'",
+    "test": "run-p test:prettier test:cypress"
+  },
+  "keywords": [
+    "http",
+    "request",
+    "generator",
+    "template",
+    "programming",
+    "languages"
+  ],
+  "homepage": "https://github.com/s00d/request-templater#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/s00d/request-templater.git"
+  },
+  "bugs": {
+    "url": "https://github.com/s00d/request-templater/issues"
+  },
+  "license": "MIT",
+  "author": "Pavel Kuzmin <Virus191288@gmail.com>",
+  "devDependencies": {
+    "@babel/core": "^7.21.3",
+    "@babel/parser": "^7.21.3",
+    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
+    "@babel/plugin-transform-runtime": "^7.21.0",
+    "@babel/preset-env": "^7.20.2",
+    "@babel/preset-typescript": "^7.21.0",
+    "@babel/runtime": "^7.21.0",
+    "@rollup/plugin-babel": "^6.0.3",
+    "@rollup/plugin-commonjs": "^24.0.1",
+    "@rollup/plugin-html": "^1.0.2",
+    "@rollup/plugin-json": "^6.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "@rollup/plugin-terser": "^0.4.0",
+    "@rollup/plugin-typescript": "^11.0.0",
+    "@types/ejs": "^3.1.2",
+    "@types/node": "^16.18.19",
+    "@types/nunjucks": "^3.2.2",
+    "autoprefixer": "^10.4.14",
+    "babel-plugin-transform-html-import-to-string": "^2.0.0",
+    "cypress": "^12.8.1",
+    "cypress-real-events": "^1.7.6",
+    "cypress-visual-regression": "^2.1.1",
+    "ejs": "^3.1.9",
+    "ejs-lint": "^2.0.0",
+    "handlebars": "^4.7.7",
+    "nunjucks": "^3.2.3",
+    "postcss-clean": "^1.2.2",
+    "postcss-normalize": "^10.0.1",
+    "prettier": "2.7.1",
+    "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-filesize": "^10.0.0",
+    "rollup-plugin-node-polyfills": "^0.2.1",
+    "rollup-plugin-postcss": "^4.0.2",
+    "rollup-plugin-progress": "^1.1.2",
+    "rollup-plugin-terser": "^7.0.2",
+    "tslib": "^2.5.0",
+    "typescript": "^5.0.2"
+  },
+  "dependencies": {
+    "@babel/polyfill": "^7.12.1",
+    "core-js": "^3.29.1",
+    "glob": "^9.3.2",
+    "rollup-plugin-ejs": "^4.0.0",
+    "rollup-plugin-handlebars-plus": "^0.4.2"
+  }
+}

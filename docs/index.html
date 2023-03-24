@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Request Templater Test</title>
+    <script src="../dist/minified/dist/request-templater.min.js"></script>
+    <style> .code {
+        width: 100%;
+        min-height: 100px;
+        max-height: 300px;
+        overflow: scroll;
+        border: 2px solid #d0d0d0;
+        padding: 10px;
+        text-indent: 4em;
+        white-space: pre-wrap;
+    }
+
+    .title-lang {
+        font-weight: bold;
+        font-size: 30px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+
+    .title {
+        font-weight: bold;
+    }
+
+    .form-item {
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 10px;
+    }
+
+    .form-item label {
+        width: 100px;
+        font-weight: bold;
+        margin-right: 10px;
+    }
+
+    .form-item select, .form-item input[type="text"] {
+        flex-grow: 1;
+    }
+
+    .form-submit {
+        margin-top: 10px;
+    } </style>
+</head>
+<body>
+<div id="form">
+    <div class="form-item">
+        <label for="base-url">Base URL:</label>
+        <input type="text" id="base-url" placeholder="https://jsonplaceholder.typicode.com/" value="https://example.com/api">
+    </div>
+    <div class="form-item">
+        <label for="url-template">URL Template:</label>
+        <input type="text" id="url-template" placeholder="posts/{id}" value="posts/{id}">
+    </div>
+    <div class="form-item">
+        <label for="query-params">Query Params:</label>
+        <textarea id="query-params" placeholder="userId=1">page=1&limit=10</textarea>
+    </div>
+    <div class="form-item">
+        <label for="path-params">Path Params:</label>
+        <textarea id="path-params" placeholder="id=1">id=12345</textarea>
+    </div>
+    <div class="form-item">
+        <label for="mime-type">MIME Type:</label>
+        <input type="text" id="mime-type" placeholder="application/json" value="application/json">
+    </div>
+    <div class="form-item">
+        <label for="method">Method:</label>
+        <select id="method">
+            <option value="GET" selected>GET</option>
+            <option value="POST">POST</option>
+            <option value="PUT">PUT</option>
+            <option value="DELETE">DELETE</option>
+            <option value="OPTIONS">OPTIONS</option>
+            <option value="PATCH">PATCH</option>
+            <option value="PATCH">HEAD</option>
+        </select>
+    </div>
+    <div class="form-item"><label for="lang">Language:</label> <select id="lang"></select></div>
+    <div class="form-item"><label for="library">Library:</label> <select id="library"></select></div>
+    <button class="form-submit" onclick="generateCode()">Generate Code</button>
+</div>
+<div id="output" class="code"></div>
+<script>
+    const output = document.getElementById('output');
+    const requestTemplater = new RequestTemplater(); // Populate the language and library dropdowns
+    const configs = requestTemplater.config();
+    const langDropdown = document.getElementById('lang');
+    for (let lang in configs) {
+        const option = document.createElement('option');
+        option.value = lang;
+        option.text = lang;
+        langDropdown.appendChild(option);
+    }
+    langDropdown.onchange = updateLibraryDropdown;
+    let currentLang = langDropdown.value;
+    let currentLibrary = configs[currentLang][0];
+    updateLibraryDropdown();
+
+    function updateLibraryDropdown() {
+        const lang = langDropdown.value;
+        if (lang !== currentLang) {
+            currentLang = lang;
+            currentLibrary = configs[currentLang][0];
+        }
+        const libraryDropdown = document.getElementById('library');
+        libraryDropdown.innerHTML = '';
+        for (let library of configs[currentLang]) {
+            const option = document.createElement('option');
+            option.value = library;
+            option.text = library;
+            libraryDropdown.appendChild(option);
+        }
+    }
+
+    function generateCode() {
+        const baseUrl = document.getElementById('base-url').value;
+        const urlTemplate = document.getElementById('url-template').value;
+        const queryParams = document.getElementById('query-params').value;
+        const pathParams = document.getElementById('path-params').value;
+        const mimeType = document.getElementById('mime-type').value;
+        const lang = document.getElementById('lang').value;
+        const method = document.getElementById('method').value;
+        const library = document.getElementById('library').value;
+        requestTemplater.baseUrl(baseUrl);
+        requestTemplater.url(urlTemplate);
+        if (queryParams) {
+            const params = queryParams.split('&').map(param => {
+                const [key, value] = param.split('=');
+                return { in: 'query', name: key, value };
+            });
+            requestTemplater.params(params);
+        }
+        if (pathParams) {
+            const params = pathParams.split('&').map(param => {
+                const [key, value] = param.split('=');
+                return { in: 'path', name: key, value };
+            });
+            requestTemplater.params(params);
+        }
+        requestTemplater.mimeType(mimeType);
+        output.innerHTML  = requestTemplater.method(method).lang(lang).library(library).generate();
+    }
+</script>
