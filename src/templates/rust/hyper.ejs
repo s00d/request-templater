@@ -1,0 +1,44 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+// Create a new Hyper client object
+let client = hyper::Client::new();
+
+// Construct the request URL
+let full_url = "<%= url %>";
+
+// Create the request
+let mut req = hyper::Request::new(hyper::Method::<%= method %>, full_url);
+
+// Add headers to the request
+<% headers.forEach(header => { %>
+req.headers_mut().insert(hyper::header::<%= header.name %>, <%= header.value %>.parse().unwrap());
+<% }) %>
+
+// Add cookies to the request
+<% cookies.forEach(cookie => { %>
+req.headers_mut().insert(hyper::header::COOKIE, format!("<%= cookie.name %>={<%= cookie.value %>}; "));
+<% }) %>
+
+// Add the request body
+<% if (postData.length > 0) { %>
+<% if (postData.length === 1 && postData[0].type === 'file') { %>
+let form = multipart::Form::new()
+.file("<%= postData[0].name %>", "<%= postData[0].value %>")
+.unwrap();
+let mut body = hyper::Body::from(form.stream());
+<% } else { %>
+let body = hyper::Body::from("<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>");
+<% } %>
+req.headers_mut().insert(hyper::header::CONTENT_TYPE, "<%= mimeType %>".parse().unwrap());
+req.headers_mut().insert(hyper::header::CONTENT_LENGTH, body.len().into());
+req.set_body(body);
+<% } %>
+
+// Send the request and get the response
+let res = client.request(req).await?;
+
+// Print the response
+println!("Response: \n{:?}", res);

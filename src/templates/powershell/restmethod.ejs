@@ -1,0 +1,35 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+$url = "<%= url %>"
+$method = "<%= method %>"
+$mimeType = "<%= mimeType %>"
+
+$headers = @{
+  <% headers.forEach(header => { %>
+    "<%= header.name %>" = "<%= header.value %>",
+  <% }) %>
+}
+
+$cookies = @{
+  <% cookies.forEach(cookie => { %>
+    "<%= cookie.name %>" = "<%= cookie.value %>",
+  <% }) %>
+}
+
+<% if (method === 'GET') { %>
+  $req = Invoke-RestMethod -Uri $url -Headers $headers -Cookies $cookies
+<% } else { %>
+  $body = @{
+    <% postData.forEach(param => { %>
+      "<%= param.name %>" = "<%= param.value %>",
+    <% }) %>
+  }
+
+  $req = Invoke-RestMethod -Uri $url -Method $method -Body $body -Headers $headers -ContentType $mimeType -Cookies $cookies
+<% } %>
+
+Write-Host "Response: " -ForegroundColor Green
+Write-Host $req | ConvertTo-Json -Depth 100 -Compress

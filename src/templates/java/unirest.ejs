@@ -1,0 +1,58 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
+
+public class Main {
+    public static void main(String[] args) {
+        // Construct the request URL
+        String fullUrl = "<%= url %>";
+
+        // Set up the request
+        com.mashape.unirest.http.HttpRequestWithBody request =
+            Unirest.<%= method.toLowerCase() %>(fullUrl)
+                .header("Content-Type", "<%= mimeType %>");
+
+        // Add headers to the request
+        <% headers.forEach(header => { %>
+        request.header("<%= header.name %>", "<%= header.value %>");
+        <% }) %>
+
+        // Add cookies to the request
+        <% cookies.forEach(cookie => { %>
+        request.cookie("<%= cookie.name %>", "<%= cookie.value %>");
+        <% }) %>
+
+        // Set up the request body
+        <% if (postData.length > 0) { %>
+        <% if (postData.length === 1 && postData[0].type === 'file') { %>
+        // Upload a file
+        request.field("<%= postData[0].name %>", new java.io.File("<%= postData[0].value %>"));
+        <% } else { %>
+        // Send form data or raw data
+        <% if (mimeType === 'application/x-www-form-urlencoded') { %>
+        request.field("<%= postData.map(param => param.name).join("\", \"") %>",
+            <%= postData.map(param => "encodeURIComponent(\"" + param.value + "\")").join(", ") %>);
+        <% } else { %>
+        request.body("<%= postData.map(param => param.value).join("") %>");
+        <% } %>
+        <% } %>
+        <% } %>
+
+        // Send the request
+        try {
+            com.mashape.unirest.http.HttpResponse<String> response = request.asString();
+            if (response.getStatus() == 200) {
+                String responseBody = response.getBody();
+                System.out.println("Response: " + responseBody);
+            } else {
+                System.out.println("Error: " + response.getStatusText());
+            }
+        } catch (UnirestException e) {
+            System.out.println("Exception: " + e.getMessage());
+        }
+    }
+}

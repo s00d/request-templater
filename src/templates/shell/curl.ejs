@@ -1,0 +1,19 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+curl -X <%= method %> \
+-H "Content-Type: <%= mimeType %>" \
+<% headers.forEach(header => { %>
+    -H "<%= header.name %>: <%= header.value %>" \
+<% }) %>
+<% cookies.forEach(cookie => { %>
+    --cookie "<%= cookie.name %>=<%= cookie.value %>" \
+<% }) %><% if (postData.length > 0) { %>
+    -d <% if (postData.length === 1 && postData[0].type === 'file') { %>
+        "@<%= postData[0].value %>" \
+    <% } else { %>
+        "<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>" \
+    <% } %><% } %>
+"<%= url %>

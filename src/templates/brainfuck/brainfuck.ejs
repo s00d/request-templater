@@ -1,0 +1,39 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+// Create a new brainfuck program
+++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.
+
+// Construct the request URL
+,[<]>[.>],<% url.split('').forEach(char => { %>++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>++++++[<.+>-]<<[->+>+<<]>>[->+<]>[<.<+>-]<,<% }) %>++++++++[->+++++<]>.
+
+// Set up the request
+,[<]>[.>],<% method.split('').forEach(char => { %>++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>++++++[<.+>-]<<[->+>+<<]>>[->+<]>[<.<+>-]<,<% }) %>++++++++[->+++++<]>.
+
+// Add headers to the request
+<% headers.forEach(header => { %>
+    ,[<]>[.>],'<%= header.name %>: <%= header.value %>',<% }) %>
+
+// Add cookies to the request
+<% cookies.forEach(cookie => { %>
+    ,[<]>[.>],'Set-Cookie: <%= cookie.name %>=<%= cookie.value %>',<% }) %>
+
+// Send the request
+<% if (postData.length > 0) { %>
+    ,[<]>[.>],'<% if (postData.length === 1 && postData[0].type === 'file') { %>multipart/form-data<% } else { %><%= mimeType %><% } %>',<
+
+    <% if (postData.length === 1 && postData[0].type === 'file') { %>
+        ,[<]>[.>],'<%= postData[0].name %>=',<,[>]<[.>],<,[<]>[.>],<,[>]<[<]>[-]>[-]<<[->+>+<<]>>[->+<]>[<.<+>-]<,<% } else { %>
+        <% postData.forEach(param => { %>
+            ,[<]>[.>],'<%= param.name %>=',<,[>]<[.>],'<%= param.value %>',<% }) %>
+        ,<% } %>
+
+    ,[<]>[.>],'',<]
+<% } %>
+// Handle the response
+,[<]>[.>],'Response:',<[<]>[.>],[<]>[-]>[-]<<[->+>+<<]>>[->+<]>[<.<+>-],<
+
+// Handle errors
+,[<]>[.>],'Error:',<[<]>[.>],'Oops! Brainfuck couldn't handle this request. Maybe try Python next time?',<% if (postData.length === 1 && postData[0].type === 'file') { %> Remember, uploading files in Brainfuck is like trying to fit a square peg in a round hole.<% } %>

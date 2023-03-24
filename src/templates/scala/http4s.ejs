@@ -1,0 +1,47 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+import cats.effect._
+import org.http4s._
+import org.http4s.client.blaze._
+import org.http4s.client.dsl.io._
+import org.http4s.headers._
+import org.http4s.MediaType._
+
+// Extract parameters from the options object
+val url = "<%= url %>"
+val method = "<%= method %>"
+val mimeType = "<%= mimeType %>"
+val headers = <% if (headers.length > 0) { %>Headers(
+<% headers.forEach(header => { %>
+  Header.apply("<%= header.name %>", "<%= header.value %>"),
+<% }) %>
+)<% } else { %>Headers.empty<% } %>
+val cookies = <% if (cookies.length > 0) { %>Seq(
+<% cookies.forEach(cookie => { %>
+  RequestCookie("<%= cookie.name %>", "<%= cookie.value %>"),
+<% }) %>
+)<% } else { %>Seq.empty<% } %>
+val postData = <% if (postData.length > 0) { %>UrlForm(
+<% postData.forEach(param => { %>
+  "<%= param.name %>" -> "<%= param.value %>",
+<% }) %>
+)<% } else { %>UrlForm.empty<% } %>
+
+// Construct the request
+implicit val cs = IO.contextShift(ExecutionContext.global)
+val client = Http1Client[IO]().unsafeRunSync()
+val request = Method.<%= method.toUpperCase() %>(Uri.unsafeFromString(url), postData)
+  .withHeaders(headers)
+  .withCredentials(Credentials(cookies))
+
+// Send the request
+val response = client.expect[String](request).unsafeRunSync()
+
+// Handle the response
+println("Response: " + response)
+
+// Clean up
+client.shutdownNow()

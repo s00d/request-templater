@@ -1,0 +1,45 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+use surf::http::{Method, Url, headers::{Headers, HeaderValue}};
+
+// Construct the request URL
+let url = Url::new("<%= url %>").unwrap();
+
+// Set up the request
+let mut req = surf::Request::new(<%= method %> , url);
+
+// Add headers to the request
+<% headers.forEach(header => { %>
+req.insert_header("<%= header.name %>", HeaderValue::from_str("<%= header.value %>").unwrap());
+<% }) %>
+
+// Add cookies to the request
+<% cookies.forEach(cookie => { %>
+req.insert_cookie(surf::http::Cookie::new("<%= cookie.name %>", "<%= cookie.value %>"));
+<% }) %>
+
+// Send the request
+<% if (postData.length > 0) { %>
+let body = <% if (postData.length === 1 && postData[0].type === 'file') { %>
+surf::Body::from_form(&surf::http::Form::from(<% postData[0].value %>))
+<% } else { %>
+surf::Body::from("<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>")
+<% } %>;
+req.set_body(body);
+<% } %>
+
+// Send the request and handle the response
+let res = async {
+    let mut res = req.await?;
+    let body = res.body_string().await?;
+    println!("Response: {}", body);
+    Ok(())
+}.await;
+
+// Handle errors
+if let Err(err) = res {
+    eprintln!("Error: {}", err);
+}

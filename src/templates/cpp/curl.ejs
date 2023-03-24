@@ -1,0 +1,50 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+// Construct the request URL
+std::string url = "<%- url %>";
+
+// Set up the request headers
+struct curl_slist* headers = NULL;
+<% headers.forEach(header => { %>
+std::string headerString = "<%= header.name %>: <%= header.value %>";
+headers = curl_slist_append(headers, headerString.c_str());
+<% }) %>
+
+// Add cookies to the request
+<% cookies.forEach(cookie => { %>
+std::string cookieString = "<%= cookie.name %>=<%= cookie.value %>";
+// TODO: Add cookieString to the request
+<% }) %>
+
+// Set up the request parameters
+std::string postData;
+<% postData.forEach(param => { %>
+std::string paramString = "<%= param.name %>=<%= param.value %>";
+postData += paramString + "&";
+<% }) %>
+
+// Construct the request
+CURL* curl = curl_easy_init();
+if (curl) {
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    // TODO: Set up cookies with CURLOPT_COOKIE
+    if (postData.length() > 0) {
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData.c_str());
+    }
+
+    // Perform the request
+    CURLcode res = curl_easy_perform(curl);
+
+    // Handle errors
+    if (res != CURLE_OK) {
+        fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+    }
+
+    // Cleanup
+    curl_slist_free_all(headers);
+    curl_easy_cleanup(curl);
+}

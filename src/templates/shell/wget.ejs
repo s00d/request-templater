@@ -1,0 +1,25 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+wget --verbose --output-document=- \
+--header="Content-Type: <%= mimeType %>" \
+<% headers.forEach(header => { %>
+    --header="<%= header.name %>: <%= header.value %>" \
+<% }) %>
+<% cookies.forEach(cookie => { %>
+    --header="Cookie: <%= cookie.name %>=<%= cookie.value %>" \
+<% }) %><% if (method === 'GET') { %>
+    "<%= url %>" \
+<% } else if (method === 'POST') { %>
+    --post-data="<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>" \
+    "<%= url %>" \
+<% } else if (method === 'PUT') { %>
+    --method=PUT \
+    --body-data="<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>" \
+    "<%= url %>" \
+<% } else if (method === 'DELETE') { %>
+    --method=DELETE \
+    "<%= url %>" \
+<% } %>

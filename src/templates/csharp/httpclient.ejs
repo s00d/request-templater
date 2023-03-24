@@ -1,0 +1,52 @@
+<%
+    // Extract parameters from the options object
+    const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+
+class Program
+{
+    static async Task Main(string[] args)
+    {
+        // Construct the request URL
+        var fullUrl = "<%= url %>";
+
+        // Set up the request
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(new HttpMethod("<%= method %>"), fullUrl);
+        request.Headers.Add("Content-Type", "<%= mimeType %>");
+
+        // Add headers to the request
+        <% headers.forEach(header => { %>
+        request.Headers.Add("<%= header.name %>", "<%= header.value %>");
+        <% }) %>
+
+        // Add cookies to the request
+        <% cookies.forEach(cookie => { %>
+        var cookie = new System.Net.Cookie("<%= cookie.name %>", "<%= cookie.value %>", "/", "<%= url %>");
+        clientHandler.CookieContainer.Add(cookie);
+        <% }) %>
+
+        // Set up the request body
+        <% if (postData.length > 0) { %>
+        var requestBody = new StringContent("<%= postData.map(param => param.name + '=' + Uri.EscapeDataString(param.value)).join('&') %>");
+        request.Content = requestBody;
+        <% } %>
+
+        // Send the request
+        var response = await client.SendAsync(request);
+
+        // Handle the response
+        var responseBody = await response.Content.ReadAsStringAsync();
+        Console.WriteLine("Response: " + responseBody);
+
+        // Handle errors
+        if (!response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Error: " + response.StatusCode + " " + response.ReasonPhrase);
+        }
+    }
+}

@@ -1,0 +1,45 @@
+<%
+// Extract parameters from the options object
+const { baseUrl, url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+// Construct the request URL
+var fullUrl = '<%= url %>';
+
+// Set up the request configuration object
+var config = {
+method: '<%= method %>',
+headers: {
+'Content-Type': '<%= mimeType %>',
+<% headers.forEach(header => { %>
+    '<%= header.name %>': '<%= header.value %>',
+<% }) %>
+},
+body: <% if (postData.length === 1 && postData[0].type === 'file') { %>
+    new FormData(document.getElementById('#file_upload_form'))
+<% } else if (postData.length > 0) { %>
+    '<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>'
+<% } else { %>
+    null
+<% } %>
+};
+
+// Add cookies to the request
+<% cookies.forEach(cookie => { %>
+    document.cookie = '<%= cookie.name %>=<%= cookie.value %>';
+<% }) %>
+
+// Send the request using fetch
+fetch(fullUrl, config)
+.then(function(response) {
+if (!response.ok) {
+throw new Error('HTTP error, status = ' + response.status);
+}
+return response.text();
+})
+.then(function(data) {
+console.log('Response:', data);
+})
+.catch(function(error) {
+console.error('Error:', error.message);
+});

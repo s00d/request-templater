@@ -1,0 +1,50 @@
+<%
+    // Extract parameters from the options object
+    const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+import org.asynchttpclient.*;
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+        // Construct the request URL
+        String fullUrl = "<%= url %>";
+
+        // Set up the request
+        AsyncHttpClient client = Dsl.asyncHttpClient();
+        RequestBuilder requestBuilder = new RequestBuilder("<%= method %>")
+            .setUrl(fullUrl)
+            .addHeader("Content-Type", "<%= mimeType %>");
+
+        // Add headers to the request
+        <% headers.forEach(header => { %>
+        requestBuilder.addHeader("<%= header.name %>", "<%= header.value %>");
+        <% }) %>
+
+        // Add cookies to the request
+        <% cookies.forEach(cookie => { %>
+        requestBuilder.addCookie("<%= cookie.name %>", "<%= cookie.value %>");
+        <% }) %>
+
+        // Set up the request body
+        <% if (postData.length > 0) { %>
+        requestBuilder.setBody("<%= postData.map(param => param.name + '=' + Uri.EscapeDataString(param.value)).join('&') %>");
+        <% } %>
+
+        // Send the request
+        ListenableFuture<Response> future = client.executeRequest(requestBuilder.build());
+
+        // Handle the response
+        Response response = future.get();
+        String responseBody = response.getResponseBody();
+        System.out.println("Response: " + responseBody);
+
+        // Handle errors
+        if (response.getStatusCode() != 200) {
+            System.out.println("Error: " + response.getStatusCode() + " " + response.getStatusText());
+        }
+
+        // Clean up
+        client.close();
+    }
+}

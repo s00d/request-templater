@@ -1,0 +1,29 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+// https://www.rfc-editor.org/rfc/rfc7230
+<% if (method === 'GET') { %>
+<%= method %> <%= url %> HTTP/1.1
+<% } else { %>
+<%= method %> <%= url %> HTTP/1.1
+Content-Type: <%= mimeType %>
+<% } %>
+
+<% headers.forEach(header => { %>
+<%= header.name %>: <%= header.value %>
+<% }) %>
+
+<% cookies.forEach(cookie => { %>
+Cookie: <%= cookie.name %>=<%= cookie.value %>
+<% }) %>
+
+<% if (method === 'POST' && postData.length > 0) { %>
+    <% if (mimeType === 'application/x-www-form-urlencoded') { %>
+<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>
+    <% } else { %>
+        <% postData.forEach(param => { %>
+<%= param.name %>: <%= param.value %>
+        <% }) %>
+    <% } %>
+<% } %>

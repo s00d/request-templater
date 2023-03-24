@@ -1,0 +1,52 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+#include <iostream>
+#include <string>
+#include <curl/curl.h>
+
+// Extract parameters from the options object
+const auto url = "<%= url %>";
+const auto method = "<%= method %>";
+const auto mimeType = "<%= mimeType %>";
+const auto headers = std::vector<std::string>{
+<% headers.forEach(header => { %>
+  "<%= header.name %>: <%= header.value %>",
+<% }) %>
+};
+const auto cookies = std::vector<std::string>{
+<% cookies.forEach(cookie => { %>
+  "<%= cookie.name %>=<%= cookie.value %>",
+<% }) %>
+};
+const auto postData = std::vector<std::string>{
+<% postData.forEach(param => { %>
+  "<%= param.name %>=<%= param.value %>",
+<% }) %>
+};
+
+// Set up the request
+curl_global_init(CURL_GLOBAL_ALL);
+auto curl = curl_easy_init();
+if (curl) {
+  curl_easy_setopt(curl, CURLOPT_URL, url);
+  curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method);
+  curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+  curl_easy_setopt(curl, CURLOPT_COOKIE, cookies);
+  curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData);
+
+  // Send the request
+  CURLcode res = curl_easy_perform(curl);
+  if (res != CURLE_OK) {
+    std::cerr << "Error: " << curl_easy_strerror(res) << std::endl;
+  }
+
+  // Handle the response
+  long responseCode;
+  curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &responseCode);
+  std::cout << "Response Code: " << responseCode << std::endl;
+  curl_easy_cleanup(curl);
+}
+curl_global_cleanup();

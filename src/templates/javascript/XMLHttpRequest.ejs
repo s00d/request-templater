@@ -1,0 +1,45 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+// Create a new XMLHttpRequest object
+var xhr = new XMLHttpRequest();
+
+// Construct the request URL
+var fullUrl = '<%= url %>';
+
+// Set up the request
+xhr.open('<%= method %>', fullUrl, true);
+xhr.setRequestHeader('Content-Type', '<%= mimeType %>');
+
+// Add headers to the request
+<% headers.forEach(header => { %>
+    xhr.setRequestHeader('<%= header.name %>', '<%= header.value %>');
+<% }) %>
+
+// Add cookies to the request
+<% cookies.forEach(cookie => { %>
+    document.cookie = '<%= cookie.name %>=<%= cookie.value %>';
+<% }) %>
+
+// Send the request
+<% if (postData.length > 0) { %>
+    xhr.send(<% if (postData.length === 1 && postData[0].type === 'file') { %>
+        new FormData(document.getElementById('#file_upload_form'))<% } else { %>
+        '<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>'<% } %>);
+<% } else { %>
+    xhr.send();
+<% } %>
+
+// Handle the response
+xhr.onreadystatechange = function() {
+    if (this.readyState === 4 && this.status === 200) {
+        console.log('Response:', this.responseText);
+    }
+};
+
+// Handle errors
+xhr.onerror = function() {
+    console.error('Error:', xhr.statusText);
+};

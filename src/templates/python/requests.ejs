@@ -1,0 +1,48 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+import requests
+
+# Extract parameters from the options object
+fullUrl = "<%= url %>"
+method = "<%= method %>"
+mimeType = "<%= mimeType %>"
+headers = {
+    <% headers.forEach(header => { %>
+        '<%= header.name %>': '<%= header.value %>',
+    <% }) %>
+}
+postData = {
+    <% postData.forEach(param => { %>
+        '<%= param.name %>': '<%= param.value %>',
+    <% }) %>
+}
+cookies = {
+    <% cookies.forEach(cookie => { %>
+        '<%= cookie.name %>': '<%= cookie.value %>',
+    <% }) %>
+}
+
+# Set up the request
+req = requests.Request(method, fullUrl, headers=headers, cookies=cookies)
+
+# Add data to the request
+if postData:
+    req.data = postData
+
+# Construct the prepared request
+prepared_req = req.prepare()
+
+# Send the request and get the response
+session = requests.Session()
+response = session.send(prepared_req)
+
+# Handle the response
+print(f"{response.status_code} {response.reason}")
+print(response.text)
+
+# Handle errors
+if response.status_code >= 400:
+    print("Error:", response.status_code, response.reason)

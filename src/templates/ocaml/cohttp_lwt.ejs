@@ -1,0 +1,46 @@
+<%
+    // Extract parameters from the options object
+    const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+(* Construct the request URL *)
+let fullUrl = "<%= url %>" in
+
+(* Set up the request *)
+let req = Cohttp_lwt_unix.Client.request
+  ~headers:(Cohttp.Header.of_list [
+    "Content-Type", "<%= mimeType %>";
+    <% headers.forEach(header => { %>
+    "<%= header.name %>", "<%= header.value %>";
+    <% }) %>
+    <% cookies.forEach(cookie => { %>
+    "Cookie", "<%= cookie.name %>=<%= cookie.value %>";
+    <% }) %>
+  ])
+  <% if (postData.length > 0) { %>
+  (match <%= method %> with
+  | "GET" -> Cohttp_lwt.Body.empty
+  | _ -> Cohttp_lwt.Body.of_string "<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>")
+  <% } else { %>
+  Cohttp_lwt.Body.empty
+  <% } %>
+in
+
+(* Send the request *)
+let%bind (_resp, body) = Cohttp_lwt_unix.Client.call (<%= method %> |> Cohttp.Code.method_of_string) fullUrl req in
+
+(* Handle the response *)
+let%bind body = Cohttp_lwt.Body.to_string body in
+print_endline ("Response: " ^ body);
+
+(* Handle errors *)
+let error_handler = function
+  | Unix.Unix_error (Unix.ENETUNREACH, _, _) ->
+      print_endline "Error: Network is unreachable"
+  | Unix.Unix_error (Unix.ECONNREFUSED, _, _) ->
+      print_endline "Error: Connection refused"
+  | exn ->
+      Printf.eprintf "Error: %s\n" (Printexc.to_string exn);
+      exit 1
+in
+Lwt.catch (fun () -> body) error_handler;

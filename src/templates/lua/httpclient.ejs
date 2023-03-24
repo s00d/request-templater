@@ -1,0 +1,55 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+local http_client = require("httpclient")
+
+-- Extract parameters from the options object
+local url = '<%= url %>'
+local method = '<%= method %>'
+local mimeType = '<%= mimeType %>'
+local headers = {
+<% headers.forEach(header => { %>
+    ['<%= header.name %>'] = '<%= header.value %>',
+<% }) %>
+}
+local postData = {
+<% postData.forEach(param => { %>
+    ['<%= param.name %>'] = '<%= param.value %>',
+<% }) %>
+}
+local cookies = {
+<% cookies.forEach(cookie => { %>
+    ['<%= cookie.name %>'] = '<%= cookie.value %>',
+<% }) %>
+}
+
+-- Construct the request table
+local request = {
+    url = url,
+    method = method,
+    headers = headers,
+}
+if method == "POST" then
+    request.data = {
+    <% postData.forEach(param => { %>
+        ['<%= param.name %>'] = '<%= param.value %>',
+    <% }) %>
+    }
+end
+
+-- Add cookies to the request headers
+local cookieHeader = ""
+for cookie, value in pairs(cookies) do
+    cookieHeader = cookieHeader .. cookie .. "=" .. value .. "; "
+end
+if cookieHeader ~= "" then
+    request.headers['Cookie'] = string.sub(cookieHeader, 1, -3)
+end
+
+-- Send the request
+local response = http_client.send(request)
+
+-- Print the response
+print(response.body)

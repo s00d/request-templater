@@ -1,0 +1,36 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+// Import the Axios library
+import axios from 'axios';
+
+// Construct the request URL
+var fullUrl = '<%= url %>';
+
+// Set up the request configuration object
+var config = {
+    method: '<%= method %>',
+    url: fullUrl,
+    headers: {
+        'Content-Type': '<%= mimeType %>',
+    <% headers.forEach(header => { %>   '<%= header.name %>': '<%= header.value %>',<% }) %>
+    },
+    data: <% if (postData.length === 1 && postData[0].type === 'file') { %>
+        new FormData(document.getElementById('#file_upload_form'))
+    <% } else if (postData.length > 0) { %>'<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>'
+    <% } else { %> <% } %>
+};
+
+// Add cookies to the request
+<% cookies.forEach(cookie => { %>document.cookie = '<%= cookie.name %>=<%= cookie.value %>';
+<% }) %>
+// Send the request using Axios
+axios(config)
+    .then(function (response) {
+        console.log('Response:', response.data);
+    })
+    .catch(function (error) {
+        console.error('Error:', error);
+    });

@@ -1,0 +1,78 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+// Construct the request URL
+NSString *fullUrl = @"<%- url %>";
+
+// Set up the request headers
+NSMutableDictionary *headers = [NSMutableDictionary dictionary];
+<% headers.forEach(header => { %>
+[headers setObject:@"<%= header.value %>" forKey:@"<%= header.name %>"];
+<% }) %>
+
+// Add cookies to the request
+<% cookies.forEach(cookie => { %>
+NSDictionary *cookieProperties = @{
+    NSHTTPCookieDomain: @"<%= cookie.domain %>",
+    NSHTTPCookiePath: @"<%= cookie.path %>",
+    NSHTTPCookieName: @"<%= cookie.name %>",
+    NSHTTPCookieValue: @"<%= cookie.value %>",
+};
+NSHTTPCookie *cookie = [NSHTTPCookie cookieWithProperties:cookieProperties];
+[[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
+<% }) %>
+
+// Set up the request parameters
+NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
+<% postData.forEach(param => { %>
+[parameters setObject:@"<%= param.value %>" forKey:@"<%= param.name %>"];
+<% }) %>
+
+// Create the request manager
+AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+manager.requestSerializer = [AFJSONRequestSerializer serializer];
+manager.responseSerializer = [AFJSONResponseSerializer serializer];
+
+// Add the headers to the request manager
+for (NSString *key in headers) {
+    [manager.requestSerializer setValue:headers[key] forHTTPHeaderField:key];
+}
+
+// Add the cookies to the request manager
+NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:[NSURL URLWithString:fullUrl]];
+NSDictionary *cookieHeaders = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
+for (NSString *key in cookieHeaders) {
+    [manager.requestSerializer setValue:cookieHeaders[key] forHTTPHeaderField:key];
+}
+
+// Send the request
+NSString *method = @"<%= method %>";
+if ([method isEqualToString:@"GET"]) {
+    [manager GET:fullUrl parameters:parameters headers:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSLog(@"Response: %@", responseObject);
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@"Error: %@", error);
+    }];
+} else if ([method isEqualToString:@"POST"]) {
+    [manager POST:fullUrl parameters:parameters headers:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSLog(@"Response: %@", responseObject);
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@"Error: %@", error);
+    }];
+} else if ([method isEqualToString:@"PUT"]) {
+    [manager PUT:fullUrl parameters:parameters headers:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSLog(@"Response: %@", responseObject);
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@"Error: %@", error);
+    }];
+} else if ([method isEqualToString:@"DELETE"]) {
+    [manager DELETE:fullUrl parameters:parameters headers:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSLog(@"Response: %@", responseObject);
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@"Error: %@", error);
+    }];
+} else {
+    // Handle unsupported methods
+}

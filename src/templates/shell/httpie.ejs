@@ -1,0 +1,16 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+http --verbose --check --follow \
+"<%= url %>" \
+<%= headers.map(header => "'" + header.name + ":" + header.value + "'").join(' \\\n    ') %> \
+<% cookies.forEach(cookie => { %>
+    Cookie:"<%= cookie.name %>=<%= cookie.value %>" \
+<% }) %><% if (postData.length > 0) { %>
+    <%= postData.map(param => "'" + param.name + "=" + encodeURIComponent(param.value) + "'").join(' \\\n    ') %> \
+<% } %>
+--form \
+--timeout 120s \
+--max-redirects 10

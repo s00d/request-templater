@@ -1,0 +1,66 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+import 'package:http/http.dart' as http;
+
+// Extract parameters from the options object
+final url = '<%= url %>';
+final method = '<%= method %>';
+final mimeType = '<%= mimeType %>';
+final headers = {
+<% headers.forEach(header => { %>
+  '<%= header.name %>' : '<%= header.value %>',
+<% }) %>
+};
+final cookies = {
+<% cookies.forEach(cookie => { %>
+  '<%= cookie.name %>' : '<%= cookie.value %>',
+<% }) %>
+};
+
+// Construct the request
+final request = http.Request(method, Uri.parse(url));
+request.headers.addAll(headers);
+
+// Add cookies to the request
+<% cookies.forEach(cookie => { %>
+request.cookies.add(Cookie('<%= cookie.name %>', '<%= cookie.value %>'));
+<% }) %>
+
+// Add post data to the request
+<% if (postData.length > 0) { %>
+<% if (postData.length === 1 && postData[0].type === 'file') { %>
+// Handle file upload
+final fileUploadRequest = http.MultipartRequest(method, Uri.parse(url));
+<% postData.forEach(param => { %>
+if ('<%= param.type %>' === 'file') {
+  fileUploadRequest.files.add(await http.MultipartFile.fromPath('<%= param.name %>', '<%= param.value %>'));
+} else {
+  fileUploadRequest.fields['<%= param.name %>'] = '<%= param.value %>';
+}
+<% }) %>
+final response = await fileUploadRequest.send();
+final responseBody = await response.stream.bytesToString();
+<% } else { %>
+// Handle regular post data
+final postDataString = '<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>';
+request.body = postDataString;
+request.headers['Content-Type'] = mimeType;
+final response = await request.send();
+final responseBody = await response.stream.bytesToString();
+<% } %>
+<% } else { %>
+// Handle GET request
+final response = await request.send();
+final responseBody = await response.stream.bytesToString();
+<% } %>
+
+// Handle the response
+print('Response: $responseBody');
+
+// Handle errors
+if (response.statusCode != 200) {
+  print('Error: ${response.reasonPhrase}');
+}

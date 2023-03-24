@@ -1,0 +1,38 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+// Extract parameters from the options object
+let url = "<%= url %>";
+let method = "<%= method %>";
+let mime_type = "<%= mimeType %>";
+
+let headers = reqwest::header::HeaderMap::new();
+<% headers.forEach(header => { %>
+headers.insert("<%= header.name %>", "<%= header.value %>".parse().unwrap());
+<% }) %>
+
+let mut cookies = reqwest::cookie::CookieJar::new();
+<% cookies.forEach(cookie => { %>
+cookies.add(reqwest::cookie::Cookie::new("<%= cookie.name %>", "<%= cookie.value %>"));
+<% }) %>
+
+let mut request_builder = reqwest::Client::new().request(method, url);
+request_builder = request_builder.headers(headers);
+request_builder = request_builder.cookie_store(cookies);
+
+// Add post data to the request
+<% if (postData.length > 0) { %>
+<% if (postData.length === 1 && postData[0].type === 'file') { %>
+let form_data = reqwest::multipart::Form::new()
+    .file("<%= postData[0].name %>", "<%= postData[0].value %>").unwrap();
+<% } else { %>
+let post_data = "<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>";
+let request_builder = request_builder.body(post_data);
+<% } %>
+<% } %>
+
+let response = request_builder.send().await.unwrap();
+let response_text = response.text().await.unwrap();
+println!("Response: {}", response_text);

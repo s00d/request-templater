@@ -1,0 +1,81 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+package main
+
+import (
+    "fmt"
+    "mime/multipart"
+    "os"
+    "strings"
+    "github.com/valyala/fasthttp"
+)
+
+func main() {
+    // Construct the request URL
+    url := "<%= url %>"
+
+    // Construct the request body
+    var body *strings.Reader
+    <% if (postData.length > 0) { %>
+        <% if (postData.length === 1 && postData[0].type === 'file') { %>
+            // Construct the form data
+            file, err := os.Open("<%= postData[0].value %>")
+            if err != nil {
+                fmt.Println(err)
+                return
+            }
+            defer file.Close()
+            formData := &fasthttp.Args{}
+            writer := multipart.NewWriter(formData)
+            part, err := writer.CreateFormFile("file", file.Name())
+            if err != nil {
+                fmt.Println(err)
+                return
+            }
+            io.Copy(part, file)
+            writer.Close()
+            body = strings.NewReader(formData.String())
+        <% } else { %>
+            bodyStr := "<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>"
+            body = strings.NewReader(bodyStr)
+        <% } %>
+    <% } %>
+
+    // Create a new HTTP request
+    req := fasthttp.AcquireRequest()
+    defer fasthttp.ReleaseRequest(req)
+    req.Header.SetMethod("<%= method %>")
+    req.Header.SetContentType("<%= mimeType %>")
+    req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36")
+
+    // Add headers to the request
+    <% headers.forEach(header => { %>
+        req.Header.Add("<%= header.name %>", "<%= header.value %>")
+    <% }) %>
+
+    // Add cookies to the request
+    <% cookies.forEach(cookie => { %>
+        req.Header.AddCookie(&fasthttp.Cookie{Name: "<%= cookie.name %>", Value: "<%= cookie.value %>"})
+    <% }) %>
+
+    // Send the request
+    resp := fasthttp.AcquireResponse()
+    defer fasthttp.ReleaseResponse(resp)
+    if body != nil {
+        req.SetBodyReader(body)
+    }
+    req.URI().Update(url)
+    err := fasthttp.Do(req, resp)
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+
+    // Handle the response
+    fmt.Printf("Response: %s\n", resp.Body())
+}
+
+

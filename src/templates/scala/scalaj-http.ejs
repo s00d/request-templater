@@ -1,0 +1,57 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+import scalaj.http._
+
+// Extract parameters from the options object
+val url = "<%= url %>"
+val method = "<%= method %>"
+val mimeType = "<%= mimeType %>"
+val headers = <% if (headers.length > 0) { %>Seq(
+<% headers.forEach(header => { %>
+  ("<%= header.name %>", "<%= header.value %>"),
+<% }) %>
+)<% } else { %>Nil<% } %>
+val cookies = <% if (cookies.length > 0) { %>Seq(
+<% cookies.forEach(cookie => { %>
+  HttpCookie("<%= cookie.name %>", "<%= cookie.value %>"),
+<% }) %>
+)<% } else { %>Nil<% } %>
+val postData = <% if (postData.length > 0) { %>Seq(
+<% postData.forEach(param => { %>
+  ("<%= param.name %>", "<%= param.value %>"),
+<% }) %>
+)<% } else { %>Nil<% } %>
+
+// Construct the request
+val request = Http(url).method(method)
+  .headers(headers)
+  .cookies(cookies)
+  .timeout(connTimeoutMs = 10000, readTimeoutMs = 60000)
+  .option(HttpOptions.followRedirects(true))
+
+// Add request body if needed
+if (postData.nonEmpty) {
+  val entity = <% if (postData.length === 1 && postData[0].type === 'file') { %>
+    MultipartFormData(Seq(
+      <% postData.forEach(param => { %>
+        FileData("<%= param.name %>", new java.io.File("<%= param.value %>"))
+      <% }) %>
+    )).toEntity
+  <% } else { %>
+    HttpConstants.writePostData(postData).getBytes("UTF-8")
+  <% } %>
+  request.postData(entity, mimeType)
+}
+
+// Send the request
+val response = request.asString
+
+// Handle the response
+if (response.isSuccess) {
+  println("Response: " + response.body)
+} else {
+  println("Error: " + response.code + " " + response.statusLine)
+}

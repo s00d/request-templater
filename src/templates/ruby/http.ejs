@@ -1,0 +1,34 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+require 'net/http'
+require 'uri'
+
+url = URI("<%= url %>")
+method = "<%= method %>"
+mimeType = "<%= mimeType %>"
+
+<% if (method === 'GET') { %>
+  req = Net::HTTP::Get.new(url)
+<% } else { %>
+  body = "<%= postData.map(param => param.name + '=' + CGI.escape(param.value)).join('&') %>"
+  req = Net::HTTP::<%= method.capitalize %>.new(url)
+  req.body = body
+  req.content_type = mimeType
+<% } %>
+
+<% headers.forEach(header => { %>
+  req['<%= header.name %>'] = '<%= header.value %>'
+<% }) %>
+
+<% cookies.forEach(cookie => { %>
+  req['Cookie'] = '<%= cookie.name %>=<%= cookie.value %>'
+<% }) %>
+
+res = Net::HTTP.start(url.hostname, url.port, use_ssl: url.scheme == 'https') do |http|
+  http.request(req)
+end
+
+puts "Response: #{res.body}"

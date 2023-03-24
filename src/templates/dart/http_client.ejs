@@ -1,0 +1,53 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+// Extract parameters from the options object
+final url = '<%= url %>';
+final method = '<%= method %>';
+final mimeType = '<%= mimeType %>';
+final headers = {
+<% headers.forEach(header => { %>
+  '<%= header.name %>' : '<%= header.value %>',
+<% }) %>
+};
+final cookies = {
+<% cookies.forEach(cookie => { %>
+  '<%= cookie.name %>' : '<%= cookie.value %>',
+<% }) %>
+};
+final postData = {
+<% postData.forEach(param => { %>
+  '<%= param.name %>' : '<%= param.value %>',
+<% }) %>
+};
+
+// Construct the request
+final request = http.Request(method, Uri.parse(url));
+request.headers.addAll(headers);
+
+// Add cookies to the request
+<% cookies.forEach(cookie => { %>
+request.cookies.add(Cookie('<%= cookie.name %>', '<%= cookie.value %>'));
+<% }) %>
+
+// Add post data to the request
+<% if (postData.length > 0) { %>
+request.bodyFields = postData;
+<% } %>
+
+// Send the request
+final response = await http.Client().send(request);
+final responseBody = await response.stream.bytesToString();
+
+// Handle the response
+print('Response: $responseBody');
+
+// Handle errors
+if (response.statusCode != 200) {
+  print('Error: ${response.reasonPhrase}');
+}

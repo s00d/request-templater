@@ -1,0 +1,54 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, query, postData, cookies } = locals;
+%>
+
+import http.client
+
+# Extract parameters from the options object
+fullUrl = "<%= url %>"
+method = "<%= method %>"
+mimeType = "<%= mimeType %>"
+headers = [
+    <% headers.forEach(header => { %>
+        ('<%= header.name %>', '<%= header.value %>'),
+    <% }) %>
+]
+postData = {
+    <% postData.forEach(param => { %>
+        '<%= param.name %>': '<%= param.value %>',
+    <% }) %>
+}
+cookies = {
+    <% cookies.forEach(cookie => { %>
+        '<%= cookie.name %>': '<%= cookie.value %>',
+    <% }) %>
+}
+
+# Set up the request
+conn = http.client.HTTPSConnection(fullUrl)
+
+# Add headers to the request
+for header in headers:
+    conn.request(method, url, headers=header)
+
+# Add cookies to the request
+cookie_str = '; '.join([f"{name}={value}" for name, value in cookies.items()])
+    conn.request(method, url, headers={'Cookie': cookie_str})
+
+# Send the request
+if postData:
+    postData_str = '&'.join([f"{name}={value}" for name, value in postData.items()])
+    conn.request(method, url, body=postData_str, headers={'Content-Type': mimeType})
+else:
+    conn.request(method, url)
+
+# Handle the response
+res = conn.getresponse()
+print(res.status, res.reason)
+data = res.read()
+print(data.decode("utf-8"))
+
+# Handle errors
+if res.status >= 400:
+    print("Error:", res.status, res.reason)

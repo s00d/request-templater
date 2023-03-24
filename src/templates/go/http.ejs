@@ -1,0 +1,80 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+package main
+
+import (
+    "fmt"
+    "net/http"
+    "strings"
+)
+
+func main() {
+// Construct the request URL
+    url := "<%= url %>"
+
+    // Construct the request body
+    var body strings.Reader
+    <% if (postData.length > 0) { %>
+        <% if (postData.length === 1 && postData[0].type === 'file') { %>
+            // Construct the form data
+            file, header, err := r.FormFile("file")
+            if err != nil {
+                fmt.Println(err)
+                return
+            }
+            defer file.Close()
+            formData := &bytes.Buffer{}
+            writer := multipart.NewWriter(formData)
+            part, err := writer.CreateFormFile("file", header.Filename)
+            if err != nil {
+                fmt.Println(err)
+                return
+            }
+            io.Copy(part, file)
+            writer.Close()
+            body = *strings.NewReader(formData.String())
+        <% } else { %>
+            bodyStr := "<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>"
+            body = *strings.NewReader(bodyStr)
+        <% } %>
+    <% } %>
+
+    // Create a new HTTP request
+    req, err := http.NewRequest("<%= method %>", url, &body)
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+
+    // Add headers to the request
+    <% headers.forEach(header => { %>
+        req.Header.Set("<%= header.name %>", "<%= header.value %>")
+    <% }) %>
+
+    // Add cookies to the request
+    <% cookies.forEach(cookie => { %>
+        req.AddCookie(&http.Cookie{Name: "<%= cookie.name %>", Value: "<%= cookie.value %>"})
+    <% }) %>
+
+    // Send the request and get the response
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+    defer resp.Body.Close()
+
+    // Handle the response
+    fmt.Println("Response:")
+    respBody, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+    fmt.Println(string(respBody))
+}
+

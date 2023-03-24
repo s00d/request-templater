@@ -1,0 +1,67 @@
+<%
+    // Extract parameters from the options object
+    const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        // Construct the request URL
+        String fullUrl = "<%= url %>";
+
+        // Set up the request
+        URL url = new URL(fullUrl);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("<%= method %>");
+        connection.setRequestProperty("Content-Type", "<%= mimeType %>");
+
+        // Add headers to the request
+        <% headers.forEach(header => { %>
+        connection.setRequestProperty("<%= header.name %>", "<%= header.value %>");
+        <% }) %>
+
+        // Add cookies to the request
+        <% cookies.forEach(cookie => { %>
+        connection.setRequestProperty("Cookie", "<%= cookie.name %>=<%= cookie.value %>");
+        <% }) %>
+
+        // Set up the request body
+        <% if (postData.length > 0) { %>
+        connection.setDoOutput(true);
+        String requestBody = "<%= postData.map(param => param.name + '=' + URLEncoder.encode(param.value, "UTF-8")).join('&') %>";
+        connection.getOutputStream().write(requestBody.getBytes("UTF-8"));
+        <% } %>
+
+        // Send the request
+        connection.connect();
+
+        // Handle the response
+        int responseCode = connection.getResponseCode();
+        if (responseCode == 200) {
+            InputStream inputStream = connection.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+            StringBuilder responseBody = new StringBuilder();
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                responseBody.append(line);
+                responseBody.append("\n");
+            }
+
+            System.out.println("Response: " + responseBody.toString());
+        } else {
+            System.out.println("Error: " + responseCode + " " + connection.getResponseMessage());
+        }
+
+        // Clean up
+        connection.disconnect();
+    }
+}

@@ -1,0 +1,53 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+<%# Create a new LWP::UserAgent object %>
+use LWP::UserAgent;
+my $ua = LWP::UserAgent->new;
+
+<%# Construct the request URL %>
+my $fullUrl = '<%= url %>';
+
+<%# Create the HTTP request %>
+my $request = HTTP::Request->new('<%= method %>', $fullUrl);
+
+<%# Add headers to the request %>
+<% headers.forEach(header => { %>
+$request->header('<%= header.name %>', '<%= header.value %>');
+<% }) %>
+
+<%# Add cookies to the request %>
+<% cookies.forEach(cookie => { %>
+$ua->cookie_jar->set_cookie(0, '<%= cookie.name %>', '<%= cookie.value %>', '/', 'example.com');
+<% }) %>
+
+<%# Add post data to the request %>
+<% if (postData.length > 0) { %>
+<% if (postData.length === 1 && postData[0].type === 'file') { %>
+my $file = '<%= postData[0].value %>';
+$request->content($file);
+<% } else { %>
+my $post_data = {
+<% postData.forEach(param => { %>
+'<%= param.name %>' => '<%= param.value %>',
+<% }) %>
+};
+$request->content(join('&', map { $_ . '=' . $post_data->{$_} } keys %$post_data));
+<% } %>
+<% } %>
+
+<%# Send the request %>
+my $response = $ua->request($request);
+
+<%# Handle the response %>
+if ($response->is_success) {
+print "Response:\n";
+print $response->content;
+}
+
+<%# Handle errors %>
+else {
+print "Error: " . $response->status_line . "\n";
+}

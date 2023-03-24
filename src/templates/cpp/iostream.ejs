@@ -1,0 +1,54 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+// Construct the request URL
+std::string fullUrl = "<%- url %>";
+
+// Set up the request headers
+std::map<std::string, std::string> headers;
+<% headers.forEach(header => { %>
+headers["<%= header.name %>"] = "<%= header.value %>";
+<% }) %>
+
+// Add cookies to the request
+<% cookies.forEach(cookie => { %>
+std::string cookieString = "<%= cookie.name %>=<%= cookie.value %>";
+// TODO: Add cookieString to the request
+<% }) %>
+
+// Set up the request parameters
+std::map<std::string, std::string> parameters;
+<% postData.forEach(param => { %>
+parameters["<%= param.name %>"] = "<%= param.value %>";
+<% }) %>
+
+// Construct the request
+std::string method = "<%= method %>";
+std::string postDataString;
+if (method == "GET") {
+    // TODO: Construct GET request with parameters
+} else if (method == "POST") {
+    for (auto const& [key, val] : parameters) {
+        postDataString += key + "=" + val + "&";
+    }
+    // TODO: Construct POST request with postDataString
+} else if (method == "PUT") {
+    // TODO: Construct PUT request with parameters
+} else if (method == "DELETE") {
+    // TODO: Construct DELETE request with parameters
+} else {
+    // Handle unsupported methods
+}
+
+// Print the request
+std::cout << method << " " << fullUrl << " HTTP/1.1\r\n";
+for (auto const& [key, val] : headers) {
+    std::cout << key << ": " << val << "\r\n";
+}
+// TODO: Print cookies
+std::cout << "\r\n";
+if (method == "POST" || method == "PUT" || method == "DELETE") {
+    std::cout << postDataString << "\r\n";
+}

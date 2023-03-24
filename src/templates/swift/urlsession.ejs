@@ -1,0 +1,47 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+// Create a new URLRequest object
+var request = URLRequest(url: URL(string: "<%- url %>")!)
+
+// Set the request method
+request.httpMethod = "<%- method %>"
+
+// Set the request content type header
+request.addValue("<%- mimeType %>", forHTTPHeaderField: "Content-Type")
+
+// Add headers to the request
+<% headers.forEach(header => { %>
+request.addValue("<%= header.value %>", forHTTPHeaderField: "<%= header.name %>")
+<% }) %>
+
+// Add cookies to the request
+<% cookies.forEach(cookie => { %>
+request.addValue("<%= cookie.value %>", forHTTPHeaderField: "<%= cookie.name %>")
+<% }) %>
+
+// Set the request body
+<% if (postData.length > 0) { %>
+<% if (postData.length === 1 && postData[0].type === 'file') { %>
+let fileUrl = URL(fileURLWithPath: "/path/to/file")
+let data = try Data(contentsOf: fileUrl)
+request.httpBody = data
+<% } else { %>
+let postData = "<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>"
+let postDataEncoded = postData.data(using: .utf8)
+request.httpBody = postDataEncoded
+<% } %>
+<% } %>
+
+// Create a new URLSession object
+let session = URLSession.shared
+
+// Send the request
+let task = session.dataTask(with: request) { (data, response, error) in
+guard let data = data else { return }
+print("Response:", String(data: data, encoding: .utf8)!)
+}
+
+task.resume()

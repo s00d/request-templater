@@ -1,0 +1,52 @@
+<%
+    // Extract parameters from the options object
+    const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+import com.github.kittinunf.fuel.*
+import com.github.kittinunf.fuel.core.*
+import com.github.kittinunf.result.*
+
+val fullUrl = "<%= url %>"
+
+val requestHeaders = listOf(
+<% headers.forEach(header => { %>
+    "<%= header.name %>" to "<%= header.value %>",
+<% }) %>
+)
+
+val requestCookies = listOf(
+<% cookies.forEach(cookie => { %>
+    "<%= cookie.name %>" to "<%= cookie.value %>",
+<% }) %>
+)
+
+val parameters = listOf(
+<% postData.forEach(param => { %>
+    "<%= param.name %>" to "<%= param.value %>",
+<% }) %>
+)
+
+val request = Fuel.request(Method.<%= method %>, fullUrl)
+    .header(requestHeaders)
+    .header("Content-Type", "<%= mimeType %>")
+    .header("Cookie", requestCookies.joinToString(separator = "; ") { "${it.first}=${it.second}" })
+
+if (parameters.isNotEmpty()) {
+    request.parameters(parameters)
+}
+
+request.responseString { _, _, result ->
+    when (result) {
+        is Result.Failure -> {
+            println("Error: ${result.getException().message}")
+        }
+        is Result.Success -> {
+            val data = result.get()
+            println("Response: $data")
+        }
+    }
+}
+
+Like
+Dislik

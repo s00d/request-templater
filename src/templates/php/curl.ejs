@@ -1,0 +1,45 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+<?php
+
+    $url = "<%= url %>";
+
+    $requestHeaders = array(
+    <% headers.forEach(header => { %>
+        "<%= header.name %>: <%= header.value %>",
+    <% }) %>
+    );
+
+    $requestCookies = array(
+    <% cookies.forEach(cookie => { %>
+        "<%= cookie.name %>=<<%= cookie.value %>>",
+    <% }) %>
+    );
+
+    $requestBody = null;
+    if ("<%= method %>" === "POST") {
+        $requestBody = "<%= postData.map(param => param.name + '=' + urlencode(param.value)).join('&') %>";
+    }
+
+    $ch = curl_init();
+
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $requestHeaders);
+    curl_setopt($ch, CURLOPT_COOKIE, implode("; ", $requestCookies));
+
+    if ("<%= method %>" === "POST") {
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $requestBody);
+    }
+
+    $response = curl_exec($ch);
+
+    curl_close($ch);
+
+    echo "Response: " . $response;
+
+?>

@@ -72,7 +72,7 @@ const jsPlugins = [
         include: [`${inputPath}/**/*`],
         extensions,
     }),
-    // terser()
+    terser()
 ];
 
 export default [

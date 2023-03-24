@@ -1,0 +1,28 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+library(httr)
+
+url <- "<%= url %>"
+
+req <- VERB("<%= method %>", url)
+
+<% headers.forEach(header => { %>
+req <- add_headers("<%= header.name %>" = "<%= header.value %>", req)
+<% }) %>
+
+<% cookies.forEach(cookie => { %>
+req <- add_headers("Cookie" = "<%= cookie.name %>=<%= cookie.value %>", req)
+<% }) %>
+
+<% if (postData.length > 0) { %>
+body <- list(<%= postData.map(param => `"${param.name}" = "${param.value}"`).join(', ') %>)
+req <- content(req, as.formula(paste0("<%= mimeType %>", "()")), body)
+<% } %>
+
+res <- content(req)
+
+cat("Response: ")
+print(toJSON(res, pretty = TRUE))

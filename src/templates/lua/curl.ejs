@@ -1,0 +1,65 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+local curl = require("cURL")
+
+-- Extract parameters from the options object
+local url = '<%= url %>'
+local method = '<%= method %>'
+local mimeType = '<%= mimeType %>'
+local headers = {
+<% headers.forEach(header => { %>
+    ['<%= header.name %>'] = '<%= header.value %>',
+<% }) %>
+}
+local postData = {
+<% postData.forEach(param => { %>
+    ['<%= param.name %>'] = '<%= param.value %>',
+<% }) %>
+}
+local cookies = {
+<% cookies.forEach(cookie => { %>
+    ['<%= cookie.name %>'] = '<%= cookie.value %>',
+<% }) %>
+}
+
+-- Construct the request command
+local command = "curl -X " .. method .. " '" .. url .. "'"
+if mimeType ~= '' then
+    command = command .. " -H 'Content-Type: " .. mimeType .. "'"
+end
+for header, value in pairs(headers) do
+    command = command .. " -H '" .. header .. ": " .. value .. "'"
+end
+for cookie, value in pairs(cookies) do
+    command = command .. " --cookie '" .. cookie .. "=" .. value .. "'"
+end
+if method == "POST" then
+    command = command .. " --data '"
+    for key, value in pairs(postData) do
+        command = command .. key .. "=" .. value .. "&"
+    end
+    command = string.sub(command, 1, -2) .. "'"
+end
+
+-- Execute the request command
+local easy = curl.easy()
+easy:setopt(curl.OPT_URL, url)
+easy:setopt(curl.OPT_CUSTOMREQUEST, method)
+easy:setopt(curl.OPT_HEADER, true)
+easy:setopt(curl.OPT_VERBOSE, true)
+easy:setopt(curl.OPT_POSTFIELDS, postData)
+easy:setopt(curl.OPT_COOKIE, cookies)
+local response_body = {}
+easy:setopt(curl.OPT_WRITEFUNCTION, function (data)
+    table.insert(response_body, data)
+    return #data
+end)
+easy:perform()
+easy:close()
+
+-- Print the response
+local response = table.concat(response_body)
+print(response)

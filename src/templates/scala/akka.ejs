@@ -1,0 +1,58 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+import akka.actor.ActorSystem
+import akka.http.scaladsl.Http
+import akka.http.scaladsl.model._
+import akka.stream.ActorMaterializer
+import akka.stream.scaladsl._
+import scala.concurrent.Future
+import scala.util.{Failure, Success}
+
+// Extract parameters from the options object
+val url = "<%= url %>"
+val method = "<%= method %>"
+val mimeType = "<%= mimeType %>"
+val headers = List(
+<% headers.forEach(header => { %>
+  HttpHeader.parse("<%= header.name %>", "<%= header.value %>").asInstanceOf[HttpHeader],
+<% }) %>
+)
+val cookies = List(
+<% cookies.forEach(cookie => { %>
+  HttpCookiePair("<%= cookie.name %>", "<%= cookie.value %>").asInstanceOf[HttpCookiePair],
+<% }) %>
+)
+val postData = List(
+<% postData.forEach(param => { %>
+  FormData.BodyPart.Strict("<%= param.name %>", "<%= param.value %>").asInstanceOf[FormData.BodyPart.Strict],
+<% }) %>
+)
+
+// Construct the request
+implicit val system = ActorSystem()
+implicit val materializer = ActorMaterializer()
+implicit val executionContext = system.dispatcher
+
+val request = HttpRequest(
+  method = HttpMethods.<%= method.toUpperCase() %>,
+  uri = url,
+  headers = headers,
+  entity = <% if (postData.length > 0) { %>FormData(postData).toEntity<% } else { %>HttpEntity.Empty<% } %>
+).addCredentials(cookies)
+
+// Send the request
+val responseFuture: Future[HttpResponse] = Http().singleRequest(request)
+
+// Handle the response
+responseFuture.onComplete {
+  case Success(response) =>
+    response.entity.dataBytes.runWith(Sink.fold("")(_ + _.utf8String))
+      .onComplete {
+        case Success(responseBody) => println("Response: " + responseBody)
+        case Failure(ex) => println("Failed to get response body: " + ex.getMessage)
+      }
+  case Failure(ex) => println("Error: " + ex.getMessage)
+}

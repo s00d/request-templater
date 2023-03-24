@@ -1,0 +1,31 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+require 'rest-client'
+
+url = "<%= url %>"
+method = "<%= method %>"
+mimeType = "<%= mimeType %>"
+
+headers = {
+  <% headers.forEach(header => { %>
+    "<%= header.name %>" => "<%= header.value %>",
+  <% }) %>
+}
+
+cookies = {
+  <% cookies.forEach(cookie => { %>
+    "<%= cookie.name %>" => "<%= cookie.value %>",
+  <% }) %>
+}
+
+<% if (method === 'GET') { %>
+  response = RestClient.get(url, headers: headers, cookies: cookies)
+<% } else { %>
+  body = "<%= postData.map(param => param.name + '=' + CGI.escape(param.value)).join('&') %>"
+  response = RestClient::<%= method.downcase %>(url, body, headers: headers, cookies: cookies, content_type: mimeType)
+<% } %>
+
+puts "Response: #{response.body}"

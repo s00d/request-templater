@@ -1,0 +1,49 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+<%# Create a new HTTP::Request object %>
+use HTTP::Request;
+my $request = HTTP::Request->new('<%= method %>', '<%= url %>');
+
+<%# Add headers to the request %>
+<% headers.forEach(header => { %>
+$request->header('<%= header.name %>', '<%= header.value %>');
+<% }) %>
+
+<%# Add cookies to the request %>
+<% cookies.forEach(cookie => { %>
+$request->header('Cookie', '<%= cookie.name %>=<%= cookie.value %>');
+<% }) %>
+
+<%# Add post data to the request %>
+<% if (postData.length > 0) { %>
+<% if (postData.length === 1 && postData[0].type === 'file') { %>
+my $file = '<%= postData[0].value %>';
+$request->content($file);
+<% } else { %>
+my $post_data = {
+<% postData.forEach(param => { %>
+'<%= param.name %>' => '<%= param.value %>',
+<% }) %>
+};
+$request->content(join('&', map { $_ . '=' . $post_data->{$_} } keys %$post_data));
+<% } %>
+<% } %>
+
+<%# Create an HTTP::Tiny object and send the request %>
+use HTTP::Tiny;
+my $http = HTTP::Tiny->new;
+my $response = $http->request($request);
+
+<%# Handle the response %>
+if ($response->{success}) {
+print "Response:\n";
+print $response->{content};
+}
+
+<%# Handle errors %>
+else {
+print "Error: " . $response->{status} . "\n";
+}

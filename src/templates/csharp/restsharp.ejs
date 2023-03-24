@@ -1,0 +1,48 @@
+<%
+    // Extract parameters from the options object
+    const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+using RestSharp;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        // Construct the request URL
+        var fullUrl = "<%= url %>";
+
+        // Set up the request
+        var client = new RestClient(fullUrl);
+        var request = new RestRequest("<%= method %>", Method.<%= method.toUpperCase() %>);
+        request.AddHeader("Content-Type", "<%= mimeType %>");
+
+        // Add headers to the request
+        <% headers.forEach(header => { %>
+        request.AddHeader("<%= header.name %>", "<%= header.value %>");
+        <% }) %>
+
+        // Add cookies to the request
+        <% cookies.forEach(cookie => { %>
+        request.AddCookie("<%= cookie.name %>", "<%= cookie.value %>");
+        <% }) %>
+
+        // Set up the request body
+        <% if (postData.length > 0) { %>
+        request.AddParameter("text/plain", "<%= postData.map(param => param.name + '=' + Uri.EscapeDataString(param.value)).join('&') %>", ParameterType.RequestBody);
+        <% } %>
+
+        // Send the request
+        var response = client.Execute(request);
+
+        // Handle the response
+        var responseBody = response.Content;
+        Console.WriteLine("Response: " + responseBody);
+
+        // Handle errors
+        if (response.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            Console.WriteLine("Error: " + response.StatusCode + " " + response.StatusDescription);
+        }
+    }
+}

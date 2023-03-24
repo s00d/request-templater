@@ -1,0 +1,42 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+// Construct the request URL
+let fullUrl = "<%- url %>"
+
+// Set up the request headers
+var headers: HTTPHeaders = [:]
+<% headers.forEach(header => { %>
+headers["<%= header.name %>"] = "<%= header.value %>"
+<% }) %>
+
+// Add cookies to the request
+<% cookies.forEach(cookie => { %>
+let cookie = HTTPCookie(properties: [
+    .domain: "<%= cookie.domain %>",
+    .path: "<%= cookie.path %>",
+    .name: "<%= cookie.name %>",
+    .value: "<%= cookie.value %>",
+])!
+HTTPCookieStorage.shared.setCookie(cookie)
+<% }) %>
+
+// Set up the request parameters
+var parameters: Parameters = [:]
+<% postData.forEach(param => { %>
+parameters["<%= param.name %>"] = "<%= param.value %>"
+<% }) %>
+
+// Create the request
+AF.request(fullUrl, method: .<%= method.toLowerCase() %>, parameters: parameters, headers: headers).response { response in
+    switch response.result {
+    case .success(let data):
+        if let data = data {
+            print("Response:", String(data: data, encoding: .utf8)!)
+        }
+    case .failure(let error):
+        print("Error:", error.localizedDescription)
+    }
+}

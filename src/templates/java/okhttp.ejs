@@ -1,0 +1,56 @@
+<%
+    // Extract parameters from the options object
+    const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+import java.io.IOException;
+import okhttp3.*;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        // Construct the request URL
+        String fullUrl = "<%= url %>";
+
+        // Set up the request
+        OkHttpClient client = new OkHttpClient();
+        Request.Builder requestBuilder = new Request.Builder()
+            .url(fullUrl)
+            .method("<%= method %>", null)
+            .addHeader("Content-Type", "<%= mimeType %>");
+
+        // Add headers to the request
+        <% headers.forEach(header => { %>
+        requestBuilder.addHeader("<%= header.name %>", "<%= header.value %>");
+        <% }) %>
+
+        // Add cookies to the request
+        <% cookies.forEach(cookie => { %>
+        requestBuilder.addHeader("Cookie", "<%= cookie.name %>=<%= cookie.value %>");
+        <% }) %>
+
+        // Set up the request body
+        <% if (postData.length > 0) { %>
+        FormBody.Builder formBodyBuilder = new FormBody.Builder();
+        <% postData.forEach(param => { %>
+        formBodyBuilder.add("<%= param.name %>", "<%= param.value %>");
+        <% }) %>
+        RequestBody requestBody = formBodyBuilder.build();
+        requestBuilder.post(requestBody);
+        <% } %>
+
+        // Send the request
+        Request request = requestBuilder.build();
+        Response response = client.newCall(request).execute();
+
+        // Handle the response
+        if (response.isSuccessful()) {
+            String responseBody = response.body().string();
+            System.out.println("Response: " + responseBody);
+        } else {
+            System.out.println("Error: " + response.code() + " " + response.message());
+        }
+
+        // Clean up
+        response.close();
+    }
+}

@@ -1,0 +1,44 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+<?php
+
+    use GuzzleHttp\Client;
+    use GuzzleHttp\Exception\RequestException;
+
+    $client = new Client();
+
+    $url = "<%= url %>";
+
+    $headers = array(
+    <% headers.forEach(header => { %>
+        "<%= header.name %>" => "<%= header.value %>",
+    <% }) %>
+    );
+
+    $cookies = array(
+    <% cookies.forEach(cookie => { %>
+        "<%= cookie.name %>" => "<%= cookie.value %>",
+    <% }) %>
+    );
+
+    $requestBody = null;
+    if ("<%= method %>" === "POST") {
+        $requestBody = "<%= postData.map(param => param.name + '=' + urlencode(param.value)).join('&') %>";
+    }
+
+    try {
+        $response = $client->request('<%= method %>', $url, [
+            'headers' => $headers,
+            'cookies' => $cookies,
+            'body' => $requestBody,
+        ]);
+
+        echo "Response: " . $response->getBody();
+    } catch (RequestException $e) {
+        echo "Error: " . $e->getMessage();
+    }
+
+?>

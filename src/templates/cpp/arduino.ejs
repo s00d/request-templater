@@ -1,0 +1,58 @@
+<%
+// Extract parameters from the options object
+const { url, method, mimeType, headers, postData, cookies } = locals;
+%>
+
+// Construct the request URL
+String url = "<%- url %>";
+
+// Set up the request headers
+String headers;
+<% headers.forEach(header => { %>
+String headerString = "<%= header.name %>: <%= header.value %>";
+headers += headerString + "\r\n";
+<% }) %>
+
+// Add cookies to the request
+<% cookies.forEach(cookie => { %>
+String cookieString = "<%= cookie.name %>=<%= cookie.value %>";
+// TODO: Add cookieString to the request
+<% }) %>
+
+// Set up the request parameters
+String postData;
+<% postData.forEach(param => { %>
+String paramString = "<%= param.name %>=<%= param.value %>";
+postData += paramString + "&";
+<% }) %>
+
+// Construct the request
+WiFiClient client;
+if (client.connect(url, 80)) {
+    // Send the request
+    client.print("<%- method %> ");
+    client.print(url);
+    client.println(" HTTP/1.1");
+    client.print("Host: ");
+    client.println(url);
+    client.print("Content-Type: ");
+    client.println("<%- mimeType %>");
+    client.print("Content-Length: ");
+    client.println(postData.length());
+    client.print(headers);
+    if (postData.length() > 0) {
+        client.print("\r\n");
+        client.print(postData);
+    }
+    client.println();
+
+    // Read the response
+    while (client.connected()) {
+        String line = client.readStringUntil('\n');
+        if (line == "\r") {
+            break;
+        }
+    }
+    String response = client.readStringUntil('\n');
+    Serial.println("Response: " + response);
+}
