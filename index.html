@@ -128,20 +128,20 @@
         const library = document.getElementById('library').value;
         requestTemplater.baseUrl(baseUrl);
         requestTemplater.url(urlTemplate);
+        const params = [];
         if (queryParams) {
-            const params = queryParams.split('&').map(param => {
+            queryParams.split('&').map(param => {
                 const [key, value] = param.split('=');
-                return { in: 'query', name: key, value };
+                params.push({ in: 'query', name: key, value });
             });
-            requestTemplater.params(params);
         }
         if (pathParams) {
-            const params = pathParams.split('&').map(param => {
+            pathParams.split('&').map(param => {
                 const [key, value] = param.split('=');
-                return { in: 'path', name: key, value };
+                params.push({ in: 'path', name: key, value });
             });
-            requestTemplater.params(params);
         }
+        requestTemplater.params(params);
         requestTemplater.mimeType(mimeType);
         output.innerHTML  = requestTemplater.method(method).lang(lang).library(library).generate();
     }
