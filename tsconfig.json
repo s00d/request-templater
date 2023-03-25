@@ -20,7 +20,7 @@
     "declaration": true,
     "rootDir": ".",
     "baseUrl": "./",
-    "outDir": "dist"
+    "outDir": "dist",
   },
 
   "types": [
@@ -33,6 +33,7 @@
     "tests/jest/**/*"
   ],
   "exclude": [
+    "dist",
     "node_modules",
     "**/*.test.ts",
     "**/*.spec.tsx",

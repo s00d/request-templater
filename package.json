@@ -1,14 +1,18 @@
 {
   "name": "request-templater",
-  "version": "1.0.10",
+  "version": "1.1.1",
   "description": "RequestTemplater is a class for generating HTTP request examples based on templates for different programming languages.",
-  "main": "dist/request-templater.js",
+  "main": "dist/request-templater.es.js",
   "module": "dist/request-templater.module.js",
   "browser": "dist/request-templater.iife.js",
-  "typings": "dist/dist/src/index.d.ts",
+  "typings": "dist/src/index.d.ts",
+  "bin": {
+    "request-templater": "./cli.js"
+  },
   "scripts": {
     "prebuild": "rimraf ./dist",
     "build": "rollup -c",
+    "cli": "node cli.js",
     "build:watch": "rollup -c -w",
     "test:template": "ts-node ./src/templates/test.ts",
     "test:cypress": "npm run build && cp -r ./dist ./tests/cypress/setup && cd ./tests && cypress run --env type=actual",
@@ -62,6 +66,7 @@
     "cypress-visual-regression": "^2.1.1",
     "ejs": "^3.1.9",
     "glob": "^9.3.2",
+    "highlight.js": "^11.7.0",
     "postcss-clean": "^1.2.2",
     "postcss-normalize": "^10.0.1",
     "prettier": "2.7.1",
@@ -69,12 +74,13 @@
     "rollup-plugin-ejs": "^4.0.0",
     "rollup-plugin-filesize": "^10.0.0",
     "rollup-plugin-node-polyfills": "^0.2.1",
+    "rollup-plugin-polyfill-node": "^0.12.0",
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-progress": "^1.1.2",
     "tslib": "^2.5.0",
     "typescript": "^5.0.2"
   },
   "dependencies": {
-    "highlight.js": "^11.7.0"
+    "commander": "^10.0.0"
   }
 }

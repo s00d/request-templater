@@ -108,3 +108,32 @@ Method for getting a list of available templates for generating request examples
 | C           | ghttp, curl                          |
 | Brainfuck   | Brainfuck                            |
 | R           | RCurl, httr                          |
+
+## cli
+
+Install the request-templater package globally using npm:
+
+```bash
+npm install -g request-templater
+```
+
+To use Request Templater, run the request-templater command in your terminal, specifying the necessary parameters. For example:
+
+request-templater --url https://api.example.com/users --method POST --lang bash --library curl --params '[{in: "query", name: "param", value: 1}]'
+In this example, we're specifying the URL, request method, programming language (javascript), and request parameters in JSON format.
+
+Request Templater supports the following parameters:
+
+`-u, --url <url>`: The URL of the request (required)
+`-m, --method <method>`: The HTTP method (defaults to GET)
+`-l, --language <language>`: The programming language to generate code in (defaults to javascript)
+`-t, --mimeType <mimeType>`: The MIME type of the request (optional)
+`-p, --params <params>`: The request parameters (optional)
+`-b, --baseUrl <baseUrl>`: The base URL for the request (optional)
+`-r, --library <library>`: The HTTP library to use for making the request (defaults to xhr)
+
+
+To get help on the command line parameters, run the request-templater -h command:
+```bash
+request-templater -h
+```

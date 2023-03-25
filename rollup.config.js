@@ -68,9 +68,7 @@ const banner = `/*!
 const extensions = ['.ts', '.js', '.hbs', '.html', '.hbs.html', '.mustache', '.pug'];
 
 const jsPlugins = [
-    resolve({
-        dedupe: ['core-js']
-    }),
+    resolve(),
     commonjs({
         include: 'node_modules/**',
     }),
@@ -93,7 +91,7 @@ export default [
     {
         input: `${inputPath}/index.ts`,
         output: {
-            file: `${outputPath}/${pkg.main}`,
+            file: `${pkg.main}`,
             format: 'umd',
             banner,
             name: 'RequestTemplater',
@@ -104,18 +102,7 @@ export default [
     {
         input: `${inputPath}/index.ts`,
         output: {
-            file: `${outputPath}/minified/${pkg.main.replace(/\.js$/, '.min.js')}`,
-            banner,
-            format: 'umd',
-            name: 'RequestTemplater',
-            sourcemap: true,
-        },
-        plugins: jsPlugins
-    },
-    {
-        input: `${inputPath}/index.ts`,
-        output: {
-            file: `${outputPath}/${pkg.module}`,
+            file: `${pkg.module}`,
             banner,
             format: 'es',
             name: 'RequestTemplater',
@@ -126,7 +113,7 @@ export default [
     {
         input: `${inputPath}/index.ts`,
         output: {
-            file: `${outputPath}/${pkg.browser}`,
+            file: `${pkg.browser}`,
             banner,
             format: 'iife',
             name: 'RequestTemplater',
