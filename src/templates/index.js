@@ -32,7 +32,7 @@ function encode_char(c) {
     ; __append( mimeType )
     ; __append("\", forHTTPHeaderField: \"Content-Type\")\n\n")
     ;  if (headers.length > 0) { 
-    ; __append("// Add headers to the request\n")
+    ; __append("\n// Add headers to the request\n")
     ;  headers.forEach(header => { 
     ; __append("\nrequest.addValue(\"")
     ; __append(escapeFn( header.value ))
@@ -43,7 +43,7 @@ function encode_char(c) {
     ;  } 
     ; __append("\n\n")
     ;  if (cookies.length > 0) { 
-    ; __append("// Add cookies to the request\n")
+    ; __append("\n// Add cookies to the request\n")
     ;  cookies.forEach(cookie => { 
     ; __append("\nrequest.addValue(\"")
     ; __append(escapeFn( cookie.value ))
@@ -101,7 +101,9 @@ function encode_char(c) {
     ; __append(escapeFn( header.value ))
     ; __append("\"\n")
     ;  }) 
-    ; __append("\n\n// Add cookies to the request\n")
+    ; __append("\n\n")
+    ;  if (cookies.length > 0) { 
+    ; __append("\n// Add cookies to the request\n")
     ;  cookies.forEach(cookie => { 
     ; __append("\nlet cookie = HTTPCookie(properties: [\n    .domain: \"")
     ; __append(escapeFn( cookie.domain ))
@@ -113,6 +115,8 @@ function encode_char(c) {
     ; __append(escapeFn( cookie.value ))
     ; __append("\",\n])!\nHTTPCookieStorage.shared.setCookie(cookie)\n")
     ;  }) 
+    ; __append("\n")
+    ;  } 
     ; __append("\n\n// Set up the request parameters\nvar parameters: Parameters = [:]\n")
     ;  postData.forEach(param => { 
     ; __append("\nparameters[\"")
@@ -389,7 +393,9 @@ function encode_char(c) {
     ; __append(escapeFn( url ))
     ; __append("\").unwrap();\n\n// Set up the request\nlet mut req = surf::Request::new(")
     ; __append(escapeFn( method ))
-    ; __append(" , url);\n\n// Add headers to the request\n")
+    ; __append(" , url);\n\n")
+    ;  if (headers.length > 0) { 
+    ; __append("\n// Add headers to the request\n")
     ;  headers.forEach(header => { 
     ; __append("\nreq.insert_header(\"")
     ; __append(escapeFn( header.name ))
@@ -397,7 +403,11 @@ function encode_char(c) {
     ; __append(escapeFn( header.value ))
     ; __append("\").unwrap());\n")
     ;  }) 
-    ; __append("\n\n// Add cookies to the request\n")
+    ; __append("\n")
+    ;  } 
+    ; __append("\n\n")
+    ;  if (cookies.length > 0) { 
+    ; __append("\n// Add cookies to the request\n")
     ;  cookies.forEach(cookie => { 
     ; __append("\nreq.insert_cookie(surf::http::Cookie::new(\"")
     ; __append(escapeFn( cookie.name ))
@@ -405,9 +415,11 @@ function encode_char(c) {
     ; __append(escapeFn( cookie.value ))
     ; __append("\"));\n")
     ;  }) 
-    ; __append("\n\n// Send the request\n")
+    ; __append("\n")
+    ;  } 
+    ; __append("\n\n")
     ;  if (postData.length > 0) { 
-    ; __append("\nlet body = ")
+    ; __append("\n// Send the request\nlet body = ")
     ;  if (postData.length === 1 && postData[0].type === 'file') { 
     ; __append("\nsurf::Body::from_form(&surf::http::Form::from(")
     ;  postData[0].value 
@@ -517,7 +529,9 @@ function encode_char(c) {
     ; __append(escapeFn( url ))
     ; __append("\";\n\n// Create the request\nlet mut req = hyper::Request::new(hyper::Method::")
     ; __append(escapeFn( method ))
-    ; __append(", full_url);\n\n// Add headers to the request\n")
+    ; __append(", full_url);\n\n")
+    ;  if (headers.length > 0) { 
+    ; __append("\n// Add headers to the request\n")
     ;  headers.forEach(header => { 
     ; __append("\nreq.headers_mut().insert(hyper::header::")
     ; __append(escapeFn( header.name ))
@@ -525,7 +539,11 @@ function encode_char(c) {
     ; __append(escapeFn( header.value ))
     ; __append(".parse().unwrap());\n")
     ;  }) 
-    ; __append("\n\n// Add cookies to the request\n")
+    ; __append("\n")
+    ;  } 
+    ; __append("\n\n")
+    ;  if (cookies.length > 0) { 
+    ; __append("\n// Add cookies to the request\n")
     ;  cookies.forEach(cookie => { 
     ; __append("\nreq.headers_mut().insert(hyper::header::COOKIE, format!(\"")
     ; __append(escapeFn( cookie.name ))
@@ -533,9 +551,11 @@ function encode_char(c) {
     ; __append(escapeFn( cookie.value ))
     ; __append("}; \"));\n")
     ;  }) 
-    ; __append("\n\n// Add the request body\n")
-    ;  if (postData.length > 0) { 
     ; __append("\n")
+    ;  } 
+    ; __append("\n\n")
+    ;  if (postData.length > 0) { 
+    ; __append("\n// Add the request body\n")
     ;  if (postData.length === 1 && postData[0].type === 'file') { 
     ; __append("\nlet form = multipart::Form::new()\n.file(\"")
     ; __append(escapeFn( postData[0].name ))
@@ -1163,6 +1183,8 @@ function encode_char(c) {
     ; __append("\nmy $request = HTTP::Request->new('")
     ; __append(escapeFn( method ))
     ; __append("', $fullUrl);\n\n")
+    ;  if (headers.length > 0) { 
+    ; __append("\n")
     ; __append("\n")
     ;  headers.forEach(header => { 
     ; __append("\n$request->header('")
@@ -1171,7 +1193,11 @@ function encode_char(c) {
     ; __append(escapeFn( header.value ))
     ; __append("');\n")
     ;  }) 
+    ; __append("\n")
+    ;  } 
     ; __append("\n\n")
+    ;  if (cookies.length > 0) { 
+    ; __append("\n")
     ; __append("\n")
     ;  cookies.forEach(cookie => { 
     ; __append("\n$ua->cookie_jar->set_cookie(0, '")
@@ -1180,9 +1206,11 @@ function encode_char(c) {
     ; __append(escapeFn( cookie.value ))
     ; __append("', '/', 'example.com');\n")
     ;  }) 
-    ; __append("\n\n")
     ; __append("\n")
+    ;  } 
+    ; __append("\n\n")
     ;  if (postData.length > 0) { 
+    ; __append("\n")
     ; __append("\n")
     ;  if (postData.length === 1 && postData[0].type === 'file') { 
     ; __append("\nmy $file = '")
@@ -1315,6 +1343,8 @@ function encode_char(c) {
     ; __append("', '")
     ; __append(escapeFn( url ))
     ; __append("');\n\n")
+    ;  if (headers.length > 0) { 
+    ; __append("\n")
     ; __append("\n")
     ;  headers.forEach(header => { 
     ; __append("\n$request->header('")
@@ -1323,7 +1353,11 @@ function encode_char(c) {
     ; __append(escapeFn( header.value ))
     ; __append("');\n")
     ;  }) 
+    ; __append("\n")
+    ;  } 
     ; __append("\n\n")
+    ;  if (cookies.length > 0) { 
+    ; __append("\n")
     ; __append("\n")
     ;  cookies.forEach(cookie => { 
     ; __append("\n$request->header('Cookie', '")
@@ -1332,9 +1366,11 @@ function encode_char(c) {
     ; __append(escapeFn( cookie.value ))
     ; __append("');\n")
     ;  }) 
-    ; __append("\n\n")
     ; __append("\n")
+    ;  } 
+    ; __append("\n\n")
     ;  if (postData.length > 0) { 
+    ; __append("\n")
     ; __append("\n")
     ;  if (postData.length === 1 && postData[0].type === 'file') { 
     ; __append("\nmy $file = '")
@@ -1874,7 +1910,9 @@ function encode_char(c) {
     ; __append(escapeFn( url ))
     ; __append("\")\nval connection = url.openConnection() as HttpURLConnection\nconnection.requestMethod = \"")
     ; __append(escapeFn( method ))
-    ; __append("\"\n\n// Add headers to the request\n")
+    ; __append("\"\n\n")
+    ;  if (headers.length > 0) { 
+    ; __append("\n// Add headers to the request\n")
     ;  headers.forEach(header => { 
     ; __append("\nconnection.setRequestProperty(\"")
     ; __append(escapeFn( header.name ))
@@ -1882,7 +1920,11 @@ function encode_char(c) {
     ; __append(escapeFn( header.value ))
     ; __append("\")\n")
     ;  }) 
-    ; __append("\n\n// Add cookies to the request\n")
+    ; __append("\n")
+    ;  } 
+    ; __append("\n\n")
+    ;  if (cookies.length > 0) { 
+    ; __append("\n// Add cookies to the request\n")
     ;  cookies.forEach(cookie => { 
     ; __append("\nconnection.addRequestProperty(\"Cookie\", \"")
     ; __append(escapeFn( cookie.name ))
@@ -1890,6 +1932,8 @@ function encode_char(c) {
     ; __append(escapeFn( cookie.value ))
     ; __append("\")\n")
     ;  }) 
+    ; __append("\n")
+    ;  } 
     ; __append("\n\n// Send the request\n")
     ; 
 if (postData.length > 0) {
@@ -1998,39 +2042,65 @@ function encode_char(c) {
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
     ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
-    ; __append("\n// Construct the request URL\nvar fullUrl = '")
-    ; __append(escapeFn( url ))
-    ; __append("';\n\n// Set up the request configuration object\nvar config = {\nurl: fullUrl,\ntype: '")
-    ; __append(escapeFn( method ))
-    ; __append("',\nheaders: {\n'Content-Type': '")
-    ; __append(escapeFn( mimeType ))
-    ; __append("',\n")
+    ; __append("\nasync function makeRequest(url, method, mimeType, headers, cookies, postData) {\n  const fullUrl = url;\n\n  // Set up the request configuration object\n  const config = {\n    url: fullUrl,\n    type: method,\n    headers: {\n      'Content-Type': mimeType,\n      ")
     ;  headers.forEach(header => { 
-    ; __append("\n    '")
+    ; __append("'")
     ; __append(escapeFn( header.name ))
     ; __append("': '")
     ; __append(escapeFn( header.value ))
-    ; __append("',\n")
+    ; __append("',")
     ;  }) 
-    ; __append("\n},\ndata: ")
+    ; __append("\n    },\n    data: ")
     ;  if (postData.length === 1 && postData[0].type === 'file') { 
-    ; __append("\n    new FormData(document.getElementById('#file_upload_form'))\n")
+    ; __append("\n      new FormData(document.getElementById('#file_upload_form'))\n      ")
     ;  } else if (postData.length > 0) { 
-    ; __append("\n    '")
+    ; __append("'")
     ; __append(escapeFn( postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') ))
-    ; __append("'\n")
+    ; __append("'\n      ")
     ;  } else { 
-    ; __append("\n    null\n")
+    ; __append(" null ")
     ;  } 
-    ; __append("\n};\n\n// Add cookies to the request\n")
+    ; __append("\n  };\n\n  // Add cookies to the request\n  ")
     ;  cookies.forEach(cookie => { 
-    ; __append("\n    document.cookie = '")
+    ; __append("document.cookie = '")
     ; __append(escapeFn( cookie.name ))
     ; __append("=")
     ; __append(escapeFn( cookie.value ))
-    ; __append("';\n")
+    ; __append("';\n  ")
     ;  }) 
-    ; __append("\n\n// Send the request using jQuery\n$.ajax(config)\n    .done(function(data) {\n        console.log('Response:', data);\n    })\n    .fail(function(jqXHR, textStatus) {\n        console.error('Error:', textStatus);\n    });\n")
+    ; __append("\n\n  // Send the request using jQuery\n  try {\n    const data = await $.ajax(config);\n    console.log('Response:', data);\n    return data;\n  } catch (error) {\n    console.error('Error:', error.message);\n    throw error;\n  }\n}\n\n// Example usage\nconst url = '")
+    ; __append(escapeFn( url ))
+    ; __append("';\nconst method = '")
+    ; __append(escapeFn( method ))
+    ; __append("';\nconst mimeType = '")
+    ; __append(escapeFn( mimeType ))
+    ; __append("';\nconst headers = {\n  ")
+    ;  headers.forEach(header => { 
+    ; __append("'")
+    ; __append(escapeFn( header.name ))
+    ; __append("': '")
+    ; __append(escapeFn( header.value ))
+    ; __append("',")
+    ;  }) 
+    ; __append("\n};\nconst cookies = {\n  ")
+    ;  cookies.forEach(cookie => { 
+    ; __append("'")
+    ; __append(escapeFn( cookie.name ))
+    ; __append("': '")
+    ; __append(escapeFn( cookie.value ))
+    ; __append("',")
+    ;  }) 
+    ; __append("\n};\nconst postData = [\n  ")
+    ;  postData.forEach(param => { 
+    ; __append("{ name: '")
+    ; __append(escapeFn( param.name ))
+    ; __append("', value: '")
+    ; __append(escapeFn( param.value ))
+    ; __append("', type: '")
+    ; __append(escapeFn( param.type ))
+    ; __append("' },")
+    ;  }) 
+    ; __append("\n];\n\nmakeRequest(url, method, mimeType, headers, cookies, postData);\n")
   return __output;
 
 },
@@ -2058,39 +2128,65 @@ function encode_char(c) {
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
     ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
-    ; __append("\n// Construct the request URL\nvar fullUrl = '")
-    ; __append(escapeFn( url ))
-    ; __append("';\n\n// Set up the request configuration object\nvar config = {\nmethod: '")
-    ; __append(escapeFn( method ))
-    ; __append("',\nheaders: {\n'Content-Type': '")
-    ; __append(escapeFn( mimeType ))
-    ; __append("',\n")
+    ; __append("\nasync function makeRequest(url, method, mimeType, headers, cookies, postData) {\n  // Construct the request configuration object\n  var config = {\n    method: method,\n    headers: {\n      'Content-Type': mimeType,\n      ")
     ;  headers.forEach(header => { 
-    ; __append("\n    '")
+    ; __append("'")
     ; __append(escapeFn( header.name ))
     ; __append("': '")
     ; __append(escapeFn( header.value ))
-    ; __append("',\n")
+    ; __append("',")
     ;  }) 
-    ; __append("\n},\nbody: ")
+    ; __append("\n    },\n    body: ")
     ;  if (postData.length === 1 && postData[0].type === 'file') { 
-    ; __append("\n    new FormData(document.getElementById('#file_upload_form'))\n")
+    ; __append("\n      new FormData(document.getElementById('#file_upload_form'))\n      ")
     ;  } else if (postData.length > 0) { 
-    ; __append("\n    '")
+    ; __append("'")
     ; __append(escapeFn( postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') ))
-    ; __append("'\n")
+    ; __append("'\n      ")
     ;  } else { 
-    ; __append("\n    null\n")
+    ; __append(" null ")
     ;  } 
-    ; __append("\n};\n\n// Add cookies to the request\n")
+    ; __append("\n  };\n\n  // Add cookies to the request\n  ")
     ;  cookies.forEach(cookie => { 
-    ; __append("\n    document.cookie = '")
+    ; __append("document.cookie = '")
     ; __append(escapeFn( cookie.name ))
     ; __append("=")
     ; __append(escapeFn( cookie.value ))
-    ; __append("';\n")
+    ; __append("';\n  ")
     ;  }) 
-    ; __append("\n\n// Send the request using fetch\nfetch(fullUrl, config)\n.then(function(response) {\nif (!response.ok) {\nthrow new Error('HTTP error, status = ' + response.status);\n}\nreturn response.text();\n})\n.then(function(data) {\nconsole.log('Response:', data);\n})\n.catch(function(error) {\nconsole.error('Error:', error.message);\n});\n")
+    ; __append("\n\n  // Send the request using fetch\n  try {\n    const response = await fetch(url, config);\n    if (!response.ok) {\n      throw new Error('HTTP error, status = ' + response.status);\n    }\n    const data = await response.text();\n    console.log('Response:', data);\n    return data;\n  } catch (error) {\n    console.error('Error:', error.message);\n    throw error;\n  }\n}\n\n// Example usage\nconst url = '")
+    ; __append(escapeFn( url ))
+    ; __append("';\nconst method = '")
+    ; __append(escapeFn( method ))
+    ; __append("';\nconst mimeType = '")
+    ; __append(escapeFn( mimeType ))
+    ; __append("';\nconst headers = {\n  ")
+    ;  headers.forEach(header => { 
+    ; __append("'")
+    ; __append(escapeFn( header.name ))
+    ; __append("': '")
+    ; __append(escapeFn( header.value ))
+    ; __append("',")
+    ;  }) 
+    ; __append("\n};\nconst cookies = {\n  ")
+    ;  cookies.forEach(cookie => { 
+    ; __append("'")
+    ; __append(escapeFn( cookie.name ))
+    ; __append("': '")
+    ; __append(escapeFn( cookie.value ))
+    ; __append("',")
+    ;  }) 
+    ; __append("\n};\nconst postData = [\n  ")
+    ;  postData.forEach(param => { 
+    ; __append("{ name: '")
+    ; __append(escapeFn( param.name ))
+    ; __append("', value: '")
+    ; __append(escapeFn( param.value ))
+    ; __append("', type: '")
+    ; __append(escapeFn( param.type ))
+    ; __append("' },")
+    ;  }) 
+    ; __append("\n];\n\nmakeRequest(url, method, mimeType, headers, cookies, postData);\n")
   return __output;
 
 },
@@ -2118,15 +2214,9 @@ function encode_char(c) {
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
     ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
-    ; __append("\n// Import the Axios library\nimport axios from 'axios';\n\n// Construct the request URL\nvar fullUrl = '")
-    ; __append(escapeFn( url ))
-    ; __append("';\n\n// Set up the request configuration object\nvar config = {\n    method: '")
-    ; __append(escapeFn( method ))
-    ; __append("',\n    url: fullUrl,\n    headers: {\n        'Content-Type': '")
-    ; __append(escapeFn( mimeType ))
-    ; __append("',\n    ")
+    ; __append("\n// Import the Axios library\nimport axios from 'axios';\n\nasync function makeRequest(url, method, mimeType, headers, cookies, postData) {\n  // Construct the request configuration object\n  var config = {\n    method: method,\n    url: url,\n    headers: {\n      'Content-Type': mimeType,\n      ")
     ;  headers.forEach(header => { 
-    ; __append("   '")
+    ; __append("'")
     ; __append(escapeFn( header.name ))
     ; __append("': '")
     ; __append(escapeFn( header.value ))
@@ -2134,23 +2224,55 @@ function encode_char(c) {
     ;  }) 
     ; __append("\n    },\n    data: ")
     ;  if (postData.length === 1 && postData[0].type === 'file') { 
-    ; __append("\n        new FormData(document.getElementById('#file_upload_form'))\n    ")
+    ; __append("\n      new FormData(document.getElementById('#file_upload_form'))\n      ")
     ;  } else if (postData.length > 0) { 
     ; __append("'")
     ; __append(escapeFn( postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') ))
-    ; __append("'\n    ")
+    ; __append("'\n      ")
     ;  } else { 
-    ; __append(" ")
+    ; __append(" undefined ")
     ;  } 
-    ; __append("\n};\n\n// Add cookies to the request\n")
+    ; __append("\n  };\n\n  // Add cookies to the request\n  ")
     ;  cookies.forEach(cookie => { 
     ; __append("document.cookie = '")
     ; __append(escapeFn( cookie.name ))
     ; __append("=")
     ; __append(escapeFn( cookie.value ))
-    ; __append("';\n")
+    ; __append("';\n  ")
     ;  }) 
-    ; __append("\n// Send the request using Axios\naxios(config)\n    .then(function (response) {\n        console.log('Response:', response.data);\n    })\n    .catch(function (error) {\n        console.error('Error:', error);\n    });\n")
+    ; __append("\n\n  // Send the request using Axios\n  try {\n    const response = await axios(config);\n    console.log('Response:', response.data);\n    return response.data;\n  } catch (error) {\n    console.error('Error:', error);\n    throw error;\n  }\n}\n\n// Example usage\nconst url = '")
+    ; __append(escapeFn( url ))
+    ; __append("';\nconst method = '")
+    ; __append(escapeFn( method ))
+    ; __append("';\nconst mimeType = '")
+    ; __append(escapeFn( mimeType ))
+    ; __append("';\nconst headers = {\n  ")
+    ;  headers.forEach(header => { 
+    ; __append("'")
+    ; __append(escapeFn( header.name ))
+    ; __append("': '")
+    ; __append(escapeFn( header.value ))
+    ; __append("',")
+    ;  }) 
+    ; __append("\n};\nconst cookies = {\n  ")
+    ;  cookies.forEach(cookie => { 
+    ; __append("'")
+    ; __append(escapeFn( cookie.name ))
+    ; __append("': '")
+    ; __append(escapeFn( cookie.value ))
+    ; __append("',")
+    ;  }) 
+    ; __append("\n};\nconst postData = [\n  ")
+    ;  postData.forEach(param => { 
+    ; __append("{ name: '")
+    ; __append(escapeFn( param.name ))
+    ; __append("', value: '")
+    ; __append(escapeFn( param.value ))
+    ; __append("', type: '")
+    ; __append(escapeFn( param.type ))
+    ; __append("' },")
+    ;  }) 
+    ; __append("\n];\n\nmakeRequest(url, method, mimeType, headers, cookies, postData);\n")
   return __output;
 
 },
@@ -2178,43 +2300,39 @@ function encode_char(c) {
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
     ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
-    ; __append("\n// Create a new XMLHttpRequest object\nvar xhr = new XMLHttpRequest();\n\n// Construct the request URL\nvar fullUrl = '")
+    ; __append("\nasync function makeRequest(url, method, mimeType, headers, cookies, postData) {\n  const xhr = new XMLHttpRequest();\n\n  // Construct the request URL\n  const fullUrl = url;\n\n  // Set up the request\n  xhr.open(method, fullUrl, true);\n  xhr.setRequestHeader('Content-Type', mimeType);\n\n  // Add headers to the request\n  headers.forEach(header => {\n    xhr.setRequestHeader(header.name, header.value);\n  });\n\n  // Add cookies to the request\n  cookies.forEach(cookie => {\n    document.cookie = `${cookie.name}=${cookie.value}`;\n  });\n\n  // Send the request\n  if (postData.length > 0) {\n    if (postData.length === 1 && postData[0].type === 'file') {\n      xhr.send(new FormData(document.getElementById('#file_upload_form')));\n    } else {\n      xhr.send(postData.map(param => `${param.name}=${encodeURIComponent(param.value)}`).join('&'));\n    }\n  } else {\n    xhr.send();\n  }\n\n  // Handle the response\n  try {\n    await new Promise((resolve, reject) => {\n      xhr.onreadystatechange = function() {\n        if (this.readyState === 4) {\n          if (this.status === 200) {\n            console.log('Response:', this.responseText);\n            resolve(this.responseText);\n          } else {\n            reject(new Error(`Request failed with status code ${this.status}`));\n          }\n        }\n      };\n    });\n  } catch (error) {\n    console.error('Error:', error.message);\n    throw error;\n  }\n}\n\n// Example usage\nconst url = '")
     ; __append(escapeFn( url ))
-    ; __append("';\n\n// Set up the request\nxhr.open('")
+    ; __append("';\nconst method = '")
     ; __append(escapeFn( method ))
-    ; __append("', fullUrl, true);\nxhr.setRequestHeader('Content-Type', '")
+    ; __append("';\nconst mimeType = '")
     ; __append(escapeFn( mimeType ))
-    ; __append("');\n\n// Add headers to the request\n")
+    ; __append("';\nconst headers = [\n  ")
     ;  headers.forEach(header => { 
-    ; __append("\n    xhr.setRequestHeader('")
+    ; __append("{ name: '")
     ; __append(escapeFn( header.name ))
-    ; __append("', '")
+    ; __append("', value: '")
     ; __append(escapeFn( header.value ))
-    ; __append("');\n")
+    ; __append("' },")
     ;  }) 
-    ; __append("\n\n// Add cookies to the request\n")
+    ; __append("\n];\nconst cookies = [\n  ")
     ;  cookies.forEach(cookie => { 
-    ; __append("\n    document.cookie = '")
+    ; __append("{ name: '")
     ; __append(escapeFn( cookie.name ))
-    ; __append("=")
+    ; __append("', value: '")
     ; __append(escapeFn( cookie.value ))
-    ; __append("';\n")
+    ; __append("' },")
     ;  }) 
-    ; __append("\n\n// Send the request\n")
-    ;  if (postData.length > 0) { 
-    ; __append("\n    xhr.send(")
-    ;  if (postData.length === 1 && postData[0].type === 'file') { 
-    ; __append("\n        new FormData(document.getElementById('#file_upload_form'))")
-    ;  } else { 
-    ; __append("\n        '")
-    ; __append(escapeFn( postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') ))
-    ; __append("'")
-    ;  } 
-    ; __append(");\n")
-    ;  } else { 
-    ; __append("\n    xhr.send();\n")
-    ;  } 
-    ; __append("\n\n// Handle the response\nxhr.onreadystatechange = function() {\n    if (this.readyState === 4 && this.status === 200) {\n        console.log('Response:', this.responseText);\n    }\n};\n\n// Handle errors\nxhr.onerror = function() {\n    console.error('Error:', xhr.statusText);\n};\n")
+    ; __append("\n];\nconst postData = [\n  ")
+    ;  postData.forEach(param => { 
+    ; __append("{ name: '")
+    ; __append(escapeFn( param.name ))
+    ; __append("', value: '")
+    ; __append(escapeFn( param.value ))
+    ; __append("', type: '")
+    ; __append(escapeFn( param.type ))
+    ; __append("' },")
+    ;  }) 
+    ; __append("\n];\n\nmakeRequest(url, method, mimeType, headers, cookies, postData);\n")
   return __output;
 
 },
@@ -2248,7 +2366,9 @@ function encode_char(c) {
     ; __append(escapeFn( method.toLowerCase() ))
     ; __append("(fullUrl)\n                .header(\"Content-Type\", \"")
     ; __append(escapeFn( mimeType ))
-    ; __append("\");\n\n        // Add headers to the request\n        ")
+    ; __append("\");\n\n        ")
+    ;  if (headers.length > 0) { 
+    ; __append("\n        // Add headers to the request\n        ")
     ;  headers.forEach(header => { 
     ; __append("\n        request.header(\"")
     ; __append(escapeFn( header.name ))
@@ -2256,7 +2376,11 @@ function encode_char(c) {
     ; __append(escapeFn( header.value ))
     ; __append("\");\n        ")
     ;  }) 
-    ; __append("\n\n        // Add cookies to the request\n        ")
+    ; __append("\n        ")
+    ;  } 
+    ; __append("\n\n        ")
+    ;  if (cookies.length > 0) { 
+    ; __append("\n        // Add cookies to the request\n        ")
     ;  cookies.forEach(cookie => { 
     ; __append("\n        request.cookie(\"")
     ; __append(escapeFn( cookie.name ))
@@ -2264,7 +2388,11 @@ function encode_char(c) {
     ; __append(escapeFn( cookie.value ))
     ; __append("\");\n        ")
     ;  }) 
-    ; __append("\n\n        // Set up the request body\n        ")
+    ; __append("\n        ")
+    ;  } 
+    ; __append("\n\n        ")
+    ;  if (postData.length > 0) { 
+    ; __append("\n        // Set up the request body\n        ")
     ;  if (postData.length > 0) { 
     ; __append("\n        ")
     ;  if (postData.length === 1 && postData[0].type === 'file') { 
@@ -2285,6 +2413,8 @@ function encode_char(c) {
     ; __append("\n        request.body(\"")
     ; __append(escapeFn( postData.map(param => param.value).join("") ))
     ; __append("\");\n        ")
+    ;  } 
+    ; __append("\n        ")
     ;  } 
     ; __append("\n        ")
     ;  } 
@@ -2324,7 +2454,9 @@ function encode_char(c) {
     ; __append(escapeFn( method ))
     ; __append("\", null)\n            .addHeader(\"Content-Type\", \"")
     ; __append(escapeFn( mimeType ))
-    ; __append("\");\n\n        // Add headers to the request\n        ")
+    ; __append("\");\n\n        ")
+    ;  if (headers.length > 0) { 
+    ; __append("\n        // Add headers to the request\n        ")
     ;  headers.forEach(header => { 
     ; __append("\n        requestBuilder.addHeader(\"")
     ; __append(escapeFn( header.name ))
@@ -2332,7 +2464,11 @@ function encode_char(c) {
     ; __append(escapeFn( header.value ))
     ; __append("\");\n        ")
     ;  }) 
-    ; __append("\n\n        // Add cookies to the request\n        ")
+    ; __append("\n        ")
+    ;  } 
+    ; __append("\n\n        ")
+    ;  if (cookies.length > 0) { 
+    ; __append("\n        // Add cookies to the request\n        ")
     ;  cookies.forEach(cookie => { 
     ; __append("\n        requestBuilder.addHeader(\"Cookie\", \"")
     ; __append(escapeFn( cookie.name ))
@@ -2340,7 +2476,11 @@ function encode_char(c) {
     ; __append(escapeFn( cookie.value ))
     ; __append("\");\n        ")
     ;  }) 
-    ; __append("\n\n        // Set up the request body\n        ")
+    ; __append("\n        ")
+    ;  } 
+    ; __append("\n\n        ")
+    ;  if (postData.length > 0) { 
+    ; __append("\n        // Set up the request body\n        ")
     ;  if (postData.length > 0) { 
     ; __append("\n        FormBody.Builder formBodyBuilder = new FormBody.Builder();\n        ")
     ;  postData.forEach(param => { 
@@ -2351,6 +2491,8 @@ function encode_char(c) {
     ; __append("\");\n        ")
     ;  }) 
     ; __append("\n        RequestBody requestBody = formBodyBuilder.build();\n        requestBuilder.post(requestBody);\n        ")
+    ;  } 
+    ; __append("\n        ")
     ;  } 
     ; __append("\n\n        // Send the request\n        Request request = requestBuilder.build();\n        Response response = client.newCall(request).execute();\n\n        // Handle the response\n        if (response.isSuccessful()) {\n            String responseBody = response.body().string();\n            System.out.println(\"Response: \" + responseBody);\n        } else {\n            System.out.println(\"Error: \" + response.code() + \" \" + response.message());\n        }\n\n        // Clean up\n        response.close();\n    }\n}\n")
   return __output;
@@ -2386,7 +2528,9 @@ function encode_char(c) {
     ; __append(escapeFn( method ))
     ; __append("\");\n        connection.setRequestProperty(\"Content-Type\", \"")
     ; __append(escapeFn( mimeType ))
-    ; __append("\");\n\n        // Add headers to the request\n        ")
+    ; __append("\");\n\n        ")
+    ;  if (headers.length > 0) { 
+    ; __append("\n        // Add headers to the request\n        ")
     ;  headers.forEach(header => { 
     ; __append("\n        connection.setRequestProperty(\"")
     ; __append(escapeFn( header.name ))
@@ -2394,7 +2538,11 @@ function encode_char(c) {
     ; __append(escapeFn( header.value ))
     ; __append("\");\n        ")
     ;  }) 
-    ; __append("\n\n        // Add cookies to the request\n        ")
+    ; __append("\n        ")
+    ;  } 
+    ; __append("\n\n        ")
+    ;  if (cookies.length > 0) { 
+    ; __append("\n        // Add cookies to the request\n        ")
     ;  cookies.forEach(cookie => { 
     ; __append("\n        connection.setRequestProperty(\"Cookie\", \"")
     ; __append(escapeFn( cookie.name ))
@@ -2402,11 +2550,17 @@ function encode_char(c) {
     ; __append(escapeFn( cookie.value ))
     ; __append("\");\n        ")
     ;  }) 
-    ; __append("\n\n        // Set up the request body\n        ")
+    ; __append("\n        ")
+    ;  } 
+    ; __append("\n\n        ")
+    ;  if (headers.length > 0) { 
+    ; __append("\n        // Set up the request body\n        ")
     ;  if (postData.length > 0) { 
     ; __append("\n        connection.setDoOutput(true);\n        String requestBody = \"")
     ; __append(escapeFn( postData.map(param => param.name + '=' + URLEncoder.encode(param.value, "UTF-8")).join('&') ))
     ; __append("\";\n        connection.getOutputStream().write(requestBody.getBytes(\"UTF-8\"));\n        ")
+    ;  } 
+    ; __append("\n        ")
     ;  } 
     ; __append("\n\n        // Send the request\n        connection.connect();\n\n        // Handle the response\n        int responseCode = connection.getResponseCode();\n        if (responseCode == 200) {\n            InputStream inputStream = connection.getInputStream();\n            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));\n\n            StringBuilder responseBody = new StringBuilder();\n            String line;\n\n            while ((line = reader.readLine()) != null) {\n                responseBody.append(line);\n                responseBody.append(\"\\n\");\n            }\n\n            System.out.println(\"Response: \" + responseBody.toString());\n        } else {\n            System.out.println(\"Error: \" + responseCode + \" \" + connection.getResponseMessage());\n        }\n\n        // Clean up\n        connection.disconnect();\n    }\n}\n")
   return __output;
@@ -2442,7 +2596,9 @@ function encode_char(c) {
     ; __append(escapeFn( method ))
     ; __append("\")\n            .setUrl(fullUrl)\n            .addHeader(\"Content-Type\", \"")
     ; __append(escapeFn( mimeType ))
-    ; __append("\");\n\n        // Add headers to the request\n        ")
+    ; __append("\");\n\n        ")
+    ;  if (headers.length > 0) { 
+    ; __append("\n        // Add headers to the request\n        ")
     ;  headers.forEach(header => { 
     ; __append("\n        requestBuilder.addHeader(\"")
     ; __append(escapeFn( header.name ))
@@ -2450,7 +2606,11 @@ function encode_char(c) {
     ; __append(escapeFn( header.value ))
     ; __append("\");\n        ")
     ;  }) 
-    ; __append("\n\n        // Add cookies to the request\n        ")
+    ; __append("\n        ")
+    ;  } 
+    ; __append("\n\n        ")
+    ;  if (cookies.length > 0) { 
+    ; __append("\n        // Add cookies to the request\n        ")
     ;  cookies.forEach(cookie => { 
     ; __append("\n        requestBuilder.addCookie(\"")
     ; __append(escapeFn( cookie.name ))
@@ -2458,11 +2618,17 @@ function encode_char(c) {
     ; __append(escapeFn( cookie.value ))
     ; __append("\");\n        ")
     ;  }) 
-    ; __append("\n\n        // Set up the request body\n        ")
+    ; __append("\n        ")
+    ;  } 
+    ; __append("\n\n        ")
+    ;  if (postData.length > 0) { 
+    ; __append("\n        // Set up the request body\n        ")
     ;  if (postData.length > 0) { 
     ; __append("\n        requestBuilder.setBody(\"")
     ; __append(escapeFn( postData.map(param => param.name + '=' + Uri.EscapeDataString(param.value)).join('&') ))
     ; __append("\");\n        ")
+    ;  } 
+    ; __append("\n        ")
     ;  } 
     ; __append("\n\n        // Send the request\n        ListenableFuture<Response> future = client.executeRequest(requestBuilder.build());\n\n        // Handle the response\n        Response response = future.get();\n        String responseBody = response.getResponseBody();\n        System.out.println(\"Response: \" + responseBody);\n\n        // Handle errors\n        if (response.getStatusCode() != 200) {\n            System.out.println(\"Error: \" + response.getStatusCode() + \" \" + response.getStatusText());\n        }\n\n        // Clean up\n        client.close();\n    }\n}\n")
   return __output;
@@ -2588,7 +2754,9 @@ function encode_char(c) {
     ;  } 
     ; __append("\n\n    // Create a new HTTP request\n    req, err := http.NewRequest(\"")
     ; __append(escapeFn( method ))
-    ; __append("\", url, &body)\n    if err != nil {\n        fmt.Println(err)\n        return\n    }\n\n    // Add headers to the request\n    ")
+    ; __append("\", url, &body)\n    if err != nil {\n        fmt.Println(err)\n        return\n    }\n\n    ")
+    ;  if (headers.length > 0) { 
+    ; __append("\n    // Add headers to the request\n    ")
     ;  headers.forEach(header => { 
     ; __append("\n        req.Header.Set(\"")
     ; __append(escapeFn( header.name ))
@@ -2596,7 +2764,11 @@ function encode_char(c) {
     ; __append(escapeFn( header.value ))
     ; __append("\")\n    ")
     ;  }) 
-    ; __append("\n\n    // Add cookies to the request\n    ")
+    ; __append("\n    ")
+    ;  } 
+    ; __append("\n\n    ")
+    ;  if (cookies.length > 0) { 
+    ; __append("\n    // Add cookies to the request\n    ")
     ;  cookies.forEach(cookie => { 
     ; __append("\n        req.AddCookie(&http.Cookie{Name: \"")
     ; __append(escapeFn( cookie.name ))
@@ -2604,6 +2776,8 @@ function encode_char(c) {
     ; __append(escapeFn( cookie.value ))
     ; __append("\"})\n    ")
     ;  }) 
+    ; __append("\n    ")
+    ;  } 
     ; __append("\n\n    // Send the request and get the response\n    client := &http.Client{}\n    resp, err := client.Do(req)\n    if err != nil {\n        fmt.Println(err)\n        return\n    }\n    defer resp.Body.Close()\n\n    // Handle the response\n    fmt.Println(\"Response:\")\n    respBody, err := ioutil.ReadAll(resp.Body)\n    if err != nil {\n        fmt.Println(err)\n        return\n    }\n    fmt.Println(string(respBody))\n}\n\n")
   return __output;
 
@@ -2652,7 +2826,9 @@ function encode_char(c) {
     ; __append(escapeFn( method ))
     ; __append("\")\n    req.Header.SetContentType(\"")
     ; __append(escapeFn( mimeType ))
-    ; __append("\")\n    req.Header.Add(\"User-Agent\", \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36\")\n\n    // Add headers to the request\n    ")
+    ; __append("\")\n    req.Header.Add(\"User-Agent\", \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36\")\n\n    ")
+    ;  if (headers.length > 0) { 
+    ; __append("\n    // Add headers to the request\n    ")
     ;  headers.forEach(header => { 
     ; __append("\n        req.Header.Add(\"")
     ; __append(escapeFn( header.name ))
@@ -2660,7 +2836,11 @@ function encode_char(c) {
     ; __append(escapeFn( header.value ))
     ; __append("\")\n    ")
     ;  }) 
-    ; __append("\n\n    // Add cookies to the request\n    ")
+    ; __append("\n    ")
+    ;  } 
+    ; __append("\n\n    ")
+    ;  if (headers.length > 0) { 
+    ; __append("\n    // Add cookies to the request\n    ")
     ;  cookies.forEach(cookie => { 
     ; __append("\n        req.Header.AddCookie(&fasthttp.Cookie{Name: \"")
     ; __append(escapeFn( cookie.name ))
@@ -2668,77 +2848,9 @@ function encode_char(c) {
     ; __append(escapeFn( cookie.value ))
     ; __append("\"})\n    ")
     ;  }) 
-    ; __append("\n\n    // Send the request\n    resp := fasthttp.AcquireResponse()\n    defer fasthttp.ReleaseResponse(resp)\n    if body != nil {\n        req.SetBodyReader(body)\n    }\n    req.URI().Update(url)\n    err := fasthttp.Do(req, resp)\n    if err != nil {\n        fmt.Println(err)\n        return\n    }\n\n    // Handle the response\n    fmt.Printf(\"Response: %s\\n\", resp.Body())\n}\n\n\n")
-  return __output;
-
-},
-"dart/http_client": function anonymous(locals, escapeFn, include, rethrow
-) {
-"use strict";
-escapeFn = escapeFn || function (markup) {
-  return markup == undefined
-    ? ''
-    : String(markup)
-      .replace(_MATCH_HTML, encode_char);
-};
-var _ENCODE_HTML_RULES = {
-      "&": "&amp;"
-    , "<": "&lt;"
-    , ">": "&gt;"
-    , '"': "&#34;"
-    , "'": "&#39;"
-    }
-  , _MATCH_HTML = /[&<>'"]/g;
-function encode_char(c) {
-  return _ENCODE_HTML_RULES[c] || c;
-};
-;
-  var __output = "";
-  function __append(s) { if (s !== undefined && s !== null) __output += s }
-    ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
-    ; __append("\nimport 'dart:convert';\nimport 'package:http/http.dart' as http;\n\nfinal url = '")
-    ; __append(escapeFn( url ))
-    ; __append("';\nfinal method = '")
-    ; __append(escapeFn( method ))
-    ; __append("';\nfinal mimeType = '")
-    ; __append(escapeFn( mimeType ))
-    ; __append("';\nfinal headers = {\n")
-    ;  headers.forEach(header => { 
-    ; __append("\n  '")
-    ; __append(escapeFn( header.name ))
-    ; __append("' : '")
-    ; __append(escapeFn( header.value ))
-    ; __append("',\n")
-    ;  }) 
-    ; __append("\n};\nfinal cookies = {\n")
-    ;  cookies.forEach(cookie => { 
-    ; __append("\n  '")
-    ; __append(escapeFn( cookie.name ))
-    ; __append("' : '")
-    ; __append(escapeFn( cookie.value ))
-    ; __append("',\n")
-    ;  }) 
-    ; __append("\n};\nfinal postData = {\n")
-    ;  postData.forEach(param => { 
-    ; __append("\n  '")
-    ; __append(escapeFn( param.name ))
-    ; __append("' : '")
-    ; __append(escapeFn( param.value ))
-    ; __append("',\n")
-    ;  }) 
-    ; __append("\n};\n\n// Construct the request\nfinal request = http.Request(method, Uri.parse(url));\nrequest.headers.addAll(headers);\n\n// Add cookies to the request\n")
-    ;  cookies.forEach(cookie => { 
-    ; __append("\nrequest.cookies.add(Cookie('")
-    ; __append(escapeFn( cookie.name ))
-    ; __append("', '")
-    ; __append(escapeFn( cookie.value ))
-    ; __append("'));\n")
-    ;  }) 
-    ; __append("\n\n// Add post data to the request\n")
-    ;  if (postData.length > 0) { 
-    ; __append("\nrequest.bodyFields = postData;\n")
+    ; __append("\n    ")
     ;  } 
-    ; __append("\n\n// Send the request\nfinal response = await http.Client().send(request);\nfinal responseBody = await response.stream.bytesToString();\n\n// Handle the response\nprint('Response: $responseBody');\n\n// Handle errors\nif (response.statusCode != 200) {\n  print('Error: ${response.reasonPhrase}');\n}\n")
+    ; __append("\n\n    // Send the request\n    resp := fasthttp.AcquireResponse()\n    defer fasthttp.ReleaseResponse(resp)\n    if body != nil {\n        req.SetBodyReader(body)\n    }\n    req.URI().Update(url)\n    err := fasthttp.Do(req, resp)\n    if err != nil {\n        fmt.Println(err)\n        return\n    }\n\n    // Handle the response\n    fmt.Printf(\"Response: %s\\n\", resp.Body())\n}\n\n\n")
   return __output;
 
 },
@@ -2766,65 +2878,39 @@ function encode_char(c) {
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
     ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
-    ; __append("\nimport 'package:http/http.dart' as http;\n\nfinal url = '")
+    ; __append("\nimport 'package:http/http.dart' as http;\n\nFuture<String> makeRequest(String url, String method, String mimeType,\n                           Map<String, String> headers, Map<String, String> cookies,\n                           List<Map<String, dynamic>> postData) async {\n  // Construct the request\n  final request = http.Request(method, Uri.parse(url));\n  request.headers.addAll(headers);\n\n  // Add cookies to the request\n  cookies.forEach((name, value) {\n    request.cookies.add(Cookie(name, value));\n  });\n\n  // Add post data to the request\n  if (postData.isNotEmpty) {\n    if (postData.length == 1 && postData[0]['type'] == 'file') {\n      // Handle file upload\n      final fileUploadRequest = http.MultipartRequest(method, Uri.parse(url));\n      postData.forEach((param) async {\n        if (param['type'] == 'file') {\n          fileUploadRequest.files.add(await http.MultipartFile.fromPath(param['name'], param['value']));\n        } else {\n          fileUploadRequest.fields[param['name']] = param['value'];\n        }\n      });\n      final response = await fileUploadRequest.send();\n      final responseBody = await response.stream.bytesToString();\n      return responseBody;\n    } else {\n      // Handle regular post data\n      final postDataString = postData.map((param) => '${param['name']}=${Uri.encodeComponent(param['value'])}').join('&');\n      request.body = postDataString;\n      request.headers['Content-Type'] = mimeType;\n      final response = await request.send();\n      final responseBody = await response.stream.bytesToString();\n      return responseBody;\n    }\n  } else {\n    // Handle GET request\n    final response = await request.send();\n    final responseBody = await response.stream.bytesToString();\n    return responseBody;\n  }\n}\n\n// Example usage\nvoid main() async {\n  final url = '")
     ; __append(escapeFn( url ))
-    ; __append("';\nfinal method = '")
+    ; __append("';\n  final method = '")
     ; __append(escapeFn( method ))
-    ; __append("';\nfinal mimeType = '")
+    ; __append("';\n  final mimeType = '")
     ; __append(escapeFn( mimeType ))
-    ; __append("';\nfinal headers = {\n")
+    ; __append("';\n  final headers = {\n    ")
     ;  headers.forEach(header => { 
-    ; __append("\n  '")
+    ; __append("\n    '")
     ; __append(escapeFn( header.name ))
     ; __append("' : '")
     ; __append(escapeFn( header.value ))
-    ; __append("',\n")
+    ; __append("',\n    ")
     ;  }) 
-    ; __append("\n};\nfinal cookies = {\n")
+    ; __append("\n  };\n  final cookies = {\n    ")
     ;  cookies.forEach(cookie => { 
-    ; __append("\n  '")
+    ; __append("\n    '")
     ; __append(escapeFn( cookie.name ))
     ; __append("' : '")
     ; __append(escapeFn( cookie.value ))
-    ; __append("',\n")
+    ; __append("',\n    ")
     ;  }) 
-    ; __append("\n};\n\n// Construct the request\nfinal request = http.Request(method, Uri.parse(url));\nrequest.headers.addAll(headers);\n\n// Add cookies to the request\n")
-    ;  cookies.forEach(cookie => { 
-    ; __append("\nrequest.cookies.add(Cookie('")
-    ; __append(escapeFn( cookie.name ))
-    ; __append("', '")
-    ; __append(escapeFn( cookie.value ))
-    ; __append("'));\n")
-    ;  }) 
-    ; __append("\n\n// Add post data to the request\n")
-    ;  if (postData.length > 0) { 
-    ; __append("\n")
-    ;  if (postData.length === 1 && postData[0].type === 'file') { 
-    ; __append("\n// Handle file upload\nfinal fileUploadRequest = http.MultipartRequest(method, Uri.parse(url));\n")
+    ; __append("\n  };\n  final postData = [\n    ")
     ;  postData.forEach(param => { 
-    ; __append("\nif ('")
+    ; __append("\n    {\n      'name': '")
+    ; __append(escapeFn( param.name ))
+    ; __append("',\n      'value': '")
+    ; __append(escapeFn( param.value ))
+    ; __append("',\n      'type': '")
     ; __append(escapeFn( param.type ))
-    ; __append("' === 'file') {\n  fileUploadRequest.files.add(await http.MultipartFile.fromPath('")
-    ; __append(escapeFn( param.name ))
-    ; __append("', '")
-    ; __append(escapeFn( param.value ))
-    ; __append("'));\n} else {\n  fileUploadRequest.fields['")
-    ; __append(escapeFn( param.name ))
-    ; __append("'] = '")
-    ; __append(escapeFn( param.value ))
-    ; __append("';\n}\n")
+    ; __append("'\n    },\n    ")
     ;  }) 
-    ; __append("\nfinal response = await fileUploadRequest.send();\nfinal responseBody = await response.stream.bytesToString();\n")
-    ;  } else { 
-    ; __append("\n// Handle regular post data\nfinal postDataString = '")
-    ; __append(escapeFn( postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') ))
-    ; __append("';\nrequest.body = postDataString;\nrequest.headers['Content-Type'] = mimeType;\nfinal response = await request.send();\nfinal responseBody = await response.stream.bytesToString();\n")
-    ;  } 
-    ; __append("\n")
-    ;  } else { 
-    ; __append("\n// Handle GET request\nfinal response = await request.send();\nfinal responseBody = await response.stream.bytesToString();\n")
-    ;  } 
-    ; __append("\n\n// Handle the response\nprint('Response: $responseBody');\n\n// Handle errors\nif (response.statusCode != 200) {\n  print('Error: ${response.reasonPhrase}');\n}\n")
+    ; __append("\n  ];\n\n  final response = await makeRequest(url, method, mimeType, headers, cookies, postData);\n  print('Response: $response');\n}\n")
   return __output;
 
 },
@@ -2852,37 +2938,37 @@ function encode_char(c) {
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
     ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
-    ; __append("\n#include <iostream>\n#include <string>\n#include <curl/curl.h>\n\nconst auto url = \"")
+    ; __append("\n#include <iostream>\n#include <string>\n#include <vector>\n#include <curl/curl.h>\n\nstd::string makeRequest(const std::string& url, const std::string& method,\n                         const std::string& mimeType, const std::vector<std::string>& headers,\n                         const std::vector<std::string>& cookies, const std::vector<std::string>& postData) {\n    // Set up the request\n    curl_global_init(CURL_GLOBAL_ALL);\n    auto curl = curl_easy_init();\n    if (curl) {\n        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());\n        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method.c_str());\n        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);\n        if (!cookies.empty()) {\n            curl_easy_setopt(curl, CURLOPT_COOKIE, cookies[0].c_str());\n        }\n        if (!postData.empty()) {\n            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData[0].c_str());\n        }\n\n        // Send the request\n        CURLcode res = curl_easy_perform(curl);\n        if (res != CURLE_OK) {\n            std::cerr << \"Error: \" << curl_easy_strerror(res) << std::endl;\n        }\n\n        // Handle the response\n        long responseCode;\n        curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &responseCode);\n        std::string response = std::to_string(responseCode);\n        curl_easy_cleanup(curl);\n        curl_global_cleanup();\n\n        return response;\n    }\n}\n\n// Example usage\nint main() {\n    std::string url = \"")
     ; __append(escapeFn( url ))
-    ; __append("\";\nconst auto method = \"")
+    ; __append("\";\n    std::string method = \"")
     ; __append(escapeFn( method ))
-    ; __append("\";\nconst auto mimeType = \"")
+    ; __append("\";\n    std::string mimeType = \"")
     ; __append(escapeFn( mimeType ))
-    ; __append("\";\nconst auto headers = std::vector<std::string>{\n")
+    ; __append("\";\n    std::vector<std::string> headers = {\n        ")
     ;  headers.forEach(header => { 
-    ; __append("\n  \"")
+    ; __append("\n        \"")
     ; __append(escapeFn( header.name ))
     ; __append(": ")
     ; __append(escapeFn( header.value ))
-    ; __append("\",\n")
+    ; __append("\",\n        ")
     ;  }) 
-    ; __append("\n};\nconst auto cookies = std::vector<std::string>{\n")
+    ; __append("\n    };\n    std::vector<std::string> cookies = {\n        ")
     ;  cookies.forEach(cookie => { 
-    ; __append("\n  \"")
+    ; __append("\n        \"")
     ; __append(escapeFn( cookie.name ))
     ; __append("=")
     ; __append(escapeFn( cookie.value ))
-    ; __append("\",\n")
+    ; __append("\",\n        ")
     ;  }) 
-    ; __append("\n};\nconst auto postData = std::vector<std::string>{\n")
+    ; __append("\n    };\n    std::vector<std::string> postData = {\n        ")
     ;  postData.forEach(param => { 
-    ; __append("\n  \"")
+    ; __append("\n        \"")
     ; __append(escapeFn( param.name ))
     ; __append("=")
     ; __append(escapeFn( param.value ))
-    ; __append("\",\n")
+    ; __append("\",\n        ")
     ;  }) 
-    ; __append("\n};\n\n// Set up the request\ncurl_global_init(CURL_GLOBAL_ALL);\nauto curl = curl_easy_init();\nif (curl) {\n  curl_easy_setopt(curl, CURLOPT_URL, url);\n  curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method);\n  curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);\n  curl_easy_setopt(curl, CURLOPT_COOKIE, cookies);\n  curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData);\n\n  // Send the request\n  CURLcode res = curl_easy_perform(curl);\n  if (res != CURLE_OK) {\n    std::cerr << \"Error: \" << curl_easy_strerror(res) << std::endl;\n  }\n\n  // Handle the response\n  long responseCode;\n  curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &responseCode);\n  std::cout << \"Response Code: \" << responseCode << std::endl;\n  curl_easy_cleanup(curl);\n}\ncurl_global_cleanup();\n")
+    ; __append("\n    };\n\n    std::string response = makeRequest(url, method, mimeType, headers, cookies, postData);\n    std::cout << \"Response Code: \" << response << std::endl;\n    return 0;\n}\n")
   return __output;
 
 },
@@ -2918,7 +3004,9 @@ function encode_char(c) {
     ; __append(escapeFn( method.toUpperCase() ))
     ; __append(");\n        request.AddHeader(\"Content-Type\", \"")
     ; __append(escapeFn( mimeType ))
-    ; __append("\");\n\n        // Add headers to the request\n        ")
+    ; __append("\");\n\n        ")
+    ;  if (headers.length > 0) { 
+    ; __append("\n        // Add headers to the request\n        ")
     ;  headers.forEach(header => { 
     ; __append("\n        request.AddHeader(\"")
     ; __append(escapeFn( header.name ))
@@ -2926,7 +3014,11 @@ function encode_char(c) {
     ; __append(escapeFn( header.value ))
     ; __append("\");\n        ")
     ;  }) 
-    ; __append("\n\n        // Add cookies to the request\n        ")
+    ; __append("\n        ")
+    ;  } 
+    ; __append("\n\n        ")
+    ;  if (cookies.length > 0) { 
+    ; __append("\n        // Add cookies to the request\n        ")
     ;  cookies.forEach(cookie => { 
     ; __append("\n        request.AddCookie(\"")
     ; __append(escapeFn( cookie.name ))
@@ -2934,11 +3026,17 @@ function encode_char(c) {
     ; __append(escapeFn( cookie.value ))
     ; __append("\");\n        ")
     ;  }) 
-    ; __append("\n\n        // Set up the request body\n        ")
+    ; __append("\n        ")
+    ;  } 
+    ; __append("\n\n        ")
+    ;  if (cookies.length > 0) { 
+    ; __append("\n        // Set up the request body\n        ")
     ;  if (postData.length > 0) { 
     ; __append("\n        request.AddParameter(\"text/plain\", \"")
     ; __append(escapeFn( postData.map(param => param.name + '=' + Uri.EscapeDataString(param.value)).join('&') ))
     ; __append("\", ParameterType.RequestBody);\n        ")
+    ;  } 
+    ; __append("\n        ")
     ;  } 
     ; __append("\n\n        // Send the request\n        var response = client.Execute(request);\n\n        // Handle the response\n        var responseBody = response.Content;\n        Console.WriteLine(\"Response: \" + responseBody);\n\n        // Handle errors\n        if (response.StatusCode != System.Net.HttpStatusCode.OK)\n        {\n            Console.WriteLine(\"Error: \" + response.StatusCode + \" \" + response.StatusDescription);\n        }\n    }\n}\n")
   return __output;
@@ -2974,7 +3072,9 @@ function encode_char(c) {
     ; __append(escapeFn( method ))
     ; __append("\"), fullUrl);\n        request.Headers.Add(\"Content-Type\", \"")
     ; __append(escapeFn( mimeType ))
-    ; __append("\");\n\n        // Add headers to the request\n        ")
+    ; __append("\");\n\n        ")
+    ;  if (headers.length > 0) { 
+    ; __append("\n        // Add headers to the request\n        ")
     ;  headers.forEach(header => { 
     ; __append("\n        request.Headers.Add(\"")
     ; __append(escapeFn( header.name ))
@@ -2982,7 +3082,11 @@ function encode_char(c) {
     ; __append(escapeFn( header.value ))
     ; __append("\");\n        ")
     ;  }) 
-    ; __append("\n\n        // Add cookies to the request\n        ")
+    ; __append("\n        ")
+    ;  } 
+    ; __append("\n\n        ")
+    ;  if (cookies.length > 0) { 
+    ; __append("\n        // Add cookies to the request\n        ")
     ;  cookies.forEach(cookie => { 
     ; __append("\n        var cookie = new System.Net.Cookie(\"")
     ; __append(escapeFn( cookie.name ))
@@ -2992,11 +3096,17 @@ function encode_char(c) {
     ; __append(escapeFn( url ))
     ; __append("\");\n        clientHandler.CookieContainer.Add(cookie);\n        ")
     ;  }) 
-    ; __append("\n\n        // Set up the request body\n        ")
+    ; __append("\n        ")
+    ;  } 
+    ; __append("\n\n        ")
+    ;  if (postData.length > 0) { 
+    ; __append("\n        // Set up the request body\n        ")
     ;  if (postData.length > 0) { 
     ; __append("\n        var requestBody = new StringContent(\"")
     ; __append(escapeFn( postData.map(param => param.name + '=' + Uri.EscapeDataString(param.value)).join('&') ))
     ; __append("\");\n        request.Content = requestBody;\n        ")
+    ;  } 
+    ; __append("\n        ")
     ;  } 
     ; __append("\n\n        // Send the request\n        var response = await client.SendAsync(request);\n\n        // Handle the response\n        var responseBody = await response.Content.ReadAsStringAsync();\n        Console.WriteLine(\"Response: \" + responseBody);\n\n        // Handle errors\n        if (!response.IsSuccessStatusCode)\n        {\n            Console.WriteLine(\"Error: \" + response.StatusCode + \" \" + response.ReasonPhrase);\n        }\n    }\n}\n")
   return __output;
@@ -3092,13 +3202,13 @@ function encode_char(c) {
     ; __append(escapeFn( header.value ))
     ; __append("\";\nheaders = curl_slist_append(headers, headerString.c_str());\n")
     ;  }) 
-    ; __append("\n\n// Add cookies to the request\n")
+    ; __append("\n\n// Add cookies to the request\nstd::string cookieData;\n")
     ;  cookies.forEach(cookie => { 
-    ; __append("\nstd::string cookieString = \"")
+    ; __append("\n    std::string cookieString = \"")
     ; __append(escapeFn( cookie.name ))
     ; __append("=")
     ; __append(escapeFn( cookie.value ))
-    ; __append("\";\n// TODO: Add cookieString to the request\n")
+    ; __append("\";\n    cookieData += cookieString + \"; \";\n")
     ;  }) 
     ; __append("\n\n// Set up the request parameters\nstd::string postData;\n")
     ;  postData.forEach(param => { 
@@ -3108,7 +3218,7 @@ function encode_char(c) {
     ; __append(escapeFn( param.value ))
     ; __append("\";\npostData += paramString + \"&\";\n")
     ;  }) 
-    ; __append("\n// Construct the request\nCURL* curl = curl_easy_init();\nif (curl) {\n    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());\n    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);\n    // TODO: Set up cookies with CURLOPT_COOKIE\n    if (postData.length() > 0) {\n        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData.c_str());\n    }\n\n    // Perform the request\n    CURLcode res = curl_easy_perform(curl);\n\n    // Handle errors\n    if (res != CURLE_OK) {\n        fprintf(stderr, \"curl_easy_perform() failed: %s\\n\", curl_easy_strerror(res));\n    }\n\n    // Cleanup\n    curl_slist_free_all(headers);\n    curl_easy_cleanup(curl);\n}\n")
+    ; __append("\n// Construct the request\nCURL* curl = curl_easy_init();\nif (curl) {\n    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());\n    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);\n\n    if (!cookieData.empty()) {\n        curl_easy_setopt(curl, CURLOPT_COOKIE, cookieData.c_str());\n    }\n\n    if (postData.length() > 0) {\n        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData.c_str());\n    }\n\n    // Perform the request\n    CURLcode res = curl_easy_perform(curl);\n\n    // Handle errors\n    if (res != CURLE_OK) {\n        fprintf(stderr, \"curl_easy_perform() failed: %s\\n\", curl_easy_strerror(res));\n    }\n\n    // Cleanup\n    curl_slist_free_all(headers);\n    curl_easy_cleanup(curl);\n}\n")
   return __output;
 
 },
@@ -3358,7 +3468,9 @@ function encode_char(c) {
     ; __append(escapeFn( url ))
     ; __append("\");\nstruct evhttp_connection *conn = evhttp_connection_base_new(NULL, NULL, evhttp_uri_get_host(uri), evhttp_uri_get_port(uri));\nstruct evhttp_request *req = evhttp_request_new(NULL, NULL);\n\n// Construct the request URL\nchar *path = evhttp_uri_get_path(uri);\nif(strlen(path) == 0) {\n    path = \"/\";\n}\n\n// Set request method and URL\nevhttp_request_set_chunked_cb(req, NULL);\nevhttp_request_set_error_cb(req, request_error_cb);\nevhttp_request_set_cb(req, request_done_cb);\nevhttp_request_set_header_cb(req, request_header_cb);\nevhttp_request_set_response_cb(req, request_response_cb);\nevhttp_request_set_uri(req, path);\nevhttp_request_set_type(req, EVHTTP_REQ_")
     ; __append(escapeFn( method.toUpperCase() ))
-    ; __append(");\n\n// Add headers to the request\n")
+    ; __append(");\n\n")
+    ;  if (headers.length > 0) { 
+    ; __append("\n// Add headers to the request\n")
     ;  headers.forEach(header => { 
     ; __append("\n    evhttp_add_header(req->output_headers, \"")
     ; __append(escapeFn( header.name ))
@@ -3366,7 +3478,11 @@ function encode_char(c) {
     ; __append(escapeFn( header.value ))
     ; __append("\");\n")
     ;  }) 
-    ; __append("\n\n// Add cookies to the request\n")
+    ; __append("\n")
+    ;  } 
+    ; __append("\n\n")
+    ;  if (cookies.length > 0) { 
+    ; __append("\n// Add cookies to the request\n")
     ;  cookies.forEach(cookie => { 
     ; __append("\n    evhttp_add_header(req->output_headers, \"Cookie\", \"")
     ; __append(escapeFn( cookie.name ))
@@ -3374,6 +3490,8 @@ function encode_char(c) {
     ; __append(escapeFn( cookie.value ))
     ; __append("\");\n")
     ;  }) 
+    ; __append("\n")
+    ;  } 
     ; __append("\n\n// Send the request\nif (evhttp_make_request(conn, req, EVHTTP_REQ_")
     ; __append(escapeFn( method.toUpperCase() ))
     ; __append(", path) == -1) {\n    fprintf(stderr, \"Failed to send HTTP request\\n\");\n    return 1;\n}\n\n// Handle errors\nvoid request_error_cb(struct evhttp_request *req, void *ctx) {\n    fprintf(stderr, \"Error: %d %s\\n\", evhttp_request_get_response_code(req), evhttp_request_get_response_code_line(req));\n}\n\n// Handle response headers\nvoid request_header_cb(struct evhttp_request *req, void *ctx) {\n    struct evkeyvalq *headers = evhttp_request_get_input_headers(req);\n    struct evkeyval *header;\n    TAILQ_FOREACH(header, headers, next) {\n        fprintf(stdout, \"%s: %s\\n\", header->key, header->value);\n    }\n}\n\n// Handle response body\nvoid request_response_cb(struct evhttp_request *req, void *ctx) {\n    struct evbuffer *buffer = evhttp_request_get_input_buffer(req);\n    fprintf(stdout, \"%.*s\\n\", (int)evbuffer_get_length(buffer), evbuffer_pullup(buffer, -1));\n}\n\n// Handle completion of the request\nvoid request_done_cb(struct evhttp_request *req, void *ctx) {\n    event_base_loopbreak(base);\n}\n")
@@ -3450,49 +3568,57 @@ function encode_char(c) {
     ;  method.split('').forEach(char => { 
     ; __append("++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>++++++[<.+>-]<<[->+>+<<]>>[->+<]>[<.<+>-]<,")
     ;  }) 
-    ; __append("++++++++[->+++++<]>.\n\n// Add headers to the request\n")
+    ; __append("++++++++[->+++++<]>.\n\n")
+    ;  if (headers.length > 0) { 
+    ; __append("\n// Add headers to the request\n")
     ;  headers.forEach(header => { 
-    ; __append("\n    ,[<]>[.>],'")
+    ; __append(",[<]>[.>],'")
     ; __append(escapeFn( header.name ))
     ; __append(": ")
     ; __append(escapeFn( header.value ))
     ; __append("',")
     ;  }) 
-    ; __append("\n\n// Add cookies to the request\n")
+    ; __append("\n")
+    ;  } 
+    ; __append("\n\n")
+    ;  if (cookies.length > 0) { 
+    ; __append("\n// Add cookies to the request\n")
     ;  cookies.forEach(cookie => { 
-    ; __append("\n    ,[<]>[.>],'Set-Cookie: ")
+    ; __append(",[<]>[.>],'Set-Cookie: ")
     ; __append(escapeFn( cookie.name ))
     ; __append("=")
     ; __append(escapeFn( cookie.value ))
     ; __append("',")
     ;  }) 
-    ; __append("\n\n// Send the request\n")
+    ; __append("\n")
+    ;  } 
+    ; __append("\n\n\n")
     ;  if (postData.length > 0) { 
-    ; __append("\n    ,[<]>[.>],'")
+    ; __append("\n// Send the request\n,[<]>[.>],'")
     ;  if (postData.length === 1 && postData[0].type === 'file') { 
     ; __append("multipart/form-data")
     ;  } else { 
     ; __append(escapeFn( mimeType ))
     ;  } 
-    ; __append("',<\n\n    ")
+    ; __append("',<\n\n")
     ;  if (postData.length === 1 && postData[0].type === 'file') { 
-    ; __append("\n        ,[<]>[.>],'")
+    ; __append("\n    ,[<]>[.>],'")
     ; __append(escapeFn( postData[0].name ))
     ; __append("=',<,[>]<[.>],<,[<]>[.>],<,[>]<[<]>[-]>[-]<<[->+>+<<]>>[->+<]>[<.<+>-]<,")
     ;  } else { 
-    ; __append("\n        ")
+    ; __append("\n    ")
     ;  postData.forEach(param => { 
-    ; __append("\n            ,[<]>[.>],'")
+    ; __append("\n        ,[<]>[.>],'")
     ; __append(escapeFn( param.name ))
     ; __append("=',<,[>]<[.>],'")
     ; __append(escapeFn( param.value ))
     ; __append("',")
     ;  }) 
-    ; __append("\n        ,")
+    ; __append("\n    ,")
     ;  } 
-    ; __append("\n\n    ,[<]>[.>],'',<]\n")
+    ; __append("\n\n,[<]>[.>],'',<]\n")
     ;  } 
-    ; __append("\n// Handle the response\n,[<]>[.>],'Response:',<[<]>[.>],[<]>[-]>[-]<<[->+>+<<]>>[->+<]>[<.<+>-],<\n\n// Handle errors\n,[<]>[.>],'Error:',<[<]>[.>],'Oops! Brainfuck couldn't handle this request. Maybe try Python next time?',")
+    ; __append("\n\n// Handle the response\n,[<]>[.>],'Response:',<[<]>[.>],[<]>[-]>[-]<<[->+>+<<]>>[->+<]>[<.<+>-],<\n\n// Handle errors\n,[<]>[.>],'Error:',<[<]>[.>],'Oops! Brainfuck couldn't handle this request. Maybe try Python next time?',")
     ;  if (postData.length === 1 && postData[0].type === 'file') { 
     ; __append(" Remember, uploading files in Brainfuck is like trying to fit a square peg in a round hole.")
     ;  } 

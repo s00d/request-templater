@@ -1,41 +1,67 @@
 <% const { url, method, mimeType, headers, postData, cookies } = locals; %>
-// Create a new XMLHttpRequest object
-var xhr = new XMLHttpRequest();
+async function makeRequest(url, method, mimeType, headers, cookies, postData) {
+  const xhr = new XMLHttpRequest();
 
-// Construct the request URL
-var fullUrl = '<%= url %>';
+  // Construct the request URL
+  const fullUrl = url;
 
-// Set up the request
-xhr.open('<%= method %>', fullUrl, true);
-xhr.setRequestHeader('Content-Type', '<%= mimeType %>');
+  // Set up the request
+  xhr.open(method, fullUrl, true);
+  xhr.setRequestHeader('Content-Type', mimeType);
 
-// Add headers to the request
-<% headers.forEach(header => { %>
-    xhr.setRequestHeader('<%= header.name %>', '<%= header.value %>');
-<% }) %>
+  // Add headers to the request
+  headers.forEach(header => {
+    xhr.setRequestHeader(header.name, header.value);
+  });
 
-// Add cookies to the request
-<% cookies.forEach(cookie => { %>
-    document.cookie = '<%= cookie.name %>=<%= cookie.value %>';
-<% }) %>
+  // Add cookies to the request
+  cookies.forEach(cookie => {
+    document.cookie = `${cookie.name}=${cookie.value}`;
+  });
 
-// Send the request
-<% if (postData.length > 0) { %>
-    xhr.send(<% if (postData.length === 1 && postData[0].type === 'file') { %>
-        new FormData(document.getElementById('#file_upload_form'))<% } else { %>
-        '<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>'<% } %>);
-<% } else { %>
-    xhr.send();
-<% } %>
-
-// Handle the response
-xhr.onreadystatechange = function() {
-    if (this.readyState === 4 && this.status === 200) {
-        console.log('Response:', this.responseText);
+  // Send the request
+  if (postData.length > 0) {
+    if (postData.length === 1 && postData[0].type === 'file') {
+      xhr.send(new FormData(document.getElementById('#file_upload_form')));
+    } else {
+      xhr.send(postData.map(param => `${param.name}=${encodeURIComponent(param.value)}`).join('&'));
     }
-};
+  } else {
+    xhr.send();
+  }
 
-// Handle errors
-xhr.onerror = function() {
-    console.error('Error:', xhr.statusText);
-};
+  // Handle the response
+  try {
+    await new Promise((resolve, reject) => {
+      xhr.onreadystatechange = function() {
+        if (this.readyState === 4) {
+          if (this.status === 200) {
+            console.log('Response:', this.responseText);
+            resolve(this.responseText);
+          } else {
+            reject(new Error(`Request failed with status code ${this.status}`));
+          }
+        }
+      };
+    });
+  } catch (error) {
+    console.error('Error:', error.message);
+    throw error;
+  }
+}
+
+// Example usage
+const url = '<%= url %>';
+const method = '<%= method %>';
+const mimeType = '<%= mimeType %>';
+const headers = [
+  <% headers.forEach(header => { %>{ name: '<%= header.name %>', value: '<%= header.value %>' },<% }) %>
+];
+const cookies = [
+  <% cookies.forEach(cookie => { %>{ name: '<%= cookie.name %>', value: '<%= cookie.value %>' },<% }) %>
+];
+const postData = [
+  <% postData.forEach(param => { %>{ name: '<%= param.name %>', value: '<%= param.value %>', type: '<%= param.type %>' },<% }) %>
+];
+
+makeRequest(url, method, mimeType, headers, cookies, postData);

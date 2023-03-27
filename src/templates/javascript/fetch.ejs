@@ -1,41 +1,49 @@
 <% const { url, method, mimeType, headers, postData, cookies } = locals; %>
-// Construct the request URL
-var fullUrl = '<%= url %>';
+async function makeRequest(url, method, mimeType, headers, cookies, postData) {
+  // Construct the request configuration object
+  var config = {
+    method: method,
+    headers: {
+      'Content-Type': mimeType,
+      <% headers.forEach(header => { %>'<%= header.name %>': '<%= header.value %>',<% }) %>
+    },
+    body: <% if (postData.length === 1 && postData[0].type === 'file') { %>
+      new FormData(document.getElementById('#file_upload_form'))
+      <% } else if (postData.length > 0) { %>'<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>'
+      <% } else { %> null <% } %>
+  };
 
-// Set up the request configuration object
-var config = {
-method: '<%= method %>',
-headers: {
-'Content-Type': '<%= mimeType %>',
-<% headers.forEach(header => { %>
-    '<%= header.name %>': '<%= header.value %>',
-<% }) %>
-},
-body: <% if (postData.length === 1 && postData[0].type === 'file') { %>
-    new FormData(document.getElementById('#file_upload_form'))
-<% } else if (postData.length > 0) { %>
-    '<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>'
-<% } else { %>
-    null
-<% } %>
-};
+  // Add cookies to the request
+  <% cookies.forEach(cookie => { %>document.cookie = '<%= cookie.name %>=<%= cookie.value %>';
+  <% }) %>
 
-// Add cookies to the request
-<% cookies.forEach(cookie => { %>
-    document.cookie = '<%= cookie.name %>=<%= cookie.value %>';
-<% }) %>
-
-// Send the request using fetch
-fetch(fullUrl, config)
-.then(function(response) {
-if (!response.ok) {
-throw new Error('HTTP error, status = ' + response.status);
+  // Send the request using fetch
+  try {
+    const response = await fetch(url, config);
+    if (!response.ok) {
+      throw new Error('HTTP error, status = ' + response.status);
+    }
+    const data = await response.text();
+    console.log('Response:', data);
+    return data;
+  } catch (error) {
+    console.error('Error:', error.message);
+    throw error;
+  }
 }
-return response.text();
-})
-.then(function(data) {
-console.log('Response:', data);
-})
-.catch(function(error) {
-console.error('Error:', error.message);
-});
+
+// Example usage
+const url = '<%= url %>';
+const method = '<%= method %>';
+const mimeType = '<%= mimeType %>';
+const headers = {
+  <% headers.forEach(header => { %>'<%= header.name %>': '<%= header.value %>',<% }) %>
+};
+const cookies = {
+  <% cookies.forEach(cookie => { %>'<%= cookie.name %>': '<%= cookie.value %>',<% }) %>
+};
+const postData = [
+  <% postData.forEach(param => { %>{ name: '<%= param.name %>', value: '<%= param.value %>', type: '<%= param.type %>' },<% }) %>
+];
+
+makeRequest(url, method, mimeType, headers, cookies, postData);

@@ -3,18 +3,22 @@
 use HTTP::Request;
 my $request = HTTP::Request->new('<%= method %>', '<%= url %>');
 
+<% if (headers.length > 0) { %>
 <%# Add headers to the request %>
 <% headers.forEach(header => { %>
 $request->header('<%= header.name %>', '<%= header.value %>');
 <% }) %>
+<% } %>
 
+<% if (cookies.length > 0) { %>
 <%# Add cookies to the request %>
 <% cookies.forEach(cookie => { %>
 $request->header('Cookie', '<%= cookie.name %>=<%= cookie.value %>');
 <% }) %>
+<% } %>
 
-<%# Add post data to the request %>
 <% if (postData.length > 0) { %>
+<%# Add post data to the request %>
 <% if (postData.length === 1 && postData[0].type === 'file') { %>
 my $file = '<%= postData[0].value %>';
 $request->content($file);

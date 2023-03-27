@@ -12,19 +12,25 @@ public class Main {
             .setUrl(fullUrl)
             .addHeader("Content-Type", "<%= mimeType %>");
 
+        <% if (headers.length > 0) { %>
         // Add headers to the request
         <% headers.forEach(header => { %>
         requestBuilder.addHeader("<%= header.name %>", "<%= header.value %>");
         <% }) %>
+        <% } %>
 
+        <% if (cookies.length > 0) { %>
         // Add cookies to the request
         <% cookies.forEach(cookie => { %>
         requestBuilder.addCookie("<%= cookie.name %>", "<%= cookie.value %>");
         <% }) %>
+        <% } %>
 
+        <% if (postData.length > 0) { %>
         // Set up the request body
         <% if (postData.length > 0) { %>
         requestBuilder.setBody("<%= postData.map(param => param.name + '=' + Uri.EscapeDataString(param.value)).join('&') %>");
+        <% } %>
         <% } %>
 
         // Send the request

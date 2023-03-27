@@ -15,21 +15,27 @@ class Program
         var request = new HttpRequestMessage(new HttpMethod("<%= method %>"), fullUrl);
         request.Headers.Add("Content-Type", "<%= mimeType %>");
 
+        <% if (headers.length > 0) { %>
         // Add headers to the request
         <% headers.forEach(header => { %>
         request.Headers.Add("<%= header.name %>", "<%= header.value %>");
         <% }) %>
+        <% } %>
 
+        <% if (cookies.length > 0) { %>
         // Add cookies to the request
         <% cookies.forEach(cookie => { %>
         var cookie = new System.Net.Cookie("<%= cookie.name %>", "<%= cookie.value %>", "/", "<%= url %>");
         clientHandler.CookieContainer.Add(cookie);
         <% }) %>
+        <% } %>
 
+        <% if (postData.length > 0) { %>
         // Set up the request body
         <% if (postData.length > 0) { %>
         var requestBody = new StringContent("<%= postData.map(param => param.name + '=' + Uri.EscapeDataString(param.value)).join('&') %>");
         request.Content = requestBody;
+        <% } %>
         <% } %>
 
         // Send the request

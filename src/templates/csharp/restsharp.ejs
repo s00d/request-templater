@@ -13,19 +13,25 @@ class Program
         var request = new RestRequest("<%= method %>", Method.<%= method.toUpperCase() %>);
         request.AddHeader("Content-Type", "<%= mimeType %>");
 
+        <% if (headers.length > 0) { %>
         // Add headers to the request
         <% headers.forEach(header => { %>
         request.AddHeader("<%= header.name %>", "<%= header.value %>");
         <% }) %>
+        <% } %>
 
+        <% if (cookies.length > 0) { %>
         // Add cookies to the request
         <% cookies.forEach(cookie => { %>
         request.AddCookie("<%= cookie.name %>", "<%= cookie.value %>");
         <% }) %>
+        <% } %>
 
+        <% if (cookies.length > 0) { %>
         // Set up the request body
         <% if (postData.length > 0) { %>
         request.AddParameter("text/plain", "<%= postData.map(param => param.name + '=' + Uri.EscapeDataString(param.value)).join('&') %>", ParameterType.RequestBody);
+        <% } %>
         <% } %>
 
         // Send the request

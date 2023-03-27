@@ -8,18 +8,22 @@ let full_url = "<%= url %>";
 // Create the request
 let mut req = hyper::Request::new(hyper::Method::<%= method %>, full_url);
 
+<% if (headers.length > 0) { %>
 // Add headers to the request
 <% headers.forEach(header => { %>
 req.headers_mut().insert(hyper::header::<%= header.name %>, <%= header.value %>.parse().unwrap());
 <% }) %>
+<% } %>
 
+<% if (cookies.length > 0) { %>
 // Add cookies to the request
 <% cookies.forEach(cookie => { %>
 req.headers_mut().insert(hyper::header::COOKIE, format!("<%= cookie.name %>={<%= cookie.value %>}; "));
 <% }) %>
+<% } %>
 
-// Add the request body
 <% if (postData.length > 0) { %>
+// Add the request body
 <% if (postData.length === 1 && postData[0].type === 'file') { %>
 let form = multipart::Form::new()
 .file("<%= postData[0].name %>", "<%= postData[0].value %>")

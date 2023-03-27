@@ -8,26 +8,30 @@
 // Set up the request
 ,[<]>[.>],<% method.split('').forEach(char => { %>++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>++++++[<.+>-]<<[->+>+<<]>>[->+<]>[<.<+>-]<,<% }) %>++++++++[->+++++<]>.
 
+<% if (headers.length > 0) { %>
 // Add headers to the request
-<% headers.forEach(header => { %>
-    ,[<]>[.>],'<%= header.name %>: <%= header.value %>',<% }) %>
-
-// Add cookies to the request
-<% cookies.forEach(cookie => { %>
-    ,[<]>[.>],'Set-Cookie: <%= cookie.name %>=<%= cookie.value %>',<% }) %>
-
-// Send the request
-<% if (postData.length > 0) { %>
-    ,[<]>[.>],'<% if (postData.length === 1 && postData[0].type === 'file') { %>multipart/form-data<% } else { %><%= mimeType %><% } %>',<
-
-    <% if (postData.length === 1 && postData[0].type === 'file') { %>
-        ,[<]>[.>],'<%= postData[0].name %>=',<,[>]<[.>],<,[<]>[.>],<,[>]<[<]>[-]>[-]<<[->+>+<<]>>[->+<]>[<.<+>-]<,<% } else { %>
-        <% postData.forEach(param => { %>
-            ,[<]>[.>],'<%= param.name %>=',<,[>]<[.>],'<%= param.value %>',<% }) %>
-        ,<% } %>
-
-    ,[<]>[.>],'',<]
+<% headers.forEach(header => { %>,[<]>[.>],'<%= header.name %>: <%= header.value %>',<% }) %>
 <% } %>
+
+<% if (cookies.length > 0) { %>
+// Add cookies to the request
+<% cookies.forEach(cookie => { %>,[<]>[.>],'Set-Cookie: <%= cookie.name %>=<%= cookie.value %>',<% }) %>
+<% } %>
+
+
+<% if (postData.length > 0) { %>
+// Send the request
+,[<]>[.>],'<% if (postData.length === 1 && postData[0].type === 'file') { %>multipart/form-data<% } else { %><%= mimeType %><% } %>',<
+
+<% if (postData.length === 1 && postData[0].type === 'file') { %>
+    ,[<]>[.>],'<%= postData[0].name %>=',<,[>]<[.>],<,[<]>[.>],<,[>]<[<]>[-]>[-]<<[->+>+<<]>>[->+<]>[<.<+>-]<,<% } else { %>
+    <% postData.forEach(param => { %>
+        ,[<]>[.>],'<%= param.name %>=',<,[>]<[.>],'<%= param.value %>',<% }) %>
+    ,<% } %>
+
+,[<]>[.>],'',<]
+<% } %>
+
 // Handle the response
 ,[<]>[.>],'Response:',<[<]>[.>],[<]>[-]>[-]<<[->+>+<<]>>[->+<]>[<.<+>-],<
 

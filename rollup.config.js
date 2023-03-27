@@ -54,7 +54,6 @@ export default hljs;
 fs.writeFileSync('src/templates/hljs.js', hljsModule);
 
 const inputPath = './src'
-const outputPath = './dist';
 
 const banner = `/*!
  * Request Templater v${pkg.version}

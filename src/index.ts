@@ -115,6 +115,10 @@ class RequestTemplater {
         return hljs.highlight(this.generate(), {language: this._lang, ignoreIllegals: true}).value;
     }
 
+    makeHighlightCode(code: string): string {
+        return hljs.highlight(code, {language: this._lang, ignoreIllegals: true}).value;
+    }
+
     config() {
         return  Object.keys(templates).reduce((acc, key) => {
             const [category, name] = key.split('/');

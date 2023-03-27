@@ -10,9 +10,10 @@ headers = curl_slist_append(headers, headerString.c_str());
 <% }) %>
 
 // Add cookies to the request
+std::string cookieData;
 <% cookies.forEach(cookie => { %>
-std::string cookieString = "<%= cookie.name %>=<%= cookie.value %>";
-// TODO: Add cookieString to the request
+    std::string cookieString = "<%= cookie.name %>=<%= cookie.value %>";
+    cookieData += cookieString + "; ";
 <% }) %>
 
 // Set up the request parameters
@@ -26,7 +27,11 @@ CURL* curl = curl_easy_init();
 if (curl) {
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-    // TODO: Set up cookies with CURLOPT_COOKIE
+
+    if (!cookieData.empty()) {
+        curl_easy_setopt(curl, CURLOPT_COOKIE, cookieData.c_str());
+    }
+
     if (postData.length() > 0) {
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData.c_str());
     }

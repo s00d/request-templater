@@ -9,18 +9,22 @@ my $fullUrl = '<%= url %>';
 <%# Create the HTTP request %>
 my $request = HTTP::Request->new('<%= method %>', $fullUrl);
 
+<% if (headers.length > 0) { %>
 <%# Add headers to the request %>
 <% headers.forEach(header => { %>
 $request->header('<%= header.name %>', '<%= header.value %>');
 <% }) %>
+<% } %>
 
+<% if (cookies.length > 0) { %>
 <%# Add cookies to the request %>
 <% cookies.forEach(cookie => { %>
 $ua->cookie_jar->set_cookie(0, '<%= cookie.name %>', '<%= cookie.value %>', '/', 'example.com');
 <% }) %>
+<% } %>
 
-<%# Add post data to the request %>
 <% if (postData.length > 0) { %>
+<%# Add post data to the request %>
 <% if (postData.length === 1 && postData[0].type === 'file') { %>
 my $file = '<%= postData[0].value %>';
 $request->content($file);

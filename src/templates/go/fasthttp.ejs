@@ -47,15 +47,19 @@ func main() {
     req.Header.SetContentType("<%= mimeType %>")
     req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36")
 
+    <% if (headers.length > 0) { %>
     // Add headers to the request
     <% headers.forEach(header => { %>
         req.Header.Add("<%= header.name %>", "<%= header.value %>")
     <% }) %>
+    <% } %>
 
+    <% if (headers.length > 0) { %>
     // Add cookies to the request
     <% cookies.forEach(cookie => { %>
         req.Header.AddCookie(&fasthttp.Cookie{Name: "<%= cookie.name %>", Value: "<%= cookie.value %>"})
     <% }) %>
+    <% } %>
 
     // Send the request
     resp := fasthttp.AcquireResponse()

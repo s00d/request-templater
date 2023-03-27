@@ -14,16 +14,21 @@ public class Main {
             .method("<%= method %>", null)
             .addHeader("Content-Type", "<%= mimeType %>");
 
+        <% if (headers.length > 0) { %>
         // Add headers to the request
         <% headers.forEach(header => { %>
         requestBuilder.addHeader("<%= header.name %>", "<%= header.value %>");
         <% }) %>
+        <% } %>
 
+        <% if (cookies.length > 0) { %>
         // Add cookies to the request
         <% cookies.forEach(cookie => { %>
         requestBuilder.addHeader("Cookie", "<%= cookie.name %>=<%= cookie.value %>");
         <% }) %>
+        <% } %>
 
+        <% if (postData.length > 0) { %>
         // Set up the request body
         <% if (postData.length > 0) { %>
         FormBody.Builder formBodyBuilder = new FormBody.Builder();
@@ -32,6 +37,7 @@ public class Main {
         <% }) %>
         RequestBody requestBody = formBodyBuilder.build();
         requestBuilder.post(requestBody);
+        <% } %>
         <% } %>
 
         // Send the request

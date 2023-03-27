@@ -12,16 +12,21 @@ public class Main {
             Unirest.<%= method.toLowerCase() %>(fullUrl)
                 .header("Content-Type", "<%= mimeType %>");
 
+        <% if (headers.length > 0) { %>
         // Add headers to the request
         <% headers.forEach(header => { %>
         request.header("<%= header.name %>", "<%= header.value %>");
         <% }) %>
+        <% } %>
 
+        <% if (cookies.length > 0) { %>
         // Add cookies to the request
         <% cookies.forEach(cookie => { %>
         request.cookie("<%= cookie.name %>", "<%= cookie.value %>");
         <% }) %>
+        <% } %>
 
+        <% if (postData.length > 0) { %>
         // Set up the request body
         <% if (postData.length > 0) { %>
         <% if (postData.length === 1 && postData[0].type === 'file') { %>
@@ -34,6 +39,7 @@ public class Main {
             <%= postData.map(param => "encodeURIComponent(\"" + param.value + "\")").join(", ") %>);
         <% } else { %>
         request.body("<%= postData.map(param => param.value).join("") %>");
+        <% } %>
         <% } %>
         <% } %>
         <% } %>

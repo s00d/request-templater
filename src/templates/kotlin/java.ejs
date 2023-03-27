@@ -7,15 +7,19 @@ val url = URL("<%= url %>")
 val connection = url.openConnection() as HttpURLConnection
 connection.requestMethod = "<%= method %>"
 
+<% if (headers.length > 0) { %>
 // Add headers to the request
 <% headers.forEach(header => { %>
 connection.setRequestProperty("<%= header.name %>", "<%= header.value %>")
 <% }) %>
+<% } %>
 
+<% if (cookies.length > 0) { %>
 // Add cookies to the request
 <% cookies.forEach(cookie => { %>
 connection.addRequestProperty("Cookie", "<%= cookie.name %>=<%= cookie.value %>")
 <% }) %>
+<% } %>
 
 // Send the request
 <%

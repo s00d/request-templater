@@ -8,12 +8,14 @@ request.httpMethod = "<%- method %>"
 // Set the request content type header
 request.addValue("<%- mimeType %>", forHTTPHeaderField: "Content-Type")
 
-<% if (headers.length > 0) { %>// Add headers to the request
+<% if (headers.length > 0) { %>
+// Add headers to the request
 <% headers.forEach(header => { %>
 request.addValue("<%= header.value %>", forHTTPHeaderField: "<%= header.name %>")
 <% }) %><% } %>
 
-<% if (cookies.length > 0) { %>// Add cookies to the request
+<% if (cookies.length > 0) { %>
+// Add cookies to the request
 <% cookies.forEach(cookie => { %>
 request.addValue("<%= cookie.value %>", forHTTPHeaderField: "<%= cookie.name %>")
 <% }) %><% } %>

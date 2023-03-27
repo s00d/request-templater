@@ -1,47 +1,65 @@
 <% const { url, method, mimeType, headers, postData, cookies } = locals; %>
 #include <iostream>
 #include <string>
+#include <vector>
 #include <curl/curl.h>
 
-const auto url = "<%= url %>";
-const auto method = "<%= method %>";
-const auto mimeType = "<%= mimeType %>";
-const auto headers = std::vector<std::string>{
-<% headers.forEach(header => { %>
-  "<%= header.name %>: <%= header.value %>",
-<% }) %>
-};
-const auto cookies = std::vector<std::string>{
-<% cookies.forEach(cookie => { %>
-  "<%= cookie.name %>=<%= cookie.value %>",
-<% }) %>
-};
-const auto postData = std::vector<std::string>{
-<% postData.forEach(param => { %>
-  "<%= param.name %>=<%= param.value %>",
-<% }) %>
-};
+std::string makeRequest(const std::string& url, const std::string& method,
+                         const std::string& mimeType, const std::vector<std::string>& headers,
+                         const std::vector<std::string>& cookies, const std::vector<std::string>& postData) {
+    // Set up the request
+    curl_global_init(CURL_GLOBAL_ALL);
+    auto curl = curl_easy_init();
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method.c_str());
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+        if (!cookies.empty()) {
+            curl_easy_setopt(curl, CURLOPT_COOKIE, cookies[0].c_str());
+        }
+        if (!postData.empty()) {
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData[0].c_str());
+        }
 
-// Set up the request
-curl_global_init(CURL_GLOBAL_ALL);
-auto curl = curl_easy_init();
-if (curl) {
-  curl_easy_setopt(curl, CURLOPT_URL, url);
-  curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method);
-  curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-  curl_easy_setopt(curl, CURLOPT_COOKIE, cookies);
-  curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData);
+        // Send the request
+        CURLcode res = curl_easy_perform(curl);
+        if (res != CURLE_OK) {
+            std::cerr << "Error: " << curl_easy_strerror(res) << std::endl;
+        }
 
-  // Send the request
-  CURLcode res = curl_easy_perform(curl);
-  if (res != CURLE_OK) {
-    std::cerr << "Error: " << curl_easy_strerror(res) << std::endl;
-  }
+        // Handle the response
+        long responseCode;
+        curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &responseCode);
+        std::string response = std::to_string(responseCode);
+        curl_easy_cleanup(curl);
+        curl_global_cleanup();
 
-  // Handle the response
-  long responseCode;
-  curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &responseCode);
-  std::cout << "Response Code: " << responseCode << std::endl;
-  curl_easy_cleanup(curl);
+        return response;
+    }
 }
-curl_global_cleanup();
+
+// Example usage
+int main() {
+    std::string url = "<%= url %>";
+    std::string method = "<%= method %>";
+    std::string mimeType = "<%= mimeType %>";
+    std::vector<std::string> headers = {
+        <% headers.forEach(header => { %>
+        "<%= header.name %>: <%= header.value %>",
+        <% }) %>
+    };
+    std::vector<std::string> cookies = {
+        <% cookies.forEach(cookie => { %>
+        "<%= cookie.name %>=<%= cookie.value %>",
+        <% }) %>
+    };
+    std::vector<std::string> postData = {
+        <% postData.forEach(param => { %>
+        "<%= param.name %>=<%= param.value %>",
+        <% }) %>
+    };
+
+    std::string response = makeRequest(url, method, mimeType, headers, cookies, postData);
+    std::cout << "Response Code: " << response << std::endl;
+    return 0;
+}

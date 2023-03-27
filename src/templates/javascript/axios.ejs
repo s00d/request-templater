@@ -2,31 +2,48 @@
 // Import the Axios library
 import axios from 'axios';
 
-// Construct the request URL
-var fullUrl = '<%= url %>';
-
-// Set up the request configuration object
-var config = {
-    method: '<%= method %>',
-    url: fullUrl,
+async function makeRequest(url, method, mimeType, headers, cookies, postData) {
+  // Construct the request configuration object
+  var config = {
+    method: method,
+    url: url,
     headers: {
-        'Content-Type': '<%= mimeType %>',
-    <% headers.forEach(header => { %>   '<%= header.name %>': '<%= header.value %>',<% }) %>
+      'Content-Type': mimeType,
+      <% headers.forEach(header => { %>'<%= header.name %>': '<%= header.value %>',<% }) %>
     },
     data: <% if (postData.length === 1 && postData[0].type === 'file') { %>
-        new FormData(document.getElementById('#file_upload_form'))
-    <% } else if (postData.length > 0) { %>'<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>'
-    <% } else { %> <% } %>
-};
+      new FormData(document.getElementById('#file_upload_form'))
+      <% } else if (postData.length > 0) { %>'<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>'
+      <% } else { %> undefined <% } %>
+  };
 
-// Add cookies to the request
-<% cookies.forEach(cookie => { %>document.cookie = '<%= cookie.name %>=<%= cookie.value %>';
-<% }) %>
-// Send the request using Axios
-axios(config)
-    .then(function (response) {
-        console.log('Response:', response.data);
-    })
-    .catch(function (error) {
-        console.error('Error:', error);
-    });
+  // Add cookies to the request
+  <% cookies.forEach(cookie => { %>document.cookie = '<%= cookie.name %>=<%= cookie.value %>';
+  <% }) %>
+
+  // Send the request using Axios
+  try {
+    const response = await axios(config);
+    console.log('Response:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error:', error);
+    throw error;
+  }
+}
+
+// Example usage
+const url = '<%= url %>';
+const method = '<%= method %>';
+const mimeType = '<%= mimeType %>';
+const headers = {
+  <% headers.forEach(header => { %>'<%= header.name %>': '<%= header.value %>',<% }) %>
+};
+const cookies = {
+  <% cookies.forEach(cookie => { %>'<%= cookie.name %>': '<%= cookie.value %>',<% }) %>
+};
+const postData = [
+  <% postData.forEach(param => { %>{ name: '<%= param.name %>', value: '<%= param.value %>', type: '<%= param.type %>' },<% }) %>
+];
+
+makeRequest(url, method, mimeType, headers, cookies, postData);

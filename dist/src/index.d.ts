@@ -25,6 +25,7 @@ declare class RequestTemplater {
     private cleanup;
     generate(): string;
     generateHighlight(): string;
+    makeHighlightCode(code: string): string;
     config(): {};
 }
 export default RequestTemplater;
