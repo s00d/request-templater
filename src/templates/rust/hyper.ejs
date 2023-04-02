@@ -23,14 +23,20 @@ req.headers_mut().insert(hyper::header::COOKIE, format!("<%= cookie.name %>={<%=
 <% } %>
 
 <% if (postData.length > 0) { %>
-// Add the request body
+    // Add the request body
 <% if (postData.length === 1 && postData[0].type === 'file') { %>
 let form = multipart::Form::new()
 .file("<%= postData[0].name %>", "<%= postData[0].value %>")
 .unwrap();
 let mut body = hyper::Body::from(form.stream());
 <% } else { %>
-let body = hyper::Body::from("<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>");
+let body = hyper::Body::from("<%= postData.map(param => {
+if (Array.isArray(param.value) || typeof param.value === 'object') {
+    return param.name + '=' + encodeURIComponent(JSON.stringify(param.value))
+} else {
+    return param.name + '=' + encodeURIComponent(param.value)
+}
+}).join('&') %>");
 <% } %>
 req.headers_mut().insert(hyper::header::CONTENT_TYPE, "<%= mimeType %>".parse().unwrap());
 req.headers_mut().insert(hyper::header::CONTENT_LENGTH, body.len().into());

@@ -14,7 +14,15 @@ req <- add_headers("Cookie" = "<%= cookie.name %>=<%= cookie.value %>", req)
 <% }) %>
 
 <% if (postData.length > 0) { %>
-body <- list(<%= postData.map(param => `"${param.name}" = "${param.value}"`).join(', ') %>)
+body <- list(
+<% postData.forEach(param => { %>
+"<%= param.name %>" = <% if (Array.isArray(param.value) || typeof param.value === 'object') { %>
+    <%= JSON.stringify(param.value) %>,
+<% } else { %>
+    "<%= param.value %>",
+<% } %>
+<% }) %>
+)
 req <- content(req, as.formula(paste0("<%= mimeType %>", "()")), body)
 <% } %>
 

@@ -1,27 +1,32 @@
-<% const { url, method, mimeType, headers, postData, cookies } = locals; %>
 $url = "<%= url %>"
 $method = "<%= method %>"
 $mimeType = "<%= mimeType %>"
 
 $headers = @{
-  <% headers.forEach(header => { %>
-    "<%= header.name %>" = "<%= header.value %>",
-  <% }) %>
+<% headers.forEach(header => { %>
+  "<%= header.name %>" = "<%= header.value %>",
+<% }) %>
 }
 
 $cookies = @{
-  <% cookies.forEach(cookie => { %>
-    "<%= cookie.name %>" = "<%= cookie.value %>",
-  <% }) %>
+<% cookies.forEach(cookie => { %>
+  "<%= cookie.name %>" = "<%= cookie.value %>",
+<% }) %>
 }
 
 <% if (method === 'GET') { %>
   $req = Invoke-WebRequest -Uri $url -Headers $headers -Cookies $cookies
 <% } else { %>
   $body = @{
-    <% postData.forEach(param => { %>
-      "<%= param.name %>" = "<%= param.value %>",
-    <% }) %>
+  <% postData.forEach(param => { %>
+    "<%= param.name %>" = <% if (Array.isArray(param.value)) { %>
+      <%= JSON.stringify(param.value) %> | ConvertTo-Json -Depth 100 -Compress
+    <% } else if (typeof param.value === 'object') { %>
+      <%= JSON.stringify(param.value) %> | ConvertTo-Json -Depth 100 -Compress
+    <% } else { %>
+      '<%= param.value %>'
+    <% } %>,
+  <% }) %>
   }
 
   $req = Invoke-WebRequest -Uri $url -Method $method -Body $body -Headers $headers -ContentType $mimeType -Cookies $cookies

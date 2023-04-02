@@ -2,74 +2,100 @@
 import 'package:http/http.dart' as http;
 
 Future<String> makeRequest(String url, String method, String mimeType,
-                           Map<String, String> headers, Map<String, String> cookies,
-                           List<Map<String, dynamic>> postData) async {
-  // Construct the request
-  final request = http.Request(method, Uri.parse(url));
-  request.headers.addAll(headers);
+                            Map<String, String> headers, Map<String, String> cookies,
+                            List<Map<String, dynamic>> postData) async {
+    // Construct the request
+    final request = http.Request(method, Uri.parse(url));
+    request.headers.addAll(headers);
 
-  // Add cookies to the request
-  cookies.forEach((name, value) {
-    request.cookies.add(Cookie(name, value));
-  });
+    // Add cookies to the request
+    cookies.forEach((name, value) {
+        request.cookies.add(Cookie(name, value));
+    });
 
-  // Add post data to the request
-  if (postData.isNotEmpty) {
+    // Add post data to the request
+    if (postData.isNotEmpty) {
     if (postData.length == 1 && postData[0]['type'] == 'file') {
-      // Handle file upload
-      final fileUploadRequest = http.MultipartRequest(method, Uri.parse(url));
-      postData.forEach((param) async {
-        if (param['type'] == 'file') {
-          fileUploadRequest.files.add(await http.MultipartFile.fromPath(param['name'], param['value']));
-        } else {
-          fileUploadRequest.fields[param['name']] = param['value'];
-        }
-      });
-      final response = await fileUploadRequest.send();
-      final responseBody = await response.stream.bytesToString();
-      return responseBody;
+        // Handle file upload
+        final fileUploadRequest = http.MultipartRequest(method, Uri.parse(url));
+        postData.forEach((param) async {
+            if (param['type'] == 'file') {
+                fileUploadRequest.files.add(await http.MultipartFile.fromPath(param['name'], param['value']));
+            } else {
+                fileUploadRequest.fields[param['name']] = param['value'].toString();
+            }
+        });
+        final response = await fileUploadRequest.send();
+        final responseBody = await response.stream.bytesToString();
+        return responseBody;
     } else {
-      // Handle regular post data
-      final postDataString = postData.map((param) => '${param['name']}=${Uri.encodeComponent(param['value'])}').join('&');
-      request.body = postDataString;
-      request.headers['Content-Type'] = mimeType;
-      final response = await request.send();
-      final responseBody = await response.stream.bytesToString();
-      return responseBody;
+    // Handle regular post data
+    final postDataString = postData.map((param) {
+    if (param['value'] is List) {
+    if (param['value'].isNotEmpty && param['value'][0] is List) {
+    // Handle array of arrays
+        final nestedArrayString = param['value'].map((nestedArray) {
+        return nestedArray.map((element) => '${Uri.encodeComponent(element.toString())}').join(',');
+            }).join(';');
+            return '${param['name']}=$nestedArrayString';
+    } else {
+        // Handle array of objects
+        final nestedObjectString = param['value'].map((nestedObject) {
+        return nestedObject.entries.map((entry) {
+        return '${Uri.encodeComponent('${entry.key}')}=${Uri.encodeComponent('${entry.value}')}';
+            }).join('&');
+        }).join(';');
+            return '${param['name']}=$nestedObjectString';
+        }
+    } else if (param['value'] is Map) {
+        // Handle object
+        return param['value'].entries.map((entry) {
+        return '${Uri.encodeComponent('${entry.key}')}=${Uri.encodeComponent('${entry.value}')}';
+        }).join('&');
+    } else {
+        // Handle string or number
+        return '${param['name']}=${Uri.encodeComponent(param['value'].toString())}';
+        }
+        }).join('&');
+        request.body = postDataString;
+        request.headers['Content-Type'] = mimeType;
+        final response = await request.send();
+        final responseBody = await response.stream.bytesToString();
+        return responseBody;
     }
-  } else {
-    // Handle GET request
-    final response = await request.send();
-    final responseBody = await response.stream.bytesToString();
-    return responseBody;
-  }
+    } else {
+        // Handle GET request
+        final response = await request.send();
+        final responseBody = await response.stream.bytesToString();
+        return responseBody;
+    }
 }
 
 // Example usage
 void main() async {
-  final url = '<%= url %>';
-  final method = '<%= method %>';
-  final mimeType = '<%= mimeType %>';
-  final headers = {
+    final url = '<%= url %>';
+    final method = '<%= method %>';
+    final mimeType = '<%= mimeType %>';
+    final headers = {
     <% headers.forEach(header => { %>
-    '<%= header.name %>' : '<%= header.value %>',
+        '<%= header.name %>' : '<%= header.value %>',
     <% }) %>
-  };
-  final cookies = {
+    };
+    final cookies = {
     <% cookies.forEach(cookie => { %>
-    '<%= cookie.name %>' : '<%= cookie.value %>',
+        '<%= cookie.name %>' : '<%= cookie.value %>',
     <% }) %>
-  };
-  final postData = [
+    };
+    final postData = [
     <% postData.forEach(param => { %>
-    {
-      'name': '<%= param.name %>',
-      'value': '<%= param.value %>',
-      'type': '<%= param.type %>'
-    },
+        {
+        'name': '<%= param.name %>',
+        'value': <%= JSON.stringify(param.value) %>,
+        'type': '<%= param.type %>'
+        },
     <% }) %>
-  ];
+    ];
 
-  final response = await makeRequest(url, method, mimeType, headers, cookies, postData);
-  print('Response: $response');
+    final response = await makeRequest(url, method, mimeType, headers, cookies, postData);
+    print('Response: $response');
 }

@@ -9,8 +9,8 @@ public class Main {
         // Set up the request
         AsyncHttpClient client = Dsl.asyncHttpClient();
         RequestBuilder requestBuilder = new RequestBuilder("<%= method %>")
-            .setUrl(fullUrl)
-            .addHeader("Content-Type", "<%= mimeType %>");
+        .setUrl(fullUrl)
+        .addHeader("Content-Type", "<%= mimeType %>");
 
         <% if (headers.length > 0) { %>
         // Add headers to the request
@@ -27,9 +27,19 @@ public class Main {
         <% } %>
 
         <% if (postData.length > 0) { %>
-        // Set up the request body
+            // Set up the request body
         <% if (postData.length > 0) { %>
-        requestBuilder.setBody("<%= postData.map(param => param.name + '=' + Uri.EscapeDataString(param.value)).join('&') %>");
+        <% if (Array.isArray(postData)) { %>
+        StringBuilder bodyBuilder = new StringBuilder();
+        <% postData.forEach(param => { %>
+        bodyBuilder.append("<%= param.name %>").append("=").append("Uri.EscapeDataString(<%= param.value %>)").append("&");
+        <% }) %>
+        String body = bodyBuilder.toString();
+        requestBuilder.setBody(body.substring(0, body.length() - 1));
+        <% } else { %>
+        String body = new Gson().toJson(<%= JSON.stringify(postData) %>);
+        requestBuilder.setBody(body);
+        <% } %>
         <% } %>
         <% } %>
 
@@ -43,7 +53,7 @@ public class Main {
 
         // Handle errors
         if (response.getStatusCode() != 200) {
-            System.out.println("Error: " + response.getStatusCode() + " " + response.getStatusText());
+        System.out.println("Error: " + response.getStatusCode() + " " + response.getStatusText());
         }
 
         // Clean up

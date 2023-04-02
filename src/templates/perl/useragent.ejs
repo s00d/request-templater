@@ -12,29 +12,38 @@ my $request = HTTP::Request->new('<%= method %>', $fullUrl);
 <% if (headers.length > 0) { %>
 <%# Add headers to the request %>
 <% headers.forEach(header => { %>
-$request->header('<%= header.name %>', '<%= header.value %>');
+    $request->header('<%= header.name %>', '<%= header.value %>');
 <% }) %>
 <% } %>
 
 <% if (cookies.length > 0) { %>
 <%# Add cookies to the request %>
 <% cookies.forEach(cookie => { %>
-$ua->cookie_jar->set_cookie(0, '<%= cookie.name %>', '<%= cookie.value %>', '/', 'example.com');
+    $ua->cookie_jar->set_cookie(0, '<%= cookie.name %>', '<%= cookie.value %>', '/', 'example.com');
 <% }) %>
 <% } %>
 
 <% if (postData.length > 0) { %>
 <%# Add post data to the request %>
+<% if (Array.isArray(postData)) { %>
 <% if (postData.length === 1 && postData[0].type === 'file') { %>
 my $file = '<%= postData[0].value %>';
 $request->content($file);
 <% } else { %>
 my $post_data = {
 <% postData.forEach(param => { %>
-'<%= param.name %>' => '<%= param.value %>',
+    '<%= param.name %>' => '<%= Array.isArray(param.value) ? JSON.stringify(param.value) : param.value %>',
 <% }) %>
 };
-$request->content(join('&', map { $_ . '=' . $post_data->{$_} } keys %$post_data));
+$request->content(join('&', map { $_ . '=' . $post_data->{$} } keys %$post_data));
+<% } %>
+<% } else if (typeof postData === 'object') { %>
+my $post_data = {
+<% Object.keys(postData).forEach(key => { %>
+'<%= key %>' => '<%= Array.isArray(postData[key]) ? JSON.stringify(postData[key]) : postData[key] %>',
+<% }) %>
+};
+$request->content(join('&', map { $ . '=' . $post_data->{$_} } keys %$post_data));
 <% } %>
 <% } %>
 
@@ -43,11 +52,11 @@ my $response = $ua->request($request);
 
 <%# Handle the response %>
 if ($response->is_success) {
-print "Response:\n";
-print $response->content;
+    print "Response:\n";
+    print $response->content;
 }
 
 <%# Handle errors %>
 else {
-print "Error: " . $response->status_line . "\n";
+    print "Error: " . $response->status_line . "\n";
 }

@@ -26,7 +26,18 @@ connection.addRequestProperty("Cookie", "<%= cookie.name %>=<%= cookie.value %>"
 if (postData.length > 0) {
   if (method === 'POST') {
 %>
-val postData = "<%= postData.map(param => param.name + '=' + URLEncoder.encode(param.value, 'UTF-8')).join('&') %>".toByteArray(Charsets.UTF_8)
+val postData = "<%= postData.map(param => {
+  if (Array.isArray(param.value)) {
+    const encodedValues = param.value.map(value => encodeURIComponent(value.toString(), 'UTF-8'))
+    return encodedValues.map(value => param.name + '=' + value).join('&')
+  } else if (typeof param.value === 'object') {
+    const encodedValues = Object.values(param.value).map(value => encodeURIComponent(value.toString(), 'UTF-8'))
+    const keys = Object.keys(param.value)
+    return encodedValues.map((value, index) => param.name + '[' + keys[index] + ']=' + value).join('&')
+  } else {
+    return param.name + '=' + encodeURIComponent(param.value.toString(), 'UTF-8')
+  }
+}).join('&') %>".toByteArray(Charsets.UTF_8)
 connection.setRequestProperty("Content-Type", "<%= mimeType %>")
 connection.setRequestProperty("Content-Length", postData.size.toString())
 connection.doOutput = true

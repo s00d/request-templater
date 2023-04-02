@@ -16,11 +16,21 @@ Cookie: <%= cookie.name %>=<%= cookie.value %>
 <% }) %>
 
 <% if (method === 'POST' && postData.length > 0) { %>
-    <% if (mimeType === 'application/x-www-form-urlencoded') { %>
-<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>
-    <% } else { %>
-        <% postData.forEach(param => { %>
+<% if (mimeType === 'application/x-www-form-urlencoded') { %>
+<%= postData.map(param => param.name + '=' + encodeURIComponent(Array.isArray(param.value) || typeof param.value === 'object' ? JSON.stringify(param.value) : param.value)).join('&') %>
+<% } else if (mimeType === 'application/json') { %>
+<%= JSON.stringify(postData) %>
+<% } else if (mimeType === 'multipart/form-data') { %>
+<% postData.forEach(param => { %>
+--<%= 'boundary-' + Math.random().toString().substr(2) %>
+Content-Disposition: form-data; name="<%= param.name %>"
+
+<%= Array.isArray(param.value) || typeof param.value === 'object' ? JSON.stringify(param.value) : param.value %>
+<% }) %>
+--<%= 'boundary-' + Math.random().toString().substr(2) %>-->
+<% } else { %>
+<% postData.forEach(param => { %>
 <%= param.name %>: <%= param.value %>
-        <% }) %>
-    <% } %>
+<% }) %>
+<% } %>
 <% } %>

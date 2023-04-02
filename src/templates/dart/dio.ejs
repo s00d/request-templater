@@ -18,7 +18,21 @@ std::string makeRequest(const std::string& url, const std::string& method,
             curl_easy_setopt(curl, CURLOPT_COOKIE, cookies[0].c_str());
         }
         if (!postData.empty()) {
+            <% if (postData.some(param => typeof param.value === 'object' || Array.isArray(param.value))) { %>
+            std::string body = R"({<%
+                postData.forEach(param => {
+                    if (typeof param.value === 'object' || Array.isArray(param.value)) {
+                        %>
+                        "<%= param.name %>" : <%= JSON.stringify(param.value) %>,
+                        <% } else { %>
+                        "<%= param.name %>" : "<%= param.value %>",
+                        <% }
+                });
+            %>})";
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.c_str());
+            <% } else { %>
             curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData[0].c_str());
+            <% } %>
         }
 
         // Send the request
@@ -55,7 +69,14 @@ int main() {
     };
     std::vector<std::string> postData = {
         <% postData.forEach(param => { %>
-        "<%= param.name %>=<%= param.value %>",
+        {
+            "name": "<%= param.name %>",
+            <% if (typeof param.value === 'object' || Array.isArray(param.value)) { %>
+            "value": <%= JSON.stringify(param.value) %>
+            <% } else { %>
+            "value": "<%= param.value %>"
+            <% } %>
+        },
         <% }) %>
     };
 

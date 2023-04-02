@@ -24,7 +24,15 @@ HTTPCookieStorage.shared.setCookie(cookie)
 // Set up the request parameters
 var parameters: Parameters = [:]
 <% postData.forEach(param => { %>
+<% if (Array.isArray(param.value) || typeof param.value === 'object') { %>
+if let jsonData = try? JSONSerialization.data(withJSONObject: <%= JSON.stringify(param.value) %>, options: []) {
+    if let jsonString = String(data: jsonData, encoding: .utf8) {
+        parameters["<%= param.name %>"] = jsonString
+    }
+}
+<% } else { %>
 parameters["<%= param.name %>"] = "<%= param.value %>"
+<% } %>
 <% }) %>
 
 // Create the request

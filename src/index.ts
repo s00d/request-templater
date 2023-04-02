@@ -74,8 +74,20 @@ class RequestTemplater {
             });
 
         const queryParams = this._params.filter(param => param.in === 'query');
-        const queryStrings = queryParams.map(param => `${param.name}=${param.value}`);
-        const queryString = queryStrings.join('&');
+        const buildQueryParam = (name, value) => {
+            if (Array.isArray(value)) {
+                const queryValues = value.map(queryValue => buildQueryParam(name, queryValue));
+                return queryValues.join('&');
+            } else if (typeof value === 'object') {
+                const queryValues = Object.entries(value).map(([key, val]) => buildQueryParam(`${name}[${key}]`, val));
+                return queryValues.join('&');
+            } else {
+                return `${name}=${value}`;
+            }
+        }
+
+        const queryArray = JSON.parse(JSON.stringify(queryParams)).map(queryParam => buildQueryParam(queryParam.name, queryParam.value));
+        const queryString = queryArray.join('&');
 
         if(queryString !== '') {
             url += '?' + queryString;
@@ -99,6 +111,8 @@ class RequestTemplater {
     private cleanup(val: string): string {
         return val
             .replace(/&amp;/gmiu, '&')
+            .replace(/&#39;/gmiu, '\'')
+            .replace(/&#34;/gmiu, '\"')
             .replace(/\n\n+/gmiu, '\n')
             .replace(/^\n/gmiu, '')
     }

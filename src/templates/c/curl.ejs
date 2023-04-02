@@ -4,38 +4,50 @@
 #include <curl/curl.h>
 
 int main(void) {
-    CURL *curl;
-    CURLcode res;
-    struct curl_slist *headers = NULL;
-    char *url = "<%= url %>";
-    char *method = "<%= method %>";
-    char *mimeType = "<%= mimeType %>";
-    char *postData = "<% if (postData.length > 0) { %><%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %><% } %>";
+CURL *curl;
+CURLcode res;
+struct curl_slist *headers = NULL;
+char *url = "<%= url %>";
+char *method = "<%= method %>";
+char *mimeType = "<%= mimeType %>";
+char *postData = "";
+<% if (postData.length > 0) { %>
+<% const postDataString = postData.map(param => {
+if (Array.isArray(param.value)) {
+return param.value.map(value => param.name + '=' + encodeURIComponent(JSON.stringify(value))).join('&')
+} else if (typeof param.value === 'object') {
+return param.name + '=' + encodeURIComponent(JSON.stringify(param.value))
+} else {
+return param.name + '=' + encodeURIComponent(param.value)
+}
+}).join('&') %>
+postData = "<%= postDataString %>";
+<% } %>
 
-    curl = curl_easy_init();
-    if (curl) {
-        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method);
-        curl_easy_setopt(curl, CURLOPT_URL, url);
+curl = curl_easy_init();
+if (curl) {
+    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method);
+    curl_easy_setopt(curl, CURLOPT_URL, url);
 
-        if (*mimeType) {
-            char *contentType = malloc(strlen("Content-Type: ") + strlen(mimeType) + 1);
-            sprintf(contentType, "Content-Type: %s", mimeType);
-            headers = curl_slist_append(headers, contentType);
-            curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-        }
-
-        if (*postData) {
-            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData);
-        }
-
-        res = curl_easy_perform(curl);
-
-        if (res != CURLE_OK) {
-            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
-        }
-
-        curl_easy_cleanup(curl);
+    if (*mimeType) {
+        char *contentType = malloc(strlen("Content-Type: ") + strlen(mimeType) + 1);
+        sprintf(contentType, "Content-Type: %s", mimeType);
+        headers = curl_slist_append(headers, contentType);
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
     }
 
-    return 0;
+    if (*postData) {
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData);
+    }
+
+    res = curl_easy_perform(curl);
+
+    if (res != CURLE_OK) {
+        fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+    }
+
+    curl_easy_cleanup(curl);
+}
+
+return 0;
 }

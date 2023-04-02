@@ -1,80 +1,100 @@
 <% const { url, method, mimeType, headers, postData, cookies } = locals; %>
+
 package main
 
 import (
-    "fmt"
-    "net/http"
-    "strings"
+	"bytes"
+	"fmt"
+	"io"
+	"io/ioutil"
+	"mime/multipart"
+	"net/http"
+	"net/url"
+	"strings"
 )
 
 func main() {
-// Construct the request URL
-    url := "<%= url %>"
+	// Construct the request URL
+	url := "<%= url %>"
 
-    // Construct the request body
-    var body strings.Reader
-    <% if (postData.length > 0) { %>
-        <% if (postData.length === 1 && postData[0].type === 'file') { %>
-            // Construct the form data
-            file, header, err := r.FormFile("file")
-            if err != nil {
-                fmt.Println(err)
-                return
-            }
-            defer file.Close()
-            formData := &bytes.Buffer{}
-            writer := multipart.NewWriter(formData)
-            part, err := writer.CreateFormFile("file", header.Filename)
-            if err != nil {
-                fmt.Println(err)
-                return
-            }
-            io.Copy(part, file)
-            writer.Close()
-            body = *strings.NewReader(formData.String())
-        <% } else { %>
-            bodyStr := "<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>"
-            body = *strings.NewReader(bodyStr)
-        <% } %>
-    <% } %>
+	// Construct the request body
+	var body io.Reader
+	<% if (postData.length > 0) { %>
+    <% if (postData.length === 1 && postData[0].type === 'file') { %>
+	// Construct the form data
+	file, header, err := r.FormFile("file")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer file.Close()
+	formData := &bytes.Buffer{}
+	writer := multipart.NewWriter(formData)
+	part, err := writer.CreateFormFile("file", header.Filename)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	io.Copy(part, file)
+	writer.Close()
+	body = formData
+	<% } else { %>
+	form := url.Values{}
+	<% postData.forEach(param => { %>
+	<% if (Array.isArray(param.value)) { %>
+	<% param.value.forEach(value => { %>
+	form.Add("<%= param.name %>[]", fmt.Sprintf("%v", "<%=value%>"))
+	<% }) %>
+	<% } else if (typeof param.value === 'object') { %>
+	<% Object.keys(param.value).forEach(key => { %>
+	form.Add("<%= param.name %>[<%= key %>]", fmt.Sprintf("%v", "<%=param.value[key]%>"))
+	<% }) %>
+	<% } else { %>
+	form.Add("<%= param.name %>", fmt.Sprintf("%v", "<%=param.value%>"))
+	<% } %>
+	<% }) %>
+	body = strings.NewReader(form.Encode())
+	<% } %>
+	<% } else { %>
+	body = nil
+	<% } %>
 
-    // Create a new HTTP request
-    req, err := http.NewRequest("<%= method %>", url, &body)
-    if err != nil {
-        fmt.Println(err)
-        return
-    }
+	// Create a new HTTP request
+	req, err := http.NewRequest("<%= method %>", url, body)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
-    <% if (headers.length > 0) { %>
-    // Add headers to the request
-    <% headers.forEach(header => { %>
-        req.Header.Set("<%= header.name %>", "<%= header.value %>")
-    <% }) %>
-    <% } %>
+	<% if (headers.length > 0) { %>
+	// Add headers to the request
+	<% headers.forEach(header => { %>
+	req.Header.Set("<%= header.name %>", "<%= header.value %>")
+	<% }) %>
+	<% } %>
 
-    <% if (cookies.length > 0) { %>
-    // Add cookies to the request
-    <% cookies.forEach(cookie => { %>
-        req.AddCookie(&http.Cookie{Name: "<%= cookie.name %>", Value: "<%= cookie.value %>"})
-    <% }) %>
-    <% } %>
+	<% if (cookies.length > 0) { %>
+	// Add cookies to the request
+	<% cookies.forEach(cookie => { %>
+	req.AddCookie(&http.Cookie{Name: "<%= cookie.name %>", Value: "<%= cookie.value %>"})
+	<% }) %>
+	<% } %>
 
-    // Send the request and get the response
-    client := &http.Client{}
-    resp, err := client.Do(req)
-    if err != nil {
-        fmt.Println(err)
-        return
-    }
-    defer resp.Body.Close()
+	// Send the request and get the response
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer resp.Body.Close()
 
-    // Handle the response
-    fmt.Println("Response:")
-    respBody, err := ioutil.ReadAll(resp.Body)
-    if err != nil {
-        fmt.Println(err)
-        return
-    }
-    fmt.Println(string(respBody))
+	// Handle the response
+	fmt.Println("Response:")
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(string(respBody))
 }
-

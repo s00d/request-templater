@@ -20,7 +20,13 @@ cookies = {
 <% if (method === 'GET') { %>
   response = RestClient.get(url, headers: headers, cookies: cookies)
 <% } else { %>
-  body = "<%= postData.map(param => param.name + '=' + CGI.escape(param.value)).join('&') %>"
+  body = "<%= postData.map(param => {
+    if (Array.isArray(param.value) || typeof param.value === 'object') {
+      return param.name + '=' + encodeURIComponent(JSON.stringify(param.value))
+    } else {
+      return param.name + '=' + encodeURIComponent(param.value)
+    }
+  }).join('&') %>"
   response = RestClient::<%= method.downcase %>(url, body, headers: headers, cookies: cookies, content_type: mimeType)
 <% } %>
 

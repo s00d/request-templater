@@ -7,7 +7,7 @@ struct evhttp_request *req = evhttp_request_new(NULL, NULL);
 // Construct the request URL
 char *path = evhttp_uri_get_path(uri);
 if(strlen(path) == 0) {
-    path = "/";
+path = "/";
 }
 
 // Set request method and URL
@@ -22,44 +22,59 @@ evhttp_request_set_type(req, EVHTTP_REQ_<%= method.toUpperCase() %>);
 <% if (headers.length > 0) { %>
 // Add headers to the request
 <% headers.forEach(header => { %>
-    evhttp_add_header(req->output_headers, "<%= header.name %>", "<%= header.value %>");
+evhttp_add_header(req->output_headers, "<%= header.name %>", "<%= header.value %>");
 <% }) %>
 <% } %>
 
 <% if (cookies.length > 0) { %>
 // Add cookies to the request
 <% cookies.forEach(cookie => { %>
-    evhttp_add_header(req->output_headers, "Cookie", "<%= cookie.name %>=<%= cookie.value %>");
+evhttp_add_header(req->output_headers, "Cookie", "<%= cookie.name %>=<%= cookie.value %>");
 <% }) %>
+<% } %>
+
+<% if (postData.length > 0) { %>
+// Set request body
+<% const postDataString = postData.map(param => {
+if (Array.isArray(param.value)) {
+return param.value.map(value => param.name + '=' + encodeURIComponent(JSON.stringify(value))).join('&')
+} else if (typeof param.value === 'object') {
+return param.name + '=' + encodeURIComponent(JSON.stringify(param.value))
+} else {
+return param.name + '=' + encodeURIComponent(param.value)
+}
+}).join('&') %>
+evbuffer_add_printf(req->output_buffer, "%s", "<%= postDataString %>");
+evhttp_add_header(req->output_headers, "Content-Type", "<%= mimeType %>");
 <% } %>
 
 // Send the request
 if (evhttp_make_request(conn, req, EVHTTP_REQ_<%= method.toUpperCase() %>, path) == -1) {
-    fprintf(stderr, "Failed to send HTTP request\n");
-    return 1;
+fprintf(stderr, "Failed to send HTTP request\n");
+return 1;
 }
 
 // Handle errors
 void request_error_cb(struct evhttp_request *req, void *ctx) {
-    fprintf(stderr, "Error: %d %s\n", evhttp_request_get_response_code(req), evhttp_request_get_response_code_line(req));
+fprintf(stderr, "Error: %d %s\n", evhttp_request_get_response_code(req), evhttp_request_get_response_code_line(req));
 }
 
 // Handle response headers
 void request_header_cb(struct evhttp_request *req, void *ctx) {
-    struct evkeyvalq *headers = evhttp_request_get_input_headers(req);
-    struct evkeyval *header;
-    TAILQ_FOREACH(header, headers, next) {
-        fprintf(stdout, "%s: %s\n", header->key, header->value);
-    }
+struct evkeyvalq *headers = evhttp_request_get_input_headers(req);
+struct evkeyval *header;
+TAILQ_FOREACH(header, headers, next) {
+fprintf(stdout, "%s: %s\n", header->key, header->value);
+}
 }
 
 // Handle response body
 void request_response_cb(struct evhttp_request *req, void *ctx) {
-    struct evbuffer *buffer = evhttp_request_get_input_buffer(req);
-    fprintf(stdout, "%.*s\n", (int)evbuffer_get_length(buffer), evbuffer_pullup(buffer, -1));
+struct evbuffer *buffer = evhttp_request_get_input_buffer(req);
+fprintf(stdout, "%.*s\n", (int)evbuffer_get_length(buffer), evbuffer_pullup(buffer, -1));
 }
 
 // Handle completion of the request
 void request_done_cb(struct evhttp_request *req, void *ctx) {
-    event_base_loopbreak(base);
+event_base_loopbreak(base);
 }

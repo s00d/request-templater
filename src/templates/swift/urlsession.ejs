@@ -26,7 +26,21 @@ let fileUrl = URL(fileURLWithPath: "/path/to/file")
 let data = try Data(contentsOf: fileUrl)
 request.httpBody = data
 <% } else { %>
-let postData = "<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>"
+let postDataDict = <%=
+JSON.stringify(postData.reduce((acc, param) => {
+    if (Array.isArray(param.value) || typeof param.value === 'object') {
+        acc[param.name] = param.value
+    } else {
+        acc[param.name] = param.value
+    }
+    return acc
+}, {}))
+%>
+let postData = postDataDict.map { (key, value) -> String in
+let encodedKey = key.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? ""
+let encodedValue = String(describing: value).addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? ""
+return "(encodedKey)=(encodedValue)"
+}.joined(separator: "&")
 let postDataEncoded = postData.data(using: .utf8)
 request.httpBody = postDataEncoded
 <% } %><% } %>

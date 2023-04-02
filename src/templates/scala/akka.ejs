@@ -22,7 +22,11 @@ val cookies = List(
 )
 val postData = List(
 <% postData.forEach(param => { %>
-  FormData.BodyPart.Strict("<%= param.name %>", "<%= param.value %>").asInstanceOf[FormData.BodyPart.Strict],
+  <% if (Array.isArray(param.value) || typeof param.value === 'object') { %>
+    FormData.BodyPart.Strict("<%= param.name %>", HttpEntity(ContentTypes.application/json, "<%= JSON.stringify(param.value) %>")).asInstanceOf[FormData.BodyPart.Strict],
+  <% } else { %>
+    FormData.BodyPart.Strict("<%= param.name %>", "<%= param.value %>").asInstanceOf[FormData.BodyPart.Strict],
+  <% } %>
 <% }) %>
 )
 

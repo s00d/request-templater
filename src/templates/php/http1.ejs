@@ -1,36 +1,29 @@
-<% const { url, method, mimeType, headers, postData, cookies } = locals; %>
-<?php
+<% const { url, method, mimeType, headers, postData, cookies } = locals;
+ %>
 
+<?php
     $host = parse_url("<%= url %>", PHP_URL_HOST);
     $path = parse_url("<%= url %>", PHP_URL_PATH) ?: "/";
-
-    $httpHeaders = array(
-    <% headers.forEach(header => { %>
-        "<%= header.name %>: <%= header.value %>",
-    <% }) %>
-    );
-
-    $httpCookies = array(
-    <% cookies.forEach(cookie => { %>
-        "<%= cookie.name %>" => "<%= cookie.value %>",
-    <% }) %>
-    );
-
+    $httpHeaders = array( <% headers.forEach(header => { %> "<%= header.name %>: <%= header.value %>", <% }) %> );
+    $httpCookies = array( <% cookies.forEach(cookie => { %> "<%= cookie.name %>" => "<%= cookie.value %>", <% }) %> );
     $httpBody = null;
     if ("<%= method %>" === "POST") {
-        $httpBody = "<%= postData.map(param => param.name + '=' + urlencode(param.value)).join('&') %>";
-    }
-
+    <% if (Array.isArray(postData)) { %>
+    <% if (postData.length === 1 && postData[0].type === 'file') { %>
+    $httpBody = new http\Message\Body(fopen('<%= postData[0].value %>', 'r'));
+    <% } else { %>
+     $postData = array( <% postData.forEach(param => { %> '<%= param.name %>' => '<%= Array.isArray(param.value) ? JSON.stringify(param.value) : encodeURIComponent(param.value) %>', <% }) %> );
+     $httpBody = new http\Message\Body(http_build_query($postData));
+    <% } %> <% } else if (typeof postData === 'object') { %>
+    $postData = '<%= JSON.stringify(postData) %>';
+    $httpBody = new http\Message\Body($postData);
+    <% } %> }
     $request = new http\Client\Request("<%= method %>", "http://$host$path");
     $request->setHeaders($httpHeaders);
     $request->setCookies($httpCookies);
     $request->setBody($httpBody);
-
     $client = new http\Client;
     $client->enqueue($request);
-
     $response = $client->send();
-
     echo "Response: " . $response->getBody();
-
 ?>

@@ -19,16 +19,25 @@ $request->header('Cookie', '<%= cookie.name %>=<%= cookie.value %>');
 
 <% if (postData.length > 0) { %>
 <%# Add post data to the request %>
+<% if (Array.isArray(postData)) { %>
 <% if (postData.length === 1 && postData[0].type === 'file') { %>
 my $file = '<%= postData[0].value %>';
 $request->content($file);
 <% } else { %>
 my $post_data = {
 <% postData.forEach(param => { %>
-'<%= param.name %>' => '<%= param.value %>',
+    '<%= param.name %>' => '<%= Array.isArray(param.value) ? JSON.stringify(param.value) : param.value %>',
 <% }) %>
 };
-$request->content(join('&', map { $_ . '=' . $post_data->{$_} } keys %$post_data));
+$request->content(join('&', map { $_ . '=' . $post_data->{$} } keys %$post_data));
+<% } %>
+<% } else if (typeof postData === 'object') { %>
+my $post_data = {
+<% Object.keys(postData).forEach(key => { %>
+'<%= key %>' => '<%= Array.isArray(postData[key]) ? JSON.stringify(postData[key]) : postData[key] %>',
+<% }) %>
+};
+$request->content(join('&', map { $ . '=' . $post_data->{$_} } keys %$post_data));
 <% } %>
 <% } %>
 

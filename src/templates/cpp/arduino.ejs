@@ -5,21 +5,31 @@ String url = "<%- url %>";
 // Set up the request headers
 String headers;
 <% headers.forEach(header => { %>
-String headerString = "<%= header.name %>: <%= header.value %>";
-headers += headerString + "\r\n";
+    String headerString = "<%= header.name %>: <%= header.value %>";
+    headers += headerString + "\r\n";
 <% }) %>
 
 // Add cookies to the request
 <% cookies.forEach(cookie => { %>
-String cookieString = "<%= cookie.name %>=<%= cookie.value %>";
-// TODO: Add cookieString to the request
+    String cookieString = "<%= cookie.name %>=<%= cookie.value %>";
+    // TODO: Add cookieString to the request
 <% }) %>
 
 // Set up the request parameters
 String postData;
 <% postData.forEach(param => { %>
-String paramString = "<%= param.name %>=<%= param.value %>";
-postData += paramString + "&";
+    <% if (Array.isArray(param.value)) { %>
+        <% param.value.forEach(item => { %>
+            String paramString = "<%= param.name %>=<%= item %>";
+            postData += paramString + "&";
+        <% }) %>
+    <% } else if (typeof param.value === 'object') { %>
+        String paramString = "<%= param.name %>=<%= JSON.stringify(param.value) %>";
+        postData += paramString + "&";
+    <% } else { %>
+        String paramString = "<%= param.name %>=<%= param.value %>";
+        postData += paramString + "&";
+    <% } %>
 <% }) %>
 
 // Construct the request
@@ -37,15 +47,15 @@ if (client.connect(url, 80)) {
     client.println(postData.length());
     client.print(headers);
     if (postData.length() > 0) {
-        client.print("\r\n");
-        client.print(postData);
+    client.print("\r\n");
+    client.print(postData);
     }
     client.println();
 
     // Read the response
     while (client.connected()) {
         String line = client.readStringUntil('\n');
-        if (line == "\r") {
+            if (line == "\r") {
             break;
         }
     }

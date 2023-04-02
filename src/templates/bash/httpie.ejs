@@ -1,12 +1,22 @@
 <% const { url, method, mimeType, headers, postData, cookies } = locals; %>
-http --verbose --check --follow \
-"<%= url %>" \
-<%= headers.map(header => "'" + header.name + ":" + header.value + "'").join(' \\\n    ') %> \
+http --verbose --check --follow
+"<%= url %>"
+<%= headers.map(header => "'" + header.name + ":" + header.value + "'").join(' \n ') %>
 <% cookies.forEach(cookie => { %>
-    Cookie:"<%= cookie.name %>=<%= cookie.value %>" \
-<% }) %><% if (postData.length > 0) { %>
-    <%= postData.map(param => "'" + param.name + "=" + encodeURIComponent(param.value) + "'").join(' \\\n    ') %> \
+Cookie:"<%= cookie.name %>=<%= cookie.value %>"
+<% }) %>
+<% if (postData.length > 0) { %>
+<% const postDataString = postData.map(param => {
+if (Array.isArray(param.value)) {
+return param.value.map(value => "'" + param.name + "=" + encodeURIComponent(JSON.stringify(value)) + "'").join(' ')
+} else if (typeof param.value === 'object') {
+return "'" + param.name + "=" + encodeURIComponent(JSON.stringify(param.value)) + "'"
+} else {
+return "'" + param.name + "=" + encodeURIComponent(param.value) + "'"
+}
+}).join(' \n ') %>
+<%= postDataString %>
 <% } %>
---form \
---timeout 120s \
+--form
+--timeout 120s
 --max-redirects 10

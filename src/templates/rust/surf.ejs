@@ -24,9 +24,15 @@ req.insert_cookie(surf::http::Cookie::new("<%= cookie.name %>", "<%= cookie.valu
 <% if (postData.length > 0) { %>
 // Send the request
 let body = <% if (postData.length === 1 && postData[0].type === 'file') { %>
-surf::Body::from_form(&surf::http::Form::from(<% postData[0].value %>))
+surf::Body::from(surf::http::Form::from(<% postData[0].value %>))
 <% } else { %>
-surf::Body::from("<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>")
+surf::Body::from("<%= postData.map(param => {
+if (Array.isArray(param.value) || typeof param.value === 'object') {
+    return param.name + '=' + encodeURIComponent(JSON.stringify(param.value))
+} else {
+    return param.name + '=' + encodeURIComponent(param.value)
+}
+}).join('&') %>")
 <% } %>;
 req.set_body(body);
 <% } %>

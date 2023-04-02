@@ -1,32 +1,38 @@
 <% const { url, method, mimeType, headers, postData, cookies } = locals; %>
 // Construct the request URL
 NSString *fullUrl = @"<%- url %>";
-
-// Set up the request headers
 NSMutableDictionary *headers = [NSMutableDictionary dictionary];
 <% headers.forEach(header => { %>
-[headers setObject:@"<%= header.value %>" forKey:@"<%= header.name %>"];
+    [headers setObject:@"<%= header.value %>" forKey:@"<%= header.name %>"];
 <% }) %>
-
-// Add cookies to the request
-<% cookies.forEach(cookie => { %>
-NSDictionary *cookieProperties = @{
-    NSHTTPCookieDomain: @"<%= cookie.domain %>",
-    NSHTTPCookiePath: @"<%= cookie.path %>",
-    NSHTTPCookieName: @"<%= cookie.name %>",
-    NSHTTPCookieValue: @"<%= cookie.value %>",
-};
-NSHTTPCookie *cookie = [NSHTTPCookie cookieWithProperties:cookieProperties];
-[[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
-<% }) %>
-
-// Set up the request parameters
 NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
 <% postData.forEach(param => { %>
-[parameters setObject:@"<%= param.value %>" forKey:@"<%= param.name %>"];
+<% if (Array.isArray(param.value)) { %>
+    NSMutableArray *<%= param.name %>Array = [NSMutableArray array];
+    <% param.value.forEach(arrayItem => { %>
+    <% if (typeof arrayItem === 'object') { %>
+    NSDictionary *<%= param.name %>Item = @{
+    <% Object.keys(arrayItem).forEach(key => { %>
+        @"<%= key %>": <%= JSON.stringify(arrayItem[key]) %>,
+    <% }) %>
+    };
+    [<%= param.name %>Array addObject:<%= param.name %>Item];
+    <% } else { %>
+        [<%= param.name %>Array addObject:@"<%= arrayItem %>"];
+    <% } %>
+    <% }) %>
+    [parameters setObject:<%= param.name %>Array forKey:@"<%= param.name %>"];
+<% } else if (typeof param.value === 'object') { %>
+    NSDictionary *<%= param.name %>Dict = @{
+    <% Object.keys(param.value).forEach(key => { %>
+        @"<%= key %>": <%= JSON.stringify(param.value[key]) %>,
+    <% }) %>
+    };
+    [parameters setObject:<%= param.name %>Dict forKey:@"<%= param.name %>"];
+<% } else { %>
+    [parameters setObject:@"<%= param.value %>" forKey:@"<%= param.name %>"];
+<% } %>
 <% }) %>
-
-// Create the request
 NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:fullUrl]];
 request.HTTPMethod = @"<%= method %>";
 [request setValue:@"<%= mimeType %>" forHTTPHeaderField:@"Content-Type"];
@@ -36,16 +42,31 @@ for (NSString *key in headers) {
 NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
 NSURLSession *session = [NSURLSession sessionWithConfiguration:config];
 
-// Add the parameters to the request body
 if (parameters.count > 0) {
-    NSData *bodyData = [[parameters urlEncodedString] dataUsingEncoding:NSUTF8StringEncoding];
-    request.HTTPBody = bodyData;
+    NSError *jsonError;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:parameters options:0 error:&jsonError];
+    if (jsonError) {
+        NSLog(@"Error converting parameters to JSON: %@", jsonError);
+        return;
+    }
+    request.HTTPBody = jsonData;
 }
 
-// Send the request
+NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+<% cookies.forEach(cookie => { %>
+NSDictionary *cookieProperties = @{
+    NSHTTPCookieDomain: @"<%= cookie.domain %>",
+    NSHTTPCookiePath: @"<%= cookie.path %>",
+    NSHTTPCookieName: @"<%= cookie.name %>",
+    NSHTTPCookieValue: @"<%= cookie.value %>",
+};
+NSHTTPCookie *cookie = [NSHTTPCookie cookieWithProperties:cookieProperties];
+[cookieStorage setCookie:cookie];
+<% }) %>
+
 NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-    if (error) {
-        NSLog(@"Error: %@", error);
+if (error) {
+    NSLog(@"Error: %@", error);
         return;
     }
     if ([response isKindOfClass:[NSHTTPURLResponse class]]) {

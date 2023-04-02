@@ -9,7 +9,13 @@ mimeType = "<%= mimeType %>"
 <% if (method === 'GET') { %>
   req = Net::HTTP::Get.new(url)
 <% } else { %>
-  body = "<%= postData.map(param => param.name + '=' + CGI.escape(param.value)).join('&') %>"
+  body = "<%= postData.map(param => {
+    if (Array.isArray(param.value) || typeof param.value === 'object') {
+      return param.name + '=' + encodeURIComponent(JSON.stringify(param.value))
+    } else {
+      return param.name + '=' + encodeURIComponent(param.value)
+    }
+  }).join('&') %>"
   req = Net::HTTP::<%= method.capitalize %>.new(url)
   req.body = body
   req.content_type = mimeType

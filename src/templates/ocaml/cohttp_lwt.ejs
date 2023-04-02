@@ -1,42 +1,53 @@
 <% const { url, method, mimeType, headers, postData, cookies } = locals; %>
-(* Construct the request URL *)
-let fullUrl = "<%= url %>" in
-
 (* Set up the request *)
-let req = Cohttp_lwt_unix.Client.request
-  ~headers:(Cohttp.Header.of_list [
-    "Content-Type", "<%= mimeType %>";
+let fullUrl = "<%= url %>" in
+let headers = Cohttp.Header.of_list [
+  "Content-Type", "<%= mimeType %>";
     <% headers.forEach(header => { %>
-    "<%= header.name %>", "<%= header.value %>";
+      "<%= header.name %>", "<%= header.value %>";
     <% }) %>
     <% cookies.forEach(cookie => { %>
-    "Cookie", "<%= cookie.name %>=<%= cookie.value %>";
+      "Cookie", "<%= cookie.name %>=<%= cookie.value %>";
     <% }) %>
-  ])
+    ] in
+  let body =
   <% if (postData.length > 0) { %>
-  (match <%= method %> with
-  | "GET" -> Cohttp_lwt.Body.empty
-  | _ -> Cohttp_lwt.Body.of_string "<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>")
+    (match <%= method %> with
+    | "GET" -> Cohttp_lwt.Body.empty
+    | _ ->
+    let postData = [%yojson <%= JSON.stringify(postData) %>] in
+    let rec build_body = function
+    | Assoc [] -> Cohttp_lwt.Body.empty       | Assoc ((name, value) :: xs) ->
+    (match value with
+    | String s -> Cohttp_lwt.Body.of_string (name ^ "=" ^ Uri.pct_encode s)         | Int i -> Cohttp_lwt.Body.of_string (name ^ "=" ^ string_of_int i)
+    | Bool b -> Cohttp_lwt.Body.of_string (name ^ "=" ^ string_of_bool b)         | List l ->
+    let body_list = List.map (fun x -> ("", x)) l in
+    build_body (Assoc body_list)         | Assoc a ->
+    let body_list = List.map (fun (key, value) -> (name ^ "[" ^ key ^ "]", value)) a in
+    build_body (Assoc body_list))         >>= fun b1 ->          if xs = [] then Lwt.return b1         else build_body (Assoc xs) >>= fun b2 -> Lwt.return (Cohttp_lwt.Body.concat [b1; Cohttp_lwt.Body.of_string "&"; b2])
+    | _ -> failwith "Invalid post data format"
+    in build_body postData)
   <% } else { %>
-  Cohttp_lwt.Body.empty
+    Cohttp_lwt.Body.empty
   <% } %>
 in
-
-(* Send the request *)
-let%bind (_resp, body) = Cohttp_lwt_unix.Client.call (<%= method %> |> Cohttp.Code.method_of_string) fullUrl req in
-
-(* Handle the response *)
+let req = Cohttp_lwt_unix.Client.call (<%= method %> |> Cohttp.Code.method_of_string) fullUrl ~headers ~body in
+let run_request () =
+req >>= fun (resp, body) ->
+let status = Cohttp.Response.status resp in
+let code = Cohttp.Code.code_of_status status in
 let%bind body = Cohttp_lwt.Body.to_string body in
-print_endline ("Response: " ^ body);
-
-(* Handle errors *)
-let error_handler = function
-  | Unix.Unix_error (Unix.ENETUNREACH, _, _) ->
-      print_endline "Error: Network is unreachable"
-  | Unix.Unix_error (Unix.ECONNREFUSED, _, _) ->
-      print_endline "Error: Connection refused"
-  | exn ->
-      Printf.eprintf "Error: %s\n" (Printexc.to_string exn);
-      exit 1
+if code = 200 then Lwt.return (Ok body)   else Lwt.return (Error ("Error: " ^ body))
 in
-Lwt.catch (fun () -> body) error_handler;
+  let error_handler exn =
+  match exn with
+    | Unix.Unix_error (Unix.ENETUNREACH, _, _) ->
+      print_endline "Error: Network is unreachable"
+    | Unix.Unix_error (Unix.ECONNREFUSED, _, _) ->
+      print_endline "Error: Connection refused"
+    | _ ->
+    Printf.eprintf "Error: %s\n" (Printexc.to_string exn);
+    exit 1
+in
+  Lwt.catch run_request error_handler >>= function
+    | Ok body -> print_endline ("Response: " ^ body); Lwt.return_unit | Error err -> print_endline err; exit 1

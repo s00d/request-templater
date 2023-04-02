@@ -11,9 +11,13 @@ headers = {
     <% }) %>
 }
 postData = {
-    <% postData.forEach(param => { %>
-        '<%= param.name %>': '<%= param.value %>',
-    <% }) %>
+<% postData.forEach(param => { %>
+'<%= param.name %>': <% if (Array.isArray(param.value) || typeof param.value === 'object') { %>
+    '<%= JSON.stringify(param.value) %>',
+<% } else { %>
+    '<%= param.value %>',
+<% } %>
+<% }) %>
 }
 cookies = {
     <% cookies.forEach(cookie => { %>

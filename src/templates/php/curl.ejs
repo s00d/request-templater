@@ -1,41 +1,30 @@
-<% const { url, method, mimeType, headers, postData, cookies } = locals; %>
+<% const {url, method, mimeType, headers, postData, cookies} = locals; %>
+
 <?php
 
     $url = "<%= url %>";
-
-    $requestHeaders = array(
-    <% headers.forEach(header => { %>
-        "<%= header.name %>: <%= header.value %>",
-    <% }) %>
-    );
-
-    $requestCookies = array(
-    <% cookies.forEach(cookie => { %>
-        "<%= cookie.name %>=<<%= cookie.value %>>",
-    <% }) %>
-    );
-
-    $requestBody = null;
-    if ("<%= method %>" === "POST") {
-        $requestBody = "<%= postData.map(param => param.name + '=' + urlencode(param.value)).join('&') %>";
-    }
-
-    $ch = curl_init();
-
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $requestHeaders);
+    $requestHeaders = array( <% headers.forEach(header => { %> "<%= header.name %>: <%= header.value %>", <% }) %> );
+    $requestCookies = array( <% cookies.forEach(cookie => { %> "<%= cookie.name %>=<<%= cookie.value %>>", <% }) %> );
+    $requestBody = null; if ("<%= method %>" === "POST") {
+    <% if (Array.isArray(postData)) { %>
+    <% if (postData.length === 1 && postData[0].type === 'file') { %>
+    $requestBody = array( '<%= postData[0].name %>' => new [](poeCURLFile('<%= postData[0].value %>') );
+    <% } else { %>
+    $postData = array( <% postData.forEach(param => { %>
+        '<%= param.name %>' => '<%= Array.isArray(param.value) ? JSON.stringify(param.value) : encodeURIComponent(param.value) %>',
+    <% }) %> );
+    $requestBody = http_build_query($postData); <% } %>
+    <% } else if (typeof postData === 'object') { %>
+    $postData = array( <% Object.keys(postData).forEach(key => { %>
+        '<%= key %>' => '<%= Array.isArray(postData[key]) ? JSON.stringify(postData[key]) : encodeURIComponent(postData[key]) %>',
+    <% }) %> );
+    $requestBody = http_build_query($postData); <% } %> } $ch = curl_init(); curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); curl_setopt($ch, CURLOPT_HTTPHEADER, $requestHeaders);
     curl_setopt($ch, CURLOPT_COOKIE, implode("; ", $requestCookies));
-
     if ("<%= method %>" === "POST") {
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $requestBody);
-    }
-
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $requestBody); }
     $response = curl_exec($ch);
-
     curl_close($ch);
-
     echo "Response: " . $response;
-
 ?>

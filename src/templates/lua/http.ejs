@@ -13,7 +13,23 @@ local headers = {
 }
 local postData = {
 <% postData.forEach(param => { %>
-    ['<%= param.name %>'] = '<%= param.value %>',
+    ['<%= param.name %>'] = <% if (Array.isArray(param.value)) { %>
+    {
+    <% param.value.forEach((val, index) => { %>
+    <% if (typeof val === 'object') { %>
+        ['<%= Object.keys(val)[0] %>'] = <%= JSON.stringify(val[Object.keys(val)[0]]) %>,
+    <% } else { %>
+        <%= index %> = '<%= encodeURIComponent(val) %>',
+    <% } %>
+    <% }) %>
+    },
+    <% } else if (typeof param.value === 'object') { %>
+    {
+    ['<%= Object.keys(param.value)[0] %>'] = <%= JSON.stringify(param.value[Object.keys(param.value)[0]]) %>,
+    },
+    <% } else { %>
+    '<%= encodeURIComponent(param.value) %>',
+    <% } %>
 <% }) %>
 }
 local cookies = {
@@ -24,32 +40,30 @@ local cookies = {
 
 -- Construct the request table
 local request = {
-    url = url,
-    method = method,
-    headers = headers,
-    source = nil,
-    sink = ltn12.sink.table(),
+url = url,
+method = method,
+headers = headers,
+source = nil,
+sink = ltn12.sink.table(),
 }
 if method == "POST" then
-    request.source = ltn12.source.string(
-        '<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>'
-    )
+    request.source = postData
 end
 
 -- Add cookies to the request headers
 local cookieHeader = ""
 for cookie, value in pairs(cookies) do
-    cookieHeader = cookieHeader .. cookie .. "=" .. value .. "; "
+cookieHeader = cookieHeader .. cookie .. "=" .. value .. "; "
 end
 if cookieHeader ~= "" then
-    request.headers['Cookie'] = string.sub(cookieHeader, 1, -3)
+request.headers['Cookie'] = string.sub(cookieHeader, 1, -3)
 end
 
 -- Send the request
 local response = ""
 local result, code, response_headers, status = http.request(request)
 if result then
-    response = table.concat(request.sink)
+response = table.concat(request.sink)
 end
 
 -- Print the response

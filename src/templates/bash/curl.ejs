@@ -1,15 +1,27 @@
 <% const { url, method, mimeType, headers, postData, cookies } = locals; %>
-curl -X <%= method %> \
--H "Content-Type: <%= mimeType %>" \
+curl -X <%= method %>
+-H "Content-Type: <%= mimeType %>"
 <% headers.forEach(header => { %>
-    -H "<%= header.name %>: <%= header.value %>" \
+    -H "<%= header.name %>: <%= header.value %>"
 <% }) %>
 <% cookies.forEach(cookie => { %>
-    --cookie "<%= cookie.name %>=<%= cookie.value %>" \
+    --cookie "<%= cookie.name %>=<%= cookie.value %>"
 <% }) %><% if (postData.length > 0) { %>
     -d <% if (postData.length === 1 && postData[0].type === 'file') { %>
-        "@<%= postData[0].value %>" \
+        "@<%= postData[0].value %>"
     <% } else { %>
-        "<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>" \
+        "<%=
+            postData
+                    .map(param => {
+                        let value = param.value;
+                        if (Array.isArray(value)) {
+                            value = JSON.stringify(value);
+                        } else if (typeof value === 'object') {
+                            value = JSON.stringify(value);
+                        }
+                        return encodeURIComponent(param.name) + '=' + encodeURIComponent(value)
+                    })
+                    .join('&')
+        %>"
     <% } %><% } %>
-"<%= url %>
+"<%= url %>"

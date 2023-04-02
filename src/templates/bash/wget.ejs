@@ -1,21 +1,41 @@
 <% const { url, method, mimeType, headers, postData, cookies } = locals; %>
-wget --verbose --output-document=- \
---header="Content-Type: <%= mimeType %>" \
+wget --verbose --output-document=-
+--header="Content-Type: <%= mimeType %>"
 <% headers.forEach(header => { %>
-    --header="<%= header.name %>: <%= header.value %>" \
+    --header="<%= header.name %>: <%= header.value %>"
 <% }) %>
 <% cookies.forEach(cookie => { %>
-    --header="Cookie: <%= cookie.name %>=<%= cookie.value %>" \
+    --header="Cookie: <%= cookie.name %>=<%= cookie.value %>"
 <% }) %><% if (method === 'GET') { %>
-    "<%= url %>" \
+    "<%= url %>"
 <% } else if (method === 'POST') { %>
-    --post-data="<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>" \
-    "<%= url %>" \
+    --post-data="<%=
+    postData
+            .map(param => {
+                let value = param.value;
+                if (Array.isArray(value) || typeof value === 'object') {
+                    value = JSON.stringify(value);
+                }
+                return encodeURIComponent(param.name) + '=' + encodeURIComponent(value);
+            })
+            .join('&')
+    %>"
+    "<%= url %>"
 <% } else if (method === 'PUT') { %>
-    --method=PUT \
-    --body-data="<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>" \
-    "<%= url %>" \
+    --method=PUT
+    --body-data="<%=
+    postData
+            .map(param => {
+                let value = param.value;
+                if (Array.isArray(value) || typeof value === 'object') {
+                    value = JSON.stringify(value);
+                }
+                return encodeURIComponent(param.name) + '=' + encodeURIComponent(value);
+            })
+            .join('&')
+    %>"
+    "<%= url %>"
 <% } else if (method === 'DELETE') { %>
-    --method=DELETE \
+    --method=DELETE
     "<%= url %>"
 <% } %>

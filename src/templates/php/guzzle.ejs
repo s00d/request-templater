@@ -1,37 +1,30 @@
-<% const { url, method, mimeType, headers, postData, cookies } = locals; %>
+<% const { url, method, mimeType, headers, postData, cookies } = locals;
+ %>
 <?php
-
-    use GuzzleHttp\Client;
     use GuzzleHttp\Exception\RequestException;
-
     $client = new Client();
-
     $url = "<%= url %>";
-
-    $headers = array(
-    <% headers.forEach(header => { %>
-        "<%= header.name %>" => "<%= header.value %>",
-    <% }) %>
-    );
-
-    $cookies = array(
-    <% cookies.forEach(cookie => { %>
-        "<%= cookie.name %>" => "<%= cookie.value %>",
-    <% }) %>
-    );
-
+    $headers = array( <% headers.forEach(header => { %> "<%= header.name %>" => "<%= header.value %>", <% }) %> );
+    $cookies = array( <% cookies.forEach(cookie => { %> "<%= cookie.name %>" => "<%= cookie.value %>", <% }) %> );
     $requestBody = null;
     if ("<%= method %>" === "POST") {
-        $requestBody = "<%= postData.map(param => param.name + '=' + urlencode(param.value)).join('&') %>";
-    }
-
+    <% if (Array.isArray(postData)) { %>
+    <% if (postData.length === 1 && postData[0].type === 'file') { %>
+        $requestBody = array( 'multipart' => [ [ 'name' => '<%= postData[0].name %>', 'contents' => fopen('<%= postData[0].value %>', 'r') ] ] );
+    <% } else { %>
+        $postData = array( <% postData.forEach(param => { %> '<%= param.name %>' => '<%= Array.isArray(param.value) ? JSON.stringify(param.value) : encodeURIComponent(param.value) %>', <% }) %> );
+        $requestBody = http_build_query($postData);
+    <% } %>
+    <% } else if (typeof postData === 'object') { %>
+    $postData = '<%= JSON.stringify(postData) %>';
+    $requestBody = $postData;
+    <% } %> }
     try {
         $response = $client->request('<%= method %>', $url, [
             'headers' => $headers,
             'cookies' => $cookies,
             'body' => $requestBody,
         ]);
-
         echo "Response: " . $response->getBody();
     } catch (RequestException $e) {
         echo "Error: " . $e->getMessage();

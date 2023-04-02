@@ -1,27 +1,28 @@
 <% const { url, method, mimeType, headers, postData, cookies } = locals; %>
+
 (require '[ring.util.http-client :as client])
 
 (defn make-request []
-  (let [url "<%= url %>"
+    (let [url "<%= url %>"
         headers {<% headers.forEach(header => { %>
-                 "<%= header.name %>" "<%= header.value %>"<% if (!header.isLast) { %>,<% } %><% }) %>}
+    "<%= header.name %>" "<%= header.value %>"<% if (!header.isLast) { %>,<% } %><% }) %>}
         cookies {<% cookies.forEach(cookie => { %>
-                 "<%= cookie.name %>" "<%= cookie.value %>"<% if (!cookie.isLast) { %>,<% } %><% }) %>}
+    "<%= cookie.name %>" "<%= cookie.value %>"<% if (!cookie.isLast) { %>,<% } %><% }) %>}
         options {:headers headers
-                 :cookies cookies
-                 :content-type "<%= mimeType %>"}
-        <% if (method === 'GET') { %>
+        :cookies cookies
+        :content-type "<%= mimeType %>"}
+    <% if (method === 'GET') { %>
         response (client/get url options)]
-        <% } else { %>
+    <% } else { %>
         post-data "<% if (postData.length === 1 && postData[0].type === 'file') { %>
-                    {:multipart true
-                     :file "<%= postData[0].value %>"}
-                    <% } else { %>
-                    {<% postData.forEach(param => { %>
-                     "<%= param.name %>" "<%= param.value %>"<% if (!param.isLast) { %>,<% } %><% }) %>}
-                    <% } %>"
-        response (client/post url options post-data)]
-        <% } %>
+    {:multipart true
+        :file "<%= postData[0].value %>"}
+    <% } else { %>
+    {<% postData.forEach(param => { %>
+        "<%= param.name %>" <% if (Array.isArray(param.value) || typeof param.value === 'object') { %>(json/write-str param.value)<% } else { %>"<%= param.value %>"<% } %><% if (!param.isLast) { %>,<% } %><% }) %>}
+    <% } %>"
+    response (client/post url options post-data)]
+    <% } %>
     (println "Response: " (:body response))))
 
 (make-request)

@@ -9,21 +9,31 @@ val method = "<%= method %>"
 val mimeType = "<%= mimeType %>"
 
 val body = <% if (postData.length > 0) { %>
-  RequestBody.create(MediaType.parse(mimeType), "<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>")
+  <% postData.forEach(param => { %>
+  <% if (Array.isArray(param.value)) { %>
+  "<%= param.name %>" to <%= JSON.stringify(param.value) %>,
+  <% } else if (typeof param.value === 'object') { %>
+  "<%= param.name %>" to <%= JSON.stringify(param.value) %>,
+  <% } else { %>
+  "<%= param.name %>" to "<%= param.value %>",
+  <% } %>
+  <% }) %>
+  .joinToString(separator = "&") { "${it.first}=${URLEncoder.encode(it.second.toString(), "UTF-8")}" }
+  .let { RequestBody.create(MediaType.parse(mimeType), it) }
 <% } else { %>
   null
 <% } %>
 
 val request = Request.Builder()
-  .url(url)
-  .<%= method.toLowerCase() %>(body)
-  <% headers.forEach(header => { %>
-    .addHeader("<%= header.name %>", "<%= header.value %>")
-  <% }) %>
-  <% cookies.forEach(cookie => { %>
-    .addHeader("Cookie", "<%= cookie.name %>=<%= cookie.value %>")
-  <% }) %>
-  .build()
+.url(url)
+.<%= method.toLowerCase() %>(body)
+<% headers.forEach(header => { %>
+  .addHeader("<%= header.name %>", "<%= header.value %>")
+<% }) %>
+<% cookies.forEach(cookie => { %>
+  .addHeader("Cookie", "<%= cookie.name %>=<%= cookie.value %>")
+<% }) %>
+.build()
 
 val response = client.newCall(request).execute()
 

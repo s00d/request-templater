@@ -6,28 +6,33 @@ method <- "<%= method %>"
 mimeType <- "<%= mimeType %>"
 
 headers <- list(
-  <% headers.forEach(header => { %>
-    "<%= header.name %>" = "<%= header.value %>",
-  <% }) %>
+<% headers.forEach(header => { %>
+  "<%= header.name %>" = "<%= header.value %>",
+<% }) %>
 )
 
 cookies <- list(
-  <% cookies.forEach(cookie => { %>
-    "<%= cookie.name %>" = "<%= cookie.value %>",
-  <% }) %>
+<% cookies.forEach(cookie => { %>
+  "<%= cookie.name %>" = "<%= cookie.value %>",
+<% }) %>
 )
 
 <% if (method === 'GET') { %>
-  req <- getURL(url, httpheader = headers, cookie = cookies)
+req <- getURL(url, httpheader = headers, cookie = cookies)
 <% } else { %>
-  body <- list(
-    <% postData.forEach(param => { %>
-      "<%= param.name %>" = "<%= param.value %>",
-    <% }) %>
-  )
+body <- list(
+<% postData.forEach(param => { %>
+"<%= param.name %>" = <% if (Array.isArray(param.value) || typeof param.value === 'object') { %>
+  <%= JSON.stringify(param.value) %>,
+<% } else { %>
+  "<%= param.value %>",
+<% } %>
+<% }) %>
+)
 
-  req <- postForm(url, .params = body, httpheader = headers, cookie = cookies)
+req <- postForm(url, .params = body, httpheader = headers, cookie = cookies)
 <% } %>
 
 cat("Response: ", "\n")
 cat(req, "\n")
+

@@ -21,7 +21,11 @@ val cookies = <% if (cookies.length > 0) { %>Seq(
 )<% } else { %>Seq.empty<% } %>
 val postData = <% if (postData.length > 0) { %>UrlForm(
 <% postData.forEach(param => { %>
+<% if (Array.isArray(param.value) || typeof param.value === 'object') { %>
+  "<%= param.name %>" -> "<%= JSON.stringify(param.value) %>",
+<% } else { %>
   "<%= param.name %>" -> "<%= param.value %>",
+<% } %>
 <% }) %>
 )<% } else { %>UrlForm.empty<% } %>
 

@@ -9,8 +9,8 @@ public class Main {
 
         // Set up the request
         com.mashape.unirest.http.HttpRequestWithBody request =
-            Unirest.<%= method.toLowerCase() %>(fullUrl)
-                .header("Content-Type", "<%= mimeType %>");
+        Unirest.<%= method.toLowerCase() %>(fullUrl)
+            .header("Content-Type", "<%= mimeType %>");
 
         <% if (headers.length > 0) { %>
         // Add headers to the request
@@ -28,25 +28,37 @@ public class Main {
 
         <% if (postData.length > 0) { %>
         // Set up the request body
-        <% if (postData.length > 0) { %>
+        <% if (Array.isArray(postData)) { %>
         <% if (postData.length === 1 && postData[0].type === 'file') { %>
-        // Upload a file
-        request.field("<%= postData[0].name %>", new java.io.File("<%= postData[0].value %>"));
+            // Upload a file
+            request.field("<%= postData[0].name %>", new java.io.File("<%= postData[0].value %>"));
         <% } else { %>
         // Send form data or raw data
         <% if (mimeType === 'application/x-www-form-urlencoded') { %>
-        request.field("<%= postData.map(param => param.name).join("\", \"") %>",
-            <%= postData.map(param => "encodeURIComponent(\"" + param.value + "\")").join(", ") %>);
+        <% let params = postData.filter(param => !Array.isArray(param.value)); %>
+        <% let arrays = postData.filter(param => Array.isArray(param.value)); %>
+        request.field("<%= params.map(param => param.name).join("\", \"") %>",
+        <%= params.map(param => "encodeURIComponent(\"" + param.value + "\")").join(", ") %>
+        <% if (arrays.length > 0) { %>
+        <% arrays.forEach(arrayParam => { %>
+            , "<%= arrayParam.name %>[]",
+            <%= arrayParam.value.map(val => "encodeURIComponent(\"" + val + "\")").join(", ") %>
+        <% }) %>
+        <% } %>
+        );
         <% } else { %>
         request.body("<%= postData.map(param => param.value).join("") %>");
         <% } %>
         <% } %>
+        <% } else if (typeof postData === 'object') { %>
+        // Send JSON data
+        request.body("<%= JSON.stringify(postData) %>");
         <% } %>
         <% } %>
 
         // Send the request
         try {
-            com.mashape.unirest.http.HttpResponse<String> response = request.asString();
+        com.mashape.unirest.http.HttpResponse<String> response = request.asString();
             if (response.getStatus() == 200) {
                 String responseBody = response.getBody();
                 System.out.println("Response: " + responseBody);

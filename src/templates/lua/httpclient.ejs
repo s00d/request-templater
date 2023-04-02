@@ -12,7 +12,23 @@ local headers = {
 }
 local postData = {
 <% postData.forEach(param => { %>
-    ['<%= param.name %>'] = '<%= param.value %>',
+    ['<%= param.name %>'] = <% if (Array.isArray(param.value)) { %>
+        {
+        <% param.value.forEach((val, index) => { %>
+            <% if (typeof val === 'object') { %>
+                ['<%= Object.keys(val)[0] %>'] = <%= JSON.stringify(val[Object.keys(val)[0]]) %>,
+            <% } else { %>
+                <%= index %> = '<%= encodeURIComponent(val) %>',
+            <% } %>
+        <% }) %>
+        },
+    <% } else if (typeof param.value === 'object') { %>
+        {
+        ['<%= Object.keys(param.value)[0] %>'] = <%= JSON.stringify(param.value[Object.keys(param.value)[0]]) %>,
+        },
+    <% } else { %>
+        '<%= encodeURIComponent(param.value) %>',
+    <% } %>
 <% }) %>
 }
 local cookies = {
@@ -28,11 +44,7 @@ local request = {
     headers = headers,
 }
 if method == "POST" then
-    request.data = {
-    <% postData.forEach(param => { %>
-        ['<%= param.name %>'] = '<%= param.value %>',
-    <% }) %>
-    }
+    request.data = postData
 end
 
 -- Add cookies to the request headers

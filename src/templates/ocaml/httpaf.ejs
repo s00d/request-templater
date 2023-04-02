@@ -1,28 +1,38 @@
 <% const { url, method, mimeType, headers, postData, cookies } = locals; %>
 (* Construct the request URL *)
 let fullUrl = "<%= url %>" in
-
-(* Set up the request *)
-let headers = Cohttp.Header.of_list [
+let headers = Httpaf.Headers.of_list [
   "Content-Type", "<%= mimeType %>";
   <% headers.forEach(header => { %>
-  "<%= header.name %>", "<%= header.value %>";
+    "<%= header.name %>", "<%= header.value %>";
   <% }) %>
   <% cookies.forEach(cookie => { %>
-  "Cookie", "<%= cookie.name %>=<%= cookie.value %>";
+    "Cookie", "<%= cookie.name %>=<%= cookie.value %>";
   <% }) %>
 ] in
 let body =
-  <% if (postData.length > 0) { %>
+<% if (postData.length > 0) { %>
   (match <%= method %> with
   | "GET" -> ""
-  | _ -> "<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>")
-  <% } else { %>
+  | _ ->
+  let postData = [%yojson <%= JSON.stringify(postData) %>] in
+  let rec build_body = function
+  | Assoc [] -> ""       | Assoc ((name, value) :: xs) ->
+  (match value with
+  | String s -> name ^ "=" ^ Uri.pct_encode s         | Int i -> name ^ "=" ^ string_of_int i
+  | Bool b -> name ^ "=" ^ string_of_bool b         | List l ->
+  let body_list = List.map (fun x -> ("", x)) l in
+  build_body (Assoc body_list)         | Assoc a ->
+  let body_list = List.map (fun (key, value) -> (name ^ "[" ^ key ^ "]", value)) a in
+  build_body (Assoc body_list))         ^ (if xs = [] then "" else "&" ^ build_body (Assoc xs))
+  | _ -> failwith "Invalid post data format"
+  in build_body postData)
+<% } else { %>
   ""
-  <% } %>
+<% } %>
 in
-let req = Httpaf.Request.create
-  ~headers:(Httpaf.Headers.of_list (Cohttp.Header.to_list headers))
+  let req = Httpaf.Request.create
+  ~headers
   (Httpaf.Method.of_string "<%= method %>")
   (Uri.of_string fullUrl)
   body
@@ -38,13 +48,14 @@ let%bind body = Httpaf_lwt.Body.to_string resp.body in
 print_endline ("Response: " ^ body);
 
 (* Handle errors *)
-let error_handler = function
+let error_handler exn =
+  match exn with
   | Unix.Unix_error (Unix.ENETUNREACH, _, _) ->
-      print_endline "Error: Network is unreachable"
+    print_endline "Error: Network is unreachable"
   | Unix.Unix_error (Unix.ECONNREFUSED, _, _) ->
-      print_endline "Error: Connection refused"
-  | exn ->
-      Printf.eprintf "Error: %s\n" (Printexc.to_string exn);
-      exit 1
+    print_endline "Error: Connection refused"
+  | _ ->
+    Printf.eprintf "Error: %s\n" (Printexc.to_string exn);
+    exit 1
 in
-Lwt.catch (fun () -> body) error_handler;
+Lwt.catch (fun () -> body) error_handler >>= fun _ -> Lwt.return_unit

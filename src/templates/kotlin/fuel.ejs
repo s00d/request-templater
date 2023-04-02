@@ -6,21 +6,27 @@ import com.github.kittinunf.result.*
 val fullUrl = "<%= url %>"
 
 val requestHeaders = listOf(
-<% headers.forEach(header => { %>
+    <% headers.forEach(header => { %>
     "<%= header.name %>" to "<%= header.value %>",
-<% }) %>
+    <% }) %>
 )
 
 val requestCookies = listOf(
-<% cookies.forEach(cookie => { %>
+    <% cookies.forEach(cookie => { %>
     "<%= cookie.name %>" to "<%= cookie.value %>",
-<% }) %>
+    <% }) %>
 )
 
 val parameters = listOf(
-<% postData.forEach(param => { %>
+    <% postData.forEach(param => { %>
+    <% if (Array.isArray(param.value)) { %>
+    "<%= param.name %>" to <%= JSON.stringify(param.value) %>,
+    <% } else if (typeof param.value === 'object') { %>
+    "<%= param.name %>" to <%= JSON.stringify(param.value) %>,
+    <% } else { %>
     "<%= param.name %>" to "<%= param.value %>",
-<% }) %>
+    <% } %>
+    <% }) %>
 )
 
 val request = Fuel.request(Method.<%= method %>, fullUrl)
@@ -43,6 +49,3 @@ request.responseString { _, _, result ->
         }
     }
 }
-
-Like
-Dislik

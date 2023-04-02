@@ -5,7 +5,7 @@ NSString *fullUrl = @"<%- url %>";
 // Set up the request headers
 NSMutableDictionary *headers = [NSMutableDictionary dictionary];
 <% headers.forEach(header => { %>
-[headers setObject:@"<%= header.value %>" forKey:@"<%= header.name %>"];
+    [headers setObject:@"<%= header.value %>" forKey:@"<%= header.name %>"];
 <% }) %>
 
 // Add cookies to the request
@@ -23,7 +23,27 @@ NSHTTPCookie *cookie = [NSHTTPCookie cookieWithProperties:cookieProperties];
 // Set up the request parameters
 NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
 <% postData.forEach(param => { %>
-[parameters setObject:@"<%= param.value %>" forKey:@"<%= param.name %>"];
+    <% if (Array.isArray(param.value)) { %>
+    NSMutableArray *<%= param.name %>Array = [NSMutableArray array];
+    <% param.value.forEach(val => { %>
+    <% if (typeof val === 'object') { %>
+    NSDictionary *<%= param.name %>Object = @{
+        '<%= Object.keys(val)[0] %>': <%= JSON.stringify(val[Object.keys(val)[0]]) %>,
+    };
+    [<%= param.name %>Array addObject:<%= param.name %>Object];
+    <% } else { %>
+        [<%= param.name %>Array addObject:@"<%= encodeURIComponent(val) %>"];
+    <% } %>
+    <% }) %>
+    [parameters setObject:<%= param.name %>Array forKey:@"<%= param.name %>"];
+    <% } else if (typeof param.value === 'object') { %>
+        NSDictionary *<%= param.name %>Object = @{
+        '<%= Object.keys(param.value)[0] %>': <%= JSON.stringify(param.value[Object.keys(param.value)[0]]) %>,
+        };
+        [parameters setObject:<%= param.name %>Object forKey:@"<%= param.name %>"];
+    <% } else { %>
+        [parameters setObject:@"<%= encodeURIComponent(param.value) %>" forKey:@"<%= param.name %>"];
+    <% } %>
 <% }) %>
 
 // Create the request manager
@@ -46,25 +66,25 @@ for (NSString *key in cookieHeaders) {
 // Send the request
 NSString *method = @"<%= method %>";
 if ([method isEqualToString:@"GET"]) {
-    [manager GET:fullUrl parameters:parameters headers:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [manager GET:fullUrl parameters:parameters headers:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id _Nullable responseObject) {
         NSLog(@"Response: %@", responseObject);
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"Error: %@", error);
     }];
 } else if ([method isEqualToString:@"POST"]) {
-    [manager POST:fullUrl parameters:parameters headers:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [manager POST:fullUrl parameters:parameters headers:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id _Nullable responseObject) {
         NSLog(@"Response: %@", responseObject);
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"Error: %@", error);
     }];
 } else if ([method isEqualToString:@"PUT"]) {
-    [manager PUT:fullUrl parameters:parameters headers:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [manager PUT:fullUrl parameters:parameters headers:nil success:^(NSURLSessionDataTask * _Nonnull task, id _Nullable responseObject) {
         NSLog(@"Response: %@", responseObject);
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"Error: %@", error);
     }];
 } else if ([method isEqualToString:@"DELETE"]) {
-    [manager DELETE:fullUrl parameters:parameters headers:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [manager DELETE:fullUrl parameters:parameters headers:nil success:^(NSURLSessionDataTask * _Nonnull task, id _Nullable responseObject) {
         NSLog(@"Response: %@", responseObject);
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"Error: %@", error);

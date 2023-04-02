@@ -6,6 +6,7 @@ import (
     "mime/multipart"
     "os"
     "strings"
+    "encoding/json"
     "github.com/valyala/fasthttp"
 )
 
@@ -16,28 +17,49 @@ func main() {
     // Construct the request body
     var body *strings.Reader
     <% if (postData.length > 0) { %>
-        <% if (postData.length === 1 && postData[0].type === 'file') { %>
-            // Construct the form data
-            file, err := os.Open("<%= postData[0].value %>")
-            if err != nil {
-                fmt.Println(err)
-                return
-            }
-            defer file.Close()
-            formData := &fasthttp.Args{}
-            writer := multipart.NewWriter(formData)
-            part, err := writer.CreateFormFile("file", file.Name())
-            if err != nil {
-                fmt.Println(err)
-                return
-            }
-            io.Copy(part, file)
-            writer.Close()
-            body = strings.NewReader(formData.String())
-        <% } else { %>
-            bodyStr := "<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>"
-            body = strings.NewReader(bodyStr)
-        <% } %>
+    <% if (Array.isArray(postData) && postData.length === 1 && postData[0].type === 'file') { %>
+    // Construct the form data
+    file, err := os.Open("<%= postData[0].value %>")
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+    defer file.Close()
+    formData := &fasthttp.Args{}
+    writer := multipart.NewWriter(formData)
+    part, err := writer.CreateFormFile("file", file.Name())
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+    io.Copy(part, file)
+    writer.Close()
+    body = strings.NewReader(formData.String())
+    <% } else { %>
+    <% if (Array.isArray(postData)) { %>
+    var params []string
+    <% postData.forEach(param => { %>
+    <% if (typeof param.value === 'object') { %>
+    paramValue, err := json.Marshal(param.value)
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+    params = append(params, fmt.Sprintf("%s=%s", param.name, paramValue))
+    <% } else { %>
+    params = append(params, fmt.Sprintf("%s=%s", param.name, param.value))
+    <% } %>
+    <% }) %>
+    bodyStr := strings.Join(params, "&")
+    <% } else { %>
+    bodyStr, err := json.Marshal(postData)
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+    <% } %>
+    body = strings.NewReader(bodyStr)
+    <% } %>
     <% } %>
 
     // Create a new HTTP request
@@ -50,14 +72,14 @@ func main() {
     <% if (headers.length > 0) { %>
     // Add headers to the request
     <% headers.forEach(header => { %>
-        req.Header.Add("<%= header.name %>", "<%= header.value %>")
+    req.Header.Add("<%= header.name %>", "<%= header.value %>")
     <% }) %>
     <% } %>
 
-    <% if (headers.length > 0) { %>
+    <% if (cookies.length > 0) { %>
     // Add cookies to the request
     <% cookies.forEach(cookie => { %>
-        req.Header.AddCookie(&fasthttp.Cookie{Name: "<%= cookie.name %>", Value: "<%= cookie.value %>"})
+    req.Header.AddCookie(&fasthttp.Cookie{Name: "<%= cookie.name %>", Value: "<%= cookie.value %>"})
     <% }) %>
     <% } %>
 
@@ -77,5 +99,3 @@ func main() {
     // Handle the response
     fmt.Printf("Response: %s\n", resp.Body())
 }
-
-

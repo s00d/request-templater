@@ -12,7 +12,13 @@ local headers = {
 }
 local postData = {
 <% postData.forEach(param => { %>
+    <% if (Array.isArray(param.value)) { %>
+    ['<%= param.name %>'] = <%= JSON.stringify(param.value) %>,
+    <% } else if (typeof param.value === 'object') { %>
+    ['<%= param.name %>'] = <%= JSON.stringify(param.value) %>,
+    <% } else { %>
     ['<%= param.name %>'] = '<%= param.value %>',
+    <% } %>
 <% }) %>
 }
 local cookies = {
@@ -35,7 +41,7 @@ end
 if method == "POST" then
     command = command .. " --data '"
     for key, value in pairs(postData) do
-        command = command .. key .. "=" .. value .. "&"
+        command = command .. key .. "[]=" .. item .. "&"
     end
     command = string.sub(command, 1, -2) .. "'"
 end

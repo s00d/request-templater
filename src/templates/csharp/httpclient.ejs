@@ -32,7 +32,23 @@ class Program
 
         <% if (postData.length > 0) { %>
         // Set up the request body
-        <% if (postData.length > 0) { %>
+        <% if (postData.some(param => typeof param.value === 'object' || Array.isArray(param.value))) { %>
+        var formData = new MultipartFormDataContent();
+        <% postData.forEach(param => {
+            if (Array.isArray(param.value)) { %>
+                <% param.value.forEach(val => { %>
+                    formData.Add(new StringContent("<%= val %>"), "<%= param.name %>[]");
+                <% }) %>
+            <% } else if (typeof param.value === 'object') { %>
+                <% Object.entries(param.value).forEach(([key, val]) => { %>
+                    formData.Add(new StringContent("<%= val %>"), "<%= param.name %>[<%= key %>]");
+                <% }) %>
+            <% } else { %>
+                formData.Add(new StringContent("<%= param.value %>"), "<%= param.name %>");
+            <% } %>
+        <% }) %>
+        request.Content = formData;
+        <% } else { %>
         var requestBody = new StringContent("<%= postData.map(param => param.name + '=' + Uri.EscapeDataString(param.value)).join('&') %>");
         request.Content = requestBody;
         <% } %>

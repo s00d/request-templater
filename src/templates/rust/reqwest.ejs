@@ -21,9 +21,16 @@ request_builder = request_builder.cookie_store(cookies);
 <% if (postData.length > 0) { %>
 <% if (postData.length === 1 && postData[0].type === 'file') { %>
 let form_data = reqwest::multipart::Form::new()
-    .file("<%= postData[0].name %>", "<%= postData[0].value %>").unwrap();
+.file("<%= postData[0].name %>", "<%= postData[0].value %>").unwrap();
+let request_builder = request_builder.multipart(form_data);
 <% } else { %>
-let post_data = "<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>";
+let post_data = "<%= postData.map(param => {
+if (Array.isArray(param.value) || typeof param.value === 'object') {
+    return param.name + '=' + encodeURIComponent(JSON.stringify(param.value))
+} else {
+    return param.name + '=' + encodeURIComponent(param.value)
+}
+}).join('&') %>";
 let request_builder = request_builder.body(post_data);
 <% } %>
 <% } %>

@@ -30,12 +30,17 @@ public class Main {
 
         <% if (postData.length > 0) { %>
         // Set up the request body
-        <% if (postData.length > 0) { %>
+        <% if (Array.isArray(postData)) { %>
         FormBody.Builder formBodyBuilder = new FormBody.Builder();
         <% postData.forEach(param => { %>
-        formBodyBuilder.add("<%= param.name %>", "<%= param.value %>");
+        formBodyBuilder.add("<%= param.name %>", "<%= JSON.stringify(param.value) %>");
         <% }) %>
         RequestBody requestBody = formBodyBuilder.build();
+        requestBuilder.post(requestBody);
+        <% } else { %>
+        MediaType mediaType = MediaType.parse("<%= mimeType %>");
+        String requestBodyJson = "<%= JSON.stringify(postData) %>";
+        RequestBody requestBody = RequestBody.create(requestBodyJson, mediaType);
         requestBuilder.post(requestBody);
         <% } %>
         <% } %>

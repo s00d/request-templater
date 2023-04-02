@@ -1,42 +1,28 @@
-<% const { url, method, mimeType, headers, postData, cookies } = locals; %>
-<?php
+<% const { url, method, mimeType, headers, postData, cookies } = locals;
+ %>
 
+<?php
     $host = parse_url("<%= url %>", PHP_URL_HOST);
     $path = parse_url("<%= url %>", PHP_URL_PATH) ?: "/";
-
-    $httpHeaders = array(
-    <% headers.forEach(header => { %>
-        "<%= header.name %>" => "<%= header.value %>",
-    <% }) %>
-    );
-
-    $httpCookies = array(
-    <% cookies.forEach(cookie => { %>
-        "<%= cookie.name %>" => "<%= cookie.value %>",
-    <% }) %>
-    );
-
+    $httpHeaders = array( <% headers.forEach(header => { %> "<%= header.name %>" => "<%= header.value %>", <% }) %> );
+    $httpCookies = array( <% cookies.forEach(cookie => { %> "<%= cookie.name %>" => "<%= cookie.value %>", <% }) %> );
     $httpBody = null;
     if ("<%= method %>" === "POST") {
-        $httpBody = "<%= postData.map(param => param.name + '=' + urlencode(param.value)).join('&') %>";
+        <% if (Array.isArray(postData)) { %>
+        $postData = array( <% postData.forEach(param => { %> '<%= param.name %>' => '<%= Array.isArray(param.value) ? JSON.stringify(param.value) : encodeURIComponent(param.value) %>', <% }) %> );
+        $httpBody = http_build_query($postData);
+        <% } else if (typeof postData === 'object') { %>
+        $httpBody = json_encode(<%= postData %>);
+    <% } %>
     }
-
     $streamContext = stream_context_create([
-        'http' => [
-            'method' => "<%= method %>",
-            'header' => implode("\r\n", $httpHeaders),
-            'content' => $httpBody,
-            'follow_location' => false,
-            'protocol_version' => 2.0,
-        ],
-        'ssl' => [
-            'verify_peer' => false,
-            'verify_peer_name' => false,
-        ],
+        'http' => [ 'method' => "<%= method %>",
+        'header' => implode("\r\n", $httpHeaders),
+        'content' => $httpBody, 'follow_location' => false,
+        'protocol_version' => 2.0,
+    ],
+        'ssl' => [ 'verify_peer' => false, 'verify_peer_name' => false, ],
     ]);
-
     $response = file_get_contents("https://$host$path", false, $streamContext);
-
     echo "Response: " . $response;
-
 ?>

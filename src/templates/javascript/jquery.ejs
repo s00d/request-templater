@@ -12,7 +12,7 @@ async function makeRequest(url, method, mimeType, headers, cookies, postData) {
     },
     data: <% if (postData.length === 1 && postData[0].type === 'file') { %>
       new FormData(document.getElementById('#file_upload_form'))
-      <% } else if (postData.length > 0) { %>'<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value)).join('&') %>'
+      <% } else if (postData.length > 0) { %>postData
       <% } else { %> null <% } %>
   };
 
@@ -41,8 +41,6 @@ const headers = {
 const cookies = {
   <% cookies.forEach(cookie => { %>'<%= cookie.name %>': '<%= cookie.value %>',<% }) %>
 };
-const postData = [
-  <% postData.forEach(param => { %>{ name: '<%= param.name %>', value: '<%= param.value %>', type: '<%= param.type %>' },<% }) %>
-];
+const postData = <%- JSON.stringify(postData, null, 2) %>
 
 makeRequest(url, method, mimeType, headers, cookies, postData);

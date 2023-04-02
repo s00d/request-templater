@@ -32,13 +32,15 @@ public class Main {
         <% }) %>
         <% } %>
 
-        <% if (headers.length > 0) { %>
-        // Set up the request body
         <% if (postData.length > 0) { %>
+        // Set up the request body
         connection.setDoOutput(true);
-        String requestBody = "<%= postData.map(param => param.name + '=' + URLEncoder.encode(param.value, "UTF-8")).join('&') %>";
-        connection.getOutputStream().write(requestBody.getBytes("UTF-8"));
+        <% if (Array.isArray(postData)) { %>
+        String requestBody = "<%= postData.map(param => param.name + '=' + encodeURIComponent(param.value, "UTF-8")).join('&') %>";
+        <% } else { %>
+        String requestBody = new Gson().toJson(<%= JSON.stringify(postData) %>);
         <% } %>
+        connection.getOutputStream().write(requestBody.getBytes("UTF-8"));
         <% } %>
 
         // Send the request
