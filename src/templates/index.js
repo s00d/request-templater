@@ -56,20 +56,20 @@ function encode_char(c) {
     ;  if (method === 'POST' && postData.length > 0) { 
     ; __append("// Set the request body\n")
     ;  if (postData.length === 1 && postData[0].type === 'file') { 
-    ; __append("\n    let fileUrl = URL(fileURLWithPath: \"/path/to/file\")\n    let data = try Data(contentsOf: fileUrl)\n    request.httpBody = data\n")
+    ; __append("\nlet fileUrl = URL(fileURLWithPath: \"/path/to/file\")\nlet data = try Data(contentsOf: fileUrl)\nrequest.httpBody = data\n")
     ;  } else { 
-    ; __append("\n    let postDataDict = ")
+    ; __append("\nlet postDataDict = ")
     ; __append(escapeFn(
-    JSON.stringify(postData.reduce((acc, param) => {
-        if (Array.isArray(param.value) || typeof param.value === 'object') {
-            acc[param.name] = param.value
-        } else {
-            acc[param.name] = param.value
-        }
-        return acc
-    }, {}))
-    ))
-    ; __append("\n    let postData = postDataDict.map { (key, value) -> String in\n    let encodedKey = key.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? \"\"\n    let encodedValue = String(describing: value).addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? \"\"\n    return \"(encodedKey)=(encodedValue)\"\n    }.joined(separator: \"&\")\n    let postDataEncoded = postData.data(using: .utf8)\n    request.httpBody = postDataEncoded\n")
+JSON.stringify(postData.reduce((acc, param) => {
+    if (Array.isArray(param.value) || typeof param.value === 'object') {
+        acc[param.name] = param.value
+    } else {
+        acc[param.name] = param.value
+    }
+    return acc
+}, {}))
+))
+    ; __append("\nlet postData = postDataDict.map { (key, value) -> String in\nlet encodedKey = key.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? \"\"\nlet encodedValue = String(describing: value).addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? \"\"\nreturn \"(encodedKey)=(encodedValue)\"\n}.joined(separator: \"&\")\nlet postDataEncoded = postData.data(using: .utf8)\nrequest.httpBody = postDataEncoded\n")
     ;  } 
     ;  } 
     ; __append("\n\n// Create a new URLSession object\nlet session = URLSession.shared\n\n// Send the request\nlet task = session.dataTask(with: request) { (data, response, error) in\nguard let data = data else { return }\nprint(\"Response:\", String(data: data, encoding: .utf8)!)\n}\n\ntask.resume()\n")

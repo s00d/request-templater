@@ -103,7 +103,7 @@ export default [
         output: {
             file: `${pkg.module}`,
             banner,
-            format: 'es',
+            format: 'esm',
             name: 'RequestTemplater',
             sourcemap: true,
         },
@@ -119,5 +119,5 @@ export default [
             sourcemap: true,
         },
         plugins: jsPlugins
-    }
+    },
 ];
