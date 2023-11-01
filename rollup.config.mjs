@@ -4,9 +4,10 @@ import progress from 'rollup-plugin-progress';
 import commonjs from '@rollup/plugin-commonjs'
 import json from '@rollup/plugin-json';
 import resolve from '@rollup/plugin-node-resolve';
-import pkg from './package.json';
+import pkg from './package.json' assert { type: "json" };
 import terser from '@rollup/plugin-terser';
 import typescript from '@rollup/plugin-typescript';
+import replace from '@rollup/plugin-replace';
 
 import glob from "glob";
 import ejs from "ejs";
@@ -83,7 +84,10 @@ const jsPlugins = [
         include: [`${inputPath}/**/*`],
         extensions,
     }),
-    terser()
+    terser(),
+    replace({
+        '1.0.toString': "Number('1').toString",
+    })
 ];
 
 export default [
