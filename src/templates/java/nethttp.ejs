@@ -16,7 +16,7 @@ public class Main {
         URL url = new URL(fullUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("<%= method %>");
-        connection.setRequestProperty("Content-Type", "<%= mimeType %>");
+        <% if (mimeType) { %>connection.setRequestProperty("Content-Type", "<%= mimeType %>");<% } %>
 
         <% if (headers.length > 0) { %>
         // Add headers to the request

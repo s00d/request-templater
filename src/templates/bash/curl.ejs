@@ -1,6 +1,6 @@
 <% const { url, method, mimeType, headers, postData, cookies } = locals; %>
 curl -X <%= method %>
--H "Content-Type: <%= mimeType %>"
+<% if (mimeType) { %>-H "Content-Type: <%= mimeType %>"<% } %>
 <% headers.forEach(header => { %>
     -H "<%= header.name %>: <%= header.value %>"
 <% }) %>

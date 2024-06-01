@@ -10,7 +10,7 @@ public class Main {
         // Set up the request
         com.mashape.unirest.http.HttpRequestWithBody request =
         Unirest.<%= method.toLowerCase() %>(fullUrl)
-            .header("Content-Type", "<%= mimeType %>");
+        <% if (mimeType) { %>.header("Content-Type", "<%= mimeType %>")<% } %>;
 
         <% if (headers.length > 0) { %>
         // Add headers to the request

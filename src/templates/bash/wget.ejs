@@ -1,6 +1,6 @@
 <% const { url, method, mimeType, headers, postData, cookies } = locals; %>
 wget --verbose --output-document=-
---header="Content-Type: <%= mimeType %>"
+<% if (mimeType) { %>--header="Content-Type: <%= mimeType %>"<% } %>
 <% headers.forEach(header => { %>
     --header="<%= header.name %>: <%= header.value %>"
 <% }) %>

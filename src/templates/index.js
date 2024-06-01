@@ -2798,9 +2798,13 @@ function encode_char(c) {
     ; __append(escapeFn( url ))
     ; __append("\";\n\n        // Set up the request\n        com.mashape.unirest.http.HttpRequestWithBody request =\n        Unirest.")
     ; __append(escapeFn( method.toLowerCase() ))
-    ; __append("(fullUrl)\n            .header(\"Content-Type\", \"")
+    ; __append("(fullUrl)\n        ")
+    ;  if (mimeType) { 
+    ; __append(".header(\"Content-Type\", \"")
     ; __append(escapeFn( mimeType ))
-    ; __append("\");\n\n        ")
+    ; __append("\")")
+    ;  } 
+    ; __append(";\n\n        ")
     ;  if (headers.length > 0) { 
     ; __append("\n        // Add headers to the request\n        ")
     ;  headers.forEach(header => { 
@@ -2906,9 +2910,13 @@ function encode_char(c) {
     ; __append(escapeFn( url ))
     ; __append("\";\n\n        // Set up the request\n        OkHttpClient client = new OkHttpClient();\n        Request.Builder requestBuilder = new Request.Builder()\n            .url(fullUrl)\n            .method(\"")
     ; __append(escapeFn( method ))
-    ; __append("\", null)\n            .addHeader(\"Content-Type\", \"")
+    ; __append("\", null)\n            ")
+    ;  if (mimeType) { 
+    ; __append(".addHeader(\"Content-Type\", \"")
     ; __append(escapeFn( mimeType ))
-    ; __append("\");\n\n        ")
+    ; __append("\")")
+    ;  } 
+    ; __append(";\n\n        ")
     ;  if (headers.length > 0) { 
     ; __append("\n        // Add headers to the request\n        ")
     ;  headers.forEach(header => { 
@@ -2986,9 +2994,13 @@ function encode_char(c) {
     ; __append(escapeFn( url ))
     ; __append("\";\n\n        // Set up the request\n        URL url = new URL(fullUrl);\n        HttpURLConnection connection = (HttpURLConnection) url.openConnection();\n        connection.setRequestMethod(\"")
     ; __append(escapeFn( method ))
-    ; __append("\");\n        connection.setRequestProperty(\"Content-Type\", \"")
+    ; __append("\");\n        ")
+    ;  if (mimeType) { 
+    ; __append("connection.setRequestProperty(\"Content-Type\", \"")
     ; __append(escapeFn( mimeType ))
-    ; __append("\");\n\n        ")
+    ; __append("\");")
+    ;  } 
+    ; __append("\n\n        ")
     ;  if (headers.length > 0) { 
     ; __append("\n        // Add headers to the request\n        ")
     ;  headers.forEach(header => { 
@@ -3058,9 +3070,13 @@ function encode_char(c) {
     ; __append(escapeFn( url ))
     ; __append("\";\n\n        // Set up the request\n        AsyncHttpClient client = Dsl.asyncHttpClient();\n        RequestBuilder requestBuilder = new RequestBuilder(\"")
     ; __append(escapeFn( method ))
-    ; __append("\")\n        .setUrl(fullUrl)\n        .addHeader(\"Content-Type\", \"")
+    ; __append("\")\n        .setUrl(fullUrl)\n        ")
+    ;  if (mimeType) { 
+    ; __append(".addHeader(\"Content-Type\", \"")
     ; __append(escapeFn( mimeType ))
-    ; __append("\");\n\n        ")
+    ; __append("\")")
+    ;  } 
+    ; __append(";\n\n        ")
     ;  if (headers.length > 0) { 
     ; __append("\n        // Add headers to the request\n        ")
     ;  headers.forEach(header => { 
@@ -3368,9 +3384,13 @@ function encode_char(c) {
     ;  } 
     ; __append("\n\n    // Create a new HTTP request\n    req := fasthttp.AcquireRequest()\n    defer fasthttp.ReleaseRequest(req)\n    req.Header.SetMethod(\"")
     ; __append(escapeFn( method ))
-    ; __append("\")\n    req.Header.SetContentType(\"")
+    ; __append("\")\n    ")
+    ;  if (mimeType) { 
+    ; __append("req.Header.SetContentType(\"")
     ; __append(escapeFn( mimeType ))
-    ; __append("\")\n    req.Header.Add(\"User-Agent\", \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36\")\n\n    ")
+    ; __append("\")")
+    ;  } 
+    ; __append("\n    req.Header.Add(\"User-Agent\", \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36\")\n\n    ")
     ;  if (headers.length > 0) { 
     ; __append("\n    // Add headers to the request\n    ")
     ;  headers.forEach(header => { 
@@ -3422,7 +3442,11 @@ function encode_char(c) {
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
     ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
-    ; __append("\nimport 'package:http/http.dart' as http;\n\nFuture<String> makeRequest(String url, String method, String mimeType,\n                            Map<String, String> headers, Map<String, String> cookies,\n                            List<Map<String, dynamic>> postData) async {\n    // Construct the request\n    final request = http.Request(method, Uri.parse(url));\n    request.headers.addAll(headers);\n\n    // Add cookies to the request\n    cookies.forEach((name, value) {\n        request.cookies.add(Cookie(name, value));\n    });\n\n    // Add post data to the request\n    if (postData.isNotEmpty) {\n    if (postData.length == 1 && postData[0]['type'] == 'file') {\n        // Handle file upload\n        final fileUploadRequest = http.MultipartRequest(method, Uri.parse(url));\n        postData.forEach((param) async {\n            if (param['type'] == 'file') {\n                fileUploadRequest.files.add(await http.MultipartFile.fromPath(param['name'], param['value']));\n            } else {\n                fileUploadRequest.fields[param['name']] = param['value'].toString();\n            }\n        });\n        final response = await fileUploadRequest.send();\n        final responseBody = await response.stream.bytesToString();\n        return responseBody;\n    } else {\n    // Handle regular post data\n    final postDataString = postData.map((param) {\n    if (param['value'] is List) {\n    if (param['value'].isNotEmpty && param['value'][0] is List) {\n    // Handle array of arrays\n        final nestedArrayString = param['value'].map((nestedArray) {\n        return nestedArray.map((element) => '${Uri.encodeComponent(element.toString())}').join(',');\n            }).join(';');\n            return '${param['name']}=$nestedArrayString';\n    } else {\n        // Handle array of objects\n        final nestedObjectString = param['value'].map((nestedObject) {\n        return nestedObject.entries.map((entry) {\n        return '${Uri.encodeComponent('${entry.key}')}=${Uri.encodeComponent('${entry.value}')}';\n            }).join('&');\n        }).join(';');\n            return '${param['name']}=$nestedObjectString';\n        }\n    } else if (param['value'] is Map) {\n        // Handle object\n        return param['value'].entries.map((entry) {\n        return '${Uri.encodeComponent('${entry.key}')}=${Uri.encodeComponent('${entry.value}')}';\n        }).join('&');\n    } else {\n        // Handle string or number\n        return '${param['name']}=${Uri.encodeComponent(param['value'].toString())}';\n        }\n        }).join('&');\n        request.body = postDataString;\n        request.headers['Content-Type'] = mimeType;\n        final response = await request.send();\n        final responseBody = await response.stream.bytesToString();\n        return responseBody;\n    }\n    } else {\n        // Handle GET request\n        final response = await request.send();\n        final responseBody = await response.stream.bytesToString();\n        return responseBody;\n    }\n}\n\n// Example usage\nvoid main() async {\n    final url = '")
+    ; __append("\nimport 'package:http/http.dart' as http;\n\nFuture<String> makeRequest(String url, String method, String mimeType,\n                            Map<String, String> headers, Map<String, String> cookies,\n                            List<Map<String, dynamic>> postData) async {\n    // Construct the request\n    final request = http.Request(method, Uri.parse(url));\n    request.headers.addAll(headers);\n\n    // Add cookies to the request\n    cookies.forEach((name, value) {\n        request.cookies.add(Cookie(name, value));\n    });\n\n    // Add post data to the request\n    if (postData.isNotEmpty) {\n    if (postData.length == 1 && postData[0]['type'] == 'file') {\n        // Handle file upload\n        final fileUploadRequest = http.MultipartRequest(method, Uri.parse(url));\n        postData.forEach((param) async {\n            if (param['type'] == 'file') {\n                fileUploadRequest.files.add(await http.MultipartFile.fromPath(param['name'], param['value']));\n            } else {\n                fileUploadRequest.fields[param['name']] = param['value'].toString();\n            }\n        });\n        final response = await fileUploadRequest.send();\n        final responseBody = await response.stream.bytesToString();\n        return responseBody;\n    } else {\n    // Handle regular post data\n    final postDataString = postData.map((param) {\n    if (param['value'] is List) {\n    if (param['value'].isNotEmpty && param['value'][0] is List) {\n    // Handle array of arrays\n        final nestedArrayString = param['value'].map((nestedArray) {\n        return nestedArray.map((element) => '${Uri.encodeComponent(element.toString())}').join(',');\n            }).join(';');\n            return '${param['name']}=$nestedArrayString';\n    } else {\n        // Handle array of objects\n        final nestedObjectString = param['value'].map((nestedObject) {\n        return nestedObject.entries.map((entry) {\n        return '${Uri.encodeComponent('${entry.key}')}=${Uri.encodeComponent('${entry.value}')}';\n            }).join('&');\n        }).join(';');\n            return '${param['name']}=$nestedObjectString';\n        }\n    } else if (param['value'] is Map) {\n        // Handle object\n        return param['value'].entries.map((entry) {\n        return '${Uri.encodeComponent('${entry.key}')}=${Uri.encodeComponent('${entry.value}')}';\n        }).join('&');\n    } else {\n        // Handle string or number\n        return '${param['name']}=${Uri.encodeComponent(param['value'].toString())}';\n        }\n        }).join('&');\n        request.body = postDataString;\n        ")
+    ;  if (mimeType) { 
+    ; __append("request.headers['Content-Type'] = mimeType;")
+    ;  } 
+    ; __append("\n        final response = await request.send();\n        final responseBody = await response.stream.bytesToString();\n        return responseBody;\n    }\n    } else {\n        // Handle GET request\n        final response = await request.send();\n        final responseBody = await response.stream.bytesToString();\n        return responseBody;\n    }\n}\n\n// Example usage\nvoid main() async {\n    final url = '")
     ; __append(escapeFn( url ))
     ; __append("';\n    final method = '")
     ; __append(escapeFn( method ))
@@ -3579,9 +3603,13 @@ function encode_char(c) {
     ; __append(escapeFn( method ))
     ; __append("\", Method.")
     ; __append(escapeFn( method.toUpperCase() ))
-    ; __append(");\n        request.AddHeader(\"Content-Type\", \"")
+    ; __append(");\n        ")
+    ;  if (mimeType) { 
+    ; __append("request.AddHeader(\"Content-Type\", \"")
     ; __append(escapeFn( mimeType ))
-    ; __append("\");\n\n        ")
+    ; __append("\");")
+    ;  } 
+    ; __append("\n\n        ")
     ;  if (headers.length > 0) { 
     ; __append("\n        // Add headers to the request\n        ")
     ;  headers.forEach(header => { 
@@ -3657,9 +3685,13 @@ function encode_char(c) {
     ; __append(escapeFn( url ))
     ; __append("\";\n\n        // Set up the request\n        var client = new HttpClient();\n        var request = new HttpRequestMessage(new HttpMethod(\"")
     ; __append(escapeFn( method ))
-    ; __append("\"), fullUrl);\n        request.Headers.Add(\"Content-Type\", \"")
+    ; __append("\"), fullUrl);\n        ")
+    ;  if (mimeType) { 
+    ; __append("request.Headers.Add(\"Content-Type\", \"")
     ; __append(escapeFn( mimeType ))
-    ; __append("\");\n\n        ")
+    ; __append("\");")
+    ;  } 
+    ; __append("\n\n        ")
     ;  if (headers.length > 0) { 
     ; __append("\n        // Add headers to the request\n        ")
     ;  headers.forEach(header => { 
@@ -3974,9 +4006,13 @@ function encode_char(c) {
     ;  }) 
     ; __append("\n\n// Construct the request\nWiFiClient client;\nif (client.connect(url, 80)) {\n    // Send the request\n    client.print(\"")
     ; __append( method )
-    ; __append(" \");\n    client.print(url);\n    client.println(\" HTTP/1.1\");\n    client.print(\"Host: \");\n    client.println(url);\n    client.print(\"Content-Type: \");\n    client.println(\"")
+    ; __append(" \");\n    client.print(url);\n    client.println(\" HTTP/1.1\");\n    client.print(\"Host: \");\n    client.println(url);\n    ")
+    ;  if (mimeType) { 
+    ; __append("\n    client.print(\"Content-Type: \");\n    client.println(\"")
     ; __append( mimeType )
-    ; __append("\");\n    client.print(\"Content-Length: \");\n    client.println(postData.length());\n    client.print(headers);\n    if (postData.length() > 0) {\n    client.print(\"\\r\\n\");\n    client.print(postData);\n    }\n    client.println();\n\n    // Read the response\n    while (client.connected()) {\n        String line = client.readStringUntil('\\n');\n            if (line == \"\\r\") {\n            break;\n        }\n    }\n    String response = client.readStringUntil('\\n');\n    Serial.println(\"Response: \" + response);\n}\n")
+    ; __append("\");\n    ")
+    ;  } 
+    ; __append("\n    client.print(\"Content-Length: \");\n    client.println(postData.length());\n    client.print(headers);\n    if (postData.length() > 0) {\n    client.print(\"\\r\\n\");\n    client.print(postData);\n    }\n    client.println();\n\n    // Read the response\n    while (client.connected()) {\n        String line = client.readStringUntil('\\n');\n            if (line == \"\\r\") {\n            break;\n        }\n    }\n    String response = client.readStringUntil('\\n');\n    Serial.println(\"Response: \" + response);\n}\n")
   return __output;
 
 },
@@ -4028,9 +4064,13 @@ function encode_char(c) {
     ; __append(",")
     ;  } 
     ;  }) 
-    ; __append("}\n        options {:headers headers\n        :cookies cookies\n        :content-type \"")
+    ; __append("}\n        options {:headers headers\n        :cookies cookies\n        ")
+    ;  if (mimeType) { 
+    ; __append("\n        :content-type \"")
     ; __append(escapeFn( mimeType ))
-    ; __append("\"}\n    ")
+    ; __append("\"}\n        ")
+    ;  } 
+    ; __append("\n    ")
     ;  if (method === 'GET') { 
     ; __append("\n        response (client/get url options)]\n    ")
     ;  } else { 
@@ -4112,9 +4152,13 @@ function encode_char(c) {
     ; __append(",")
     ;  } 
     ;  }) 
-    ; __append("}\n        options {:headers headers\n        :cookies cookies\n        :content-type \"")
+    ; __append("}\n        options {:headers headers\n        :cookies cookies\n        ")
+    ;  if (mimeType) { 
+    ; __append("\n        :content-type \"")
     ; __append(escapeFn( mimeType ))
-    ; __append("\"}\n    ")
+    ; __append("\"}\n        ")
+    ;  } 
+    ; __append("\n    ")
     ;  if (method === 'GET') { 
     ; __append("\n        response (client/get url options)]\n    ")
     ;  } else { 
@@ -4218,9 +4262,13 @@ return param.name + '=' + encodeURIComponent(param.value)
 }).join('&') 
     ; __append("\nevbuffer_add_printf(req->output_buffer, \"%s\", \"")
     ; __append(escapeFn( postDataString ))
-    ; __append("\");\nevhttp_add_header(req->output_headers, \"Content-Type\", \"")
+    ; __append("\");\n")
+    ;  if (mimeType) { 
+    ; __append("\nevhttp_add_header(req->output_headers, \"Content-Type\", \"")
     ; __append(escapeFn( mimeType ))
     ; __append("\");\n")
+    ;  } 
+    ; __append("\n")
     ;  } 
     ; __append("\n\n// Send the request\nif (evhttp_make_request(conn, req, EVHTTP_REQ_")
     ; __append(escapeFn( method.toUpperCase() ))
@@ -4392,9 +4440,13 @@ function encode_char(c) {
   var __output = "";
   function __append(s) { if (s !== undefined && s !== null) __output += s }
     ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
-    ; __append("\nwget --verbose --output-document=-\n--header=\"Content-Type: ")
+    ; __append("\nwget --verbose --output-document=-\n")
+    ;  if (mimeType) { 
+    ; __append("--header=\"Content-Type: ")
     ; __append(escapeFn( mimeType ))
-    ; __append("\"\n")
+    ; __append("\"")
+    ;  } 
+    ; __append("\n")
     ;  headers.forEach(header => { 
     ; __append("\n    --header=\"")
     ; __append(escapeFn( header.name ))
@@ -4537,9 +4589,13 @@ function encode_char(c) {
     ;  const { url, method, mimeType, headers, postData, cookies } = locals; 
     ; __append("\ncurl -X ")
     ; __append(escapeFn( method ))
-    ; __append("\n-H \"Content-Type: ")
+    ; __append("\n")
+    ;  if (mimeType) { 
+    ; __append("-H \"Content-Type: ")
     ; __append(escapeFn( mimeType ))
-    ; __append("\"\n")
+    ; __append("\"")
+    ;  } 
+    ; __append("\n")
     ;  headers.forEach(header => { 
     ; __append("\n    -H \"")
     ; __append(escapeFn( header.name ))

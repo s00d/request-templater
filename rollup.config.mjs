@@ -4,10 +4,11 @@ import progress from 'rollup-plugin-progress';
 import commonjs from '@rollup/plugin-commonjs'
 import json from '@rollup/plugin-json';
 import resolve from '@rollup/plugin-node-resolve';
-import pkg from './package.json' assert { type: "json" };
 import terser from '@rollup/plugin-terser';
 import typescript from '@rollup/plugin-typescript';
 import replace from '@rollup/plugin-replace';
+
+const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf-8'));
 
 import glob from "glob";
 import ejs from "ejs";

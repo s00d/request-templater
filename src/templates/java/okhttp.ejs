@@ -12,7 +12,7 @@ public class Main {
         Request.Builder requestBuilder = new Request.Builder()
             .url(fullUrl)
             .method("<%= method %>", null)
-            .addHeader("Content-Type", "<%= mimeType %>");
+            <% if (mimeType) { %>.addHeader("Content-Type", "<%= mimeType %>")<% } %>;
 
         <% if (headers.length > 0) { %>
         // Add headers to the request

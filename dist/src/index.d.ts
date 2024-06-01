@@ -16,7 +16,7 @@ declare class RequestTemplater {
     constructor();
     library(value: string): this;
     lang(value: string): this;
-    mimeType(value: "application/x-www-form-urlencoded" | "application/json" | 'multipart/form-data'): this;
+    mimeType(value: "application/x-www-form-urlencoded" | "application/json" | 'multipart/form-data' | null): this;
     params(value: Array<Param>): this;
     method(value: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS'): this;
     url(value: string): this;

@@ -10,7 +10,7 @@ public class Main {
         AsyncHttpClient client = Dsl.asyncHttpClient();
         RequestBuilder requestBuilder = new RequestBuilder("<%= method %>")
         .setUrl(fullUrl)
-        .addHeader("Content-Type", "<%= mimeType %>");
+        <% if (mimeType) { %>.addHeader("Content-Type", "<%= mimeType %>")<% } %>;
 
         <% if (headers.length > 0) { %>
         // Add headers to the request

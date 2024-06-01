@@ -13,7 +13,7 @@ class Program
         // Set up the request
         var client = new HttpClient();
         var request = new HttpRequestMessage(new HttpMethod("<%= method %>"), fullUrl);
-        request.Headers.Add("Content-Type", "<%= mimeType %>");
+        <% if (mimeType) { %>request.Headers.Add("Content-Type", "<%= mimeType %>");<% } %>
 
         <% if (headers.length > 0) { %>
         // Add headers to the request

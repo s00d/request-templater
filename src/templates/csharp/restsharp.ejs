@@ -11,7 +11,7 @@ class Program
         // Set up the request
         var client = new RestClient(fullUrl);
         var request = new RestRequest("<%= method %>", Method.<%= method.toUpperCase() %>);
-        request.AddHeader("Content-Type", "<%= mimeType %>");
+        <% if (mimeType) { %>request.AddHeader("Content-Type", "<%= mimeType %>");<% } %>
 
         <% if (headers.length > 0) { %>
         // Add headers to the request

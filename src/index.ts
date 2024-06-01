@@ -12,7 +12,7 @@ class RequestTemplater {
     private _url: string = '';
     private _method: 'GET'|'POST'|'PUT'|'DELETE'|'PATCH'|'HEAD'|'OPTIONS' = 'GET';
     private _params: Param[] = [];
-    private _mimeType: "application/x-www-form-urlencoded"|"application/json"|'multipart/form-data' = 'application/x-www-form-urlencoded';
+    private _mimeType: "application/x-www-form-urlencoded"|"application/json"|'multipart/form-data'|null = 'application/x-www-form-urlencoded';
     private _lang: string = 'javascript';
     private _library: string = 'xmlhttprequest';
     constructor() {}
@@ -33,7 +33,7 @@ class RequestTemplater {
 
         return this;
     }
-    mimeType(value: "application/x-www-form-urlencoded"|"application/json"|'multipart/form-data') {
+    mimeType(value: "application/x-www-form-urlencoded"|"application/json"|'multipart/form-data'|null) {
         this._mimeType = value;
         return this;
     }

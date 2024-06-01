@@ -45,7 +45,9 @@ return param.name + '=' + encodeURIComponent(param.value)
 }
 }).join('&') %>
 evbuffer_add_printf(req->output_buffer, "%s", "<%= postDataString %>");
+<% if (mimeType) { %>
 evhttp_add_header(req->output_headers, "Content-Type", "<%= mimeType %>");
+<% } %>
 <% } %>
 
 // Send the request

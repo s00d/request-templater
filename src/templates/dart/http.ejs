@@ -58,7 +58,7 @@ Future<String> makeRequest(String url, String method, String mimeType,
         }
         }).join('&');
         request.body = postDataString;
-        request.headers['Content-Type'] = mimeType;
+        <% if (mimeType) { %>request.headers['Content-Type'] = mimeType;<% } %>
         final response = await request.send();
         final responseBody = await response.stream.bytesToString();
         return responseBody;

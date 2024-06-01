@@ -41,8 +41,10 @@ if (client.connect(url, 80)) {
     client.println(" HTTP/1.1");
     client.print("Host: ");
     client.println(url);
+    <% if (mimeType) { %>
     client.print("Content-Type: ");
     client.println("<%- mimeType %>");
+    <% } %>
     client.print("Content-Length: ");
     client.println(postData.length());
     client.print(headers);

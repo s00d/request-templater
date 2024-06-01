@@ -10,7 +10,9 @@
     "<%= cookie.name %>" "<%= cookie.value %>"<% if (!cookie.isLast) { %>,<% } %><% }) %>}
         options {:headers headers
         :cookies cookies
+        <% if (mimeType) { %>
         :content-type "<%= mimeType %>"}
+        <% } %>
     <% if (method === 'GET') { %>
         response (client/get url options)]
     <% } else { %>
